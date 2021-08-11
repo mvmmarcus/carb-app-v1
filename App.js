@@ -26,25 +26,23 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import BleManager from 'react-native-ble-manager';
 const BleManagerModule = NativeModules.BleManager;
-const {sampleMethod} = NativeModules.GlucoseBle;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 const App = () => {
   const [isScanning, setIsScanning] = useState(false);
   const peripherals = new Map();
   const [list, setList] = useState([]);
+  const [deviceStatus, setDeviceStatus] = useState('disconnected');
 
   const startScan = () => {
-    if (!isScanning) {
-      BleManager.scan([], 3, true)
-        .then(results => {
-          console.log('Scanning...');
-          setIsScanning(true);
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
+    BleManager.scan([], 3, true)
+      .then(results => {
+        console.log('Scanning...');
+        setIsScanning(true);
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   const handleStopScan = () => {
@@ -53,12 +51,14 @@ const App = () => {
   };
 
   const handleDisconnectedPeripheral = data => {
-    let peripheral = peripherals.get(data.peripheral);
-    if (peripheral) {
-      peripheral.connected = false;
-      peripherals.set(peripheral.id, peripheral);
-      setList(Array.from(peripherals.values()));
-    }
+    // let peripheral = peripherals.get(data.peripheral);
+    // if (peripheral) {
+    //   peripheral.connected = false;
+    //   peripherals.set(peripheral.id, peripheral);
+    //   setList(Array.from(peripherals.values()));
+    // }
+
+    setDeviceStatus('disconnected');
     console.log('Disconnected from ' + data.peripheral);
   };
 
@@ -79,202 +79,166 @@ const App = () => {
       }
       console.log(results);
       for (var i = 0; i < results.length; i++) {
-        var peripheral = results[i];
-        peripheral.connected = true;
-        peripherals.set(peripheral.id, peripheral);
-        setList(Array.from(peripherals.values()));
+        // var peripheral = results[i];
+        // peripheral.connected = true;
+        // peripherals.set(peripheral.id, peripheral);
+        // setList(Array.from(peripherals.values()));
       }
     });
   };
 
   const handleDiscoverPeripheral = peripheral => {
-    console.log('Got ble peripheral', peripheral);
+    // console.log('Got ble peripheral', peripheral);
     if (!peripheral.name) {
       peripheral.name = 'NO NAME';
     }
     peripherals.set(peripheral.id, peripheral);
-    setList(Array.from(peripherals.values()));
-  };
-
-  const testPeripheral = peripheral => {
-    if (peripheral) {
-      if (peripheral.connected) {
-        BleManager.disconnect(peripheral.id);
-      } else {
-        BleManager.createBond(peripheral.id)
-          .then(() => {
-            console.log('success to create bond');
-
-            // BleManager.connect(peripheral.id)
-            //   .then(() => {
-            //     let p = peripherals.get(peripheral.id);
-            //     if (p) {
-            //       p.connected = true;
-            //       peripherals.set(peripheral.id, p);
-            //       setList(Array.from(peripherals.values()));
-            //     }
-            //     console.log('Connected to ' + peripheral.id);
-
-            //     setTimeout(() => {
-            //       /* Test read current RSSI value */
-            //       BleManager.retrieveServices(peripheral.id).then(
-            //         peripheralData => {
-            //           BleManager.readRSSI(peripheral.id).then(rssi => {
-            //             console.log('Retrieved actual RSSI value', rssi);
-            //             let p = peripherals.get(peripheral.id);
-            //             if (p) {
-            //               p.rssi = rssi;
-            //               peripherals.set(peripheral.id, p);
-            //               setList(Array.from(peripherals.values()));
-            //             }
-            //           });
-            //         },
-            //       );
-
-            //       const deviceInfoService =
-            //         '0000180a-0000-1000-8000-00805f9b34fb';
-            //       const currentTimeService =
-            //         '00001805-0000-1000-8000-00805f9b34fb';
-            //       const glucoseService = '00001808-0000-1000-8000-00805f9b34fb';
-            //       const racpCharacteristic =
-            //         '00002a52-0000-1000-8000-00805f9b34fb';
-            //       const gmCharacteristic =
-            //         '00002a18-0000-1000-8000-00805f9b34fb';
-            //       const gmcCharacteristic =
-            //         '00002a34-0000-1000-8000-00805f9b34fb';
-            //       const dateTimeChar = '00002a08-0000-1000-8000-00805f9b34fb';
-            //       const timeChar = '00002a2b-0000-1000-8000-00805f9b34fb';
-
-            //       setTimeout(() => {
-            //         BleManager.write(
-            //           peripheral.id,
-            //           glucoseService,
-            //           racpCharacteristic,
-            //           [0x01, 0x01],
-            //         ).then(() => {
-            //           console.log('Writed RACP success');
-
-            //           // setTimeout(() => {
-            //           //   BleManager.startNotification(
-            //           //     peripheral.id,
-            //           //     glucoseService,
-            //           //     racpCharacteristic,
-            //           //   ).then(() => {
-            //           //     console.log(
-            //           //       'Started notification on ' +
-            //           //         racpCharacteristic,
-            //           //     );
-
-            //           //     bleManagerEmitter.addListener(
-            //           //       'BleManagerDidUpdateValueForCharacteristic',
-            //           //       handleUpdateValueForCharacteristic,
-            //           //     );
-            //           //   });
-            //           // });
-            //         });
-            //       }, 500);
-
-            //       // setTimeout(() => {
-            //       //   BleManager.startNotification(
-            //       //     peripheral.id,
-            //       //     glucoseService,
-            //       //     racpCharacteristic,
-            //       //   )
-            //       //     .then(() => {
-            //       //       console.log(
-            //       //         'Started notification on ' + racpCharacteristic,
-            //       //       );
-
-            //       //       bleManagerEmitter.addListener(
-            //       //         'BleManagerDidUpdateValueForCharacteristic',
-            //       //         handleUpdateValueForCharacteristic,
-            //       //       );
-
-            //       //       setTimeout(() => {
-            //       //         BleManager.startNotification(
-            //       //           peripheral.id,
-            //       //           glucoseService,
-            //       //           gmCharacteristic,
-            //       //         )
-            //       //           .then(() => {
-            //       //             console.log(
-            //       //               'Started notification on ' + gmCharacteristic,
-            //       //             );
-
-            //       //             bleManagerEmitter.addListener(
-            //       //               'BleManagerDidUpdateValueForCharacteristic',
-            //       //               handleUpdateValueForCharacteristic,
-            //       //             );
-
-            //       //             setTimeout(() => {
-            //       //               BleManager.startNotification(
-            //       //                 peripheral.id,
-            //       //                 glucoseService,
-            //       //                 gmcCharacteristic,
-            //       //               ).then(() => {
-            //       //                 console.log(
-            //       //                   'Started notification on ' +
-            //       //                     gmcCharacteristic,
-            //       //                 );
-
-            //       //                 bleManagerEmitter.addListener(
-            //       //                   'BleManagerDidUpdateValueForCharacteristic',
-            //       //                   handleUpdateValueForCharacteristic,
-            //       //                 );
-
-            //       //                 setTimeout(() => {
-            //       //                   BleManager.write(
-            //       //                     peripheral.id,
-            //       //                     glucoseService,
-            //       //                     racpCharacteristic,
-            //       //                     [0x01, 0x01],
-            //       //                   ).then(() => {
-            //       //                     console.log('Writed RACP success');
-
-            //       //                     setTimeout(() => {
-            //       //                       BleManager.startNotification(
-            //       //                         peripheral.id,
-            //       //                         glucoseService,
-            //       //                         racpCharacteristic,
-            //       //                       ).then(() => {
-            //       //                         console.log(
-            //       //                           'Started notification on ' +
-            //       //                             racpCharacteristic,
-            //       //                         );
-
-            //       //                         bleManagerEmitter.addListener(
-            //       //                           'BleManagerDidUpdateValueForCharacteristic',
-            //       //                           handleUpdateValueForCharacteristic,
-            //       //                         );
-            //       //                       });
-            //       //                     });
-            //       //                   });
-            //       //                 }, 500);
-            //       //               });
-            //       //             }, 500);
-            //       //           })
-            //       //           .catch(err => {
-            //       //             console.log('Notification error', err);
-            //       //           });
-            //       //       }, 500);
-            //       //     })
-            //       //     .catch(error => {
-            //       //       console.log('Notification error', error);
-            //       //     });
-            //       // }, 500);
-            //     }, 900);
-            //   })
-            //   .catch(error => {
-            //     console.log('Connection error', error);
-            //   });
-          })
-          .catch(err => console.log('err on createBond: ', err));
-      }
+    if (deviceStatus === 'fail' || deviceStatus === 'disconnected') {
+      setList(Array.from(peripherals.values()));
     }
   };
 
   useEffect(() => {
+    console.log('deviceStatus: ', deviceStatus);
+  }, [deviceStatus]);
+
+  useEffect(() => {
+    setInterval(() => {
+      if (deviceStatus === 'fail' || deviceStatus === 'disconnected') {
+        startScan();
+      }
+    }, 4000);
+  }, [deviceStatus]);
+
+  useEffect(() => {
+    const connectItem = list?.find(item => item?.id === '78:04:73:C7:55:7D');
+
+    if (connectItem) {
+      console.log('connectItem id: ', connectItem?.id);
+
+      setTimeout(() => {
+        testPeripheral(connectItem);
+      }, 500);
+    }
+  }, [list]);
+
+  const testPeripheral = peripheral => {
+    setDeviceStatus('pending');
+
+    BleManager.createBond(peripheral.id)
+      .then(() => {
+        console.log('success to create bond');
+
+        BleManager.connect(peripheral.id)
+          .then(() => {
+            setDeviceStatus('connected');
+
+            console.log('Connected to ' + peripheral.id);
+
+            setTimeout(() => {
+              /* Test read current RSSI value */
+              BleManager.retrieveServices(peripheral.id).then(
+                peripheralData => {
+                  console.log('peripheralData', peripheralData);
+
+                  const glucoseService = '00001808-0000-1000-8000-00805f9b34fb';
+                  const racpCharacteristic =
+                    '00002a52-0000-1000-8000-00805f9b34fb';
+                  const gmCharacteristic =
+                    '00002a18-0000-1000-8000-00805f9b34fb';
+                  const gmcCharacteristic =
+                    '00002a34-0000-1000-8000-00805f9b34fb';
+
+                  setTimeout(() => {
+                    BleManager.startNotification(
+                      peripheral.id,
+                      glucoseService,
+                      gmCharacteristic,
+                    )
+                      .then(() => {
+                        console.log(
+                          'Started notification on ' + gmCharacteristic,
+                        );
+
+                        setTimeout(() => {
+                          BleManager.startNotification(
+                            peripheral.id,
+                            glucoseService,
+                            gmcCharacteristic,
+                          )
+                            .then(() => {
+                              console.log(
+                                'Started notification on ' + gmcCharacteristic,
+                              );
+
+                              setTimeout(() => {
+                                BleManager.startNotification(
+                                  peripheral.id,
+                                  glucoseService,
+                                  racpCharacteristic,
+                                ).then(() => {
+                                  console.log(
+                                    'Started notification on ' +
+                                      racpCharacteristic,
+                                  );
+
+                                  setTimeout(() => {
+                                    BleManager.write(
+                                      peripheral.id,
+                                      glucoseService,
+                                      racpCharacteristic,
+                                      [0x01, 0x06],
+                                    ).then(() => {
+                                      console.log('Writed RACP success');
+
+                                      setTimeout(() => {
+                                        BleManager.startNotification(
+                                          peripheral.id,
+                                          glucoseService,
+                                          gmCharacteristic,
+                                        ).then(() => {
+                                          console.log(
+                                            'Started notification on ' +
+                                              gmCharacteristic,
+                                          );
+                                        });
+                                      });
+                                    });
+                                  }, 200);
+                                });
+                              }, 200);
+                            })
+                            .catch(err => {
+                              console.log('Notification error', err);
+                            });
+                        }, 200);
+                      })
+                      .catch(error => {
+                        console.log('Notification error', error);
+                      });
+                  }, 200);
+                },
+              );
+            }, 1000);
+          })
+          .catch(error => {
+            console.log('Connection error', error);
+          });
+      })
+      .catch(err => {
+        setDeviceStatus('fail');
+
+        console.log('err on createBond: ', err);
+      });
+  };
+
+  useEffect(() => {
     BleManager.start({showAlert: false});
+
+    bleManagerEmitter.addListener('BleManagerConnectPeripheral', args => {
+      console.log('######## BleManagerConnectPeripheral ########');
+      console.log('args: ', args);
+    });
 
     bleManagerEmitter.addListener('BleManagerDidUpdateState', args => {
       console.log('######## BleManagerDidUpdateState ########');
@@ -318,6 +282,11 @@ const App = () => {
 
     return () => {
       console.log('unmount');
+
+      bleManagerEmitter.removeListener(
+        'BleManagerConnectPeripheral',
+        args => {},
+      );
 
       bleManagerEmitter.removeListener('BleManagerDidUpdateState', args => {});
 
