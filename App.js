@@ -20,7 +20,10 @@ import {
   PermissionsAndroid,
   FlatList,
   TouchableHighlight,
+  AppState,
 } from 'react-native';
+
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
@@ -28,257 +31,93 @@ import BleManager from 'react-native-ble-manager';
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
+const glucoseService = '00001808-0000-1000-8000-00805f9b34fb';
+const racpCharacteristic = '00002a52-0000-1000-8000-00805f9b34fb';
+const gmCharacteristic = '00002a18-0000-1000-8000-00805f9b34fb';
+const gmcCharacteristic = '00002a34-0000-1000-8000-00805f9b34fb';
+
 const App = () => {
   const [isScanning, setIsScanning] = useState(false);
-  const peripherals = new Map();
+  const [isConnecting, setIsConnecting] = useState(false);
   const [list, setList] = useState([]);
-  const [deviceStatus, setDeviceStatus] = useState('disconnected');
+  const peripherals = new Map();
 
-  const startScan = () => {
-    BleManager.scan([], 3, true)
-      .then(results => {
-        console.log('Scanning...');
-        setIsScanning(true);
-      })
-      .catch(err => {
-        console.error(err);
+  const [connectedPeripheral, setConnectedPeripheral] = useState(null);
+  const [automaticallyConnect, setAutomaticallyConnect] = useState(false);
+  const [appState, setAppState] = useState('');
+  const [backgroundLoop, setBackgroundLoop] = useState(null);
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+
+    (async () => {
+      await BleManager.start({showAlert: false});
+
+      bleManagerEmitter.addListener('BleManagerConnectPeripheral', args => {
+        console.log('######## BleManagerConnectPeripheral ########');
+        console.log('args: ', args);
       });
-  };
 
-  const handleStopScan = () => {
-    console.log('Scan is stopped');
-    setIsScanning(false);
-  };
-
-  const handleDisconnectedPeripheral = data => {
-    // let peripheral = peripherals.get(data.peripheral);
-    // if (peripheral) {
-    //   peripheral.connected = false;
-    //   peripherals.set(peripheral.id, peripheral);
-    //   setList(Array.from(peripherals.values()));
-    // }
-
-    setDeviceStatus('disconnected');
-    console.log('Disconnected from ' + data.peripheral);
-  };
-
-  const handleUpdateValueForCharacteristic = data => {
-    console.log(
-      'Received data from ' +
-        data.peripheral +
-        ' characteristic ' +
-        data.characteristic,
-      data.value,
-    );
-  };
-
-  const retrieveConnected = () => {
-    BleManager.getConnectedPeripherals([]).then(results => {
-      if (results.length == 0) {
-        console.log('No connected peripherals');
-      }
-      console.log(results);
-      for (var i = 0; i < results.length; i++) {
-        // var peripheral = results[i];
-        // peripheral.connected = true;
-        // peripherals.set(peripheral.id, peripheral);
-        // setList(Array.from(peripherals.values()));
-      }
-    });
-  };
-
-  const handleDiscoverPeripheral = peripheral => {
-    // console.log('Got ble peripheral', peripheral);
-    if (!peripheral.name) {
-      peripheral.name = 'NO NAME';
-    }
-    peripherals.set(peripheral.id, peripheral);
-    if (deviceStatus === 'fail' || deviceStatus === 'disconnected') {
-      setList(Array.from(peripherals.values()));
-    }
-  };
-
-  useEffect(() => {
-    console.log('deviceStatus: ', deviceStatus);
-  }, [deviceStatus]);
-
-  useEffect(() => {
-    setInterval(() => {
-      if (deviceStatus === 'fail' || deviceStatus === 'disconnected') {
-        startScan();
-      }
-    }, 4000);
-  }, [deviceStatus]);
-
-  useEffect(() => {
-    const connectItem = list?.find(item => item?.id === '78:04:73:C7:55:7D');
-
-    if (connectItem) {
-      console.log('connectItem id: ', connectItem?.id);
-
-      setTimeout(() => {
-        testPeripheral(connectItem);
-      }, 500);
-    }
-  }, [list]);
-
-  const testPeripheral = peripheral => {
-    setDeviceStatus('pending');
-
-    BleManager.createBond(peripheral.id)
-      .then(() => {
-        console.log('success to create bond');
-
-        BleManager.connect(peripheral.id)
-          .then(() => {
-            setDeviceStatus('connected');
-
-            console.log('Connected to ' + peripheral.id);
-
-            setTimeout(() => {
-              /* Test read current RSSI value */
-              BleManager.retrieveServices(peripheral.id).then(
-                peripheralData => {
-                  console.log('peripheralData', peripheralData);
-
-                  const glucoseService = '00001808-0000-1000-8000-00805f9b34fb';
-                  const racpCharacteristic =
-                    '00002a52-0000-1000-8000-00805f9b34fb';
-                  const gmCharacteristic =
-                    '00002a18-0000-1000-8000-00805f9b34fb';
-                  const gmcCharacteristic =
-                    '00002a34-0000-1000-8000-00805f9b34fb';
-
-                  setTimeout(() => {
-                    BleManager.startNotification(
-                      peripheral.id,
-                      glucoseService,
-                      gmCharacteristic,
-                    )
-                      .then(() => {
-                        console.log(
-                          'Started notification on ' + gmCharacteristic,
-                        );
-
-                        setTimeout(() => {
-                          BleManager.startNotification(
-                            peripheral.id,
-                            glucoseService,
-                            gmcCharacteristic,
-                          )
-                            .then(() => {
-                              console.log(
-                                'Started notification on ' + gmcCharacteristic,
-                              );
-
-                              setTimeout(() => {
-                                BleManager.startNotification(
-                                  peripheral.id,
-                                  glucoseService,
-                                  racpCharacteristic,
-                                ).then(() => {
-                                  console.log(
-                                    'Started notification on ' +
-                                      racpCharacteristic,
-                                  );
-
-                                  setTimeout(() => {
-                                    BleManager.write(
-                                      peripheral.id,
-                                      glucoseService,
-                                      racpCharacteristic,
-                                      [0x01, 0x06],
-                                    ).then(() => {
-                                      console.log('Writed RACP success');
-
-                                      setTimeout(() => {
-                                        BleManager.startNotification(
-                                          peripheral.id,
-                                          glucoseService,
-                                          gmCharacteristic,
-                                        ).then(() => {
-                                          console.log(
-                                            'Started notification on ' +
-                                              gmCharacteristic,
-                                          );
-                                        });
-                                      });
-                                    });
-                                  }, 200);
-                                });
-                              }, 200);
-                            })
-                            .catch(err => {
-                              console.log('Notification error', err);
-                            });
-                        }, 200);
-                      })
-                      .catch(error => {
-                        console.log('Notification error', error);
-                      });
-                  }, 200);
-                },
-              );
-            }, 1000);
-          })
-          .catch(error => {
-            console.log('Connection error', error);
-          });
-      })
-      .catch(err => {
-        setDeviceStatus('fail');
-
-        console.log('err on createBond: ', err);
+      bleManagerEmitter.addListener('BleManagerDidUpdateState', args => {
+        console.log('######## BleManagerDidUpdateState ########');
+        console.log('args: ', args);
+        console.log('The new state:', args.state);
       });
-  };
 
-  useEffect(() => {
-    BleManager.start({showAlert: false});
+      bleManagerEmitter.addListener(
+        'BleManagerDiscoverPeripheral',
+        handleDiscoverPeripheral,
+      );
+      bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
+      bleManagerEmitter.addListener(
+        'BleManagerDisconnectPeripheral',
+        handleDisconnectedPeripheral,
+      );
+      bleManagerEmitter.addListener(
+        'BleManagerDidUpdateValueForCharacteristic',
+        handleUpdateValueForCharacteristic,
+      );
 
-    bleManagerEmitter.addListener('BleManagerConnectPeripheral', args => {
-      console.log('######## BleManagerConnectPeripheral ########');
-      console.log('args: ', args);
-    });
+      if (Platform.OS === 'android' && Platform.Version >= 23) {
+        PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        ).then(result => {
+          if (result) {
+            console.log('Permission is OK');
+          } else {
+            PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            ).then(result => {
+              if (result) {
+                console.log('User accept');
+              } else {
+                console.log('User refuse');
+              }
+            });
+          }
+        });
+      }
 
-    bleManagerEmitter.addListener('BleManagerDidUpdateState', args => {
-      console.log('######## BleManagerDidUpdateState ########');
-      console.log('args: ', args);
-      console.log('The new state:', args.state);
-    });
+      setInterval(() => {
+        (async () => {
+          const defaultDevice = await AsyncStorage.getItem('@defaultDevice');
+          const parsedDefaultDevice = JSON.parse(defaultDevice);
 
-    bleManagerEmitter.addListener(
-      'BleManagerDiscoverPeripheral',
-      handleDiscoverPeripheral,
-    );
-    bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
-    bleManagerEmitter.addListener(
-      'BleManagerDisconnectPeripheral',
-      handleDisconnectedPeripheral,
-    );
-    bleManagerEmitter.addListener(
-      'BleManagerDidUpdateValueForCharacteristic',
-      handleUpdateValueForCharacteristic,
-    );
+          console.log('parsedDefaultDevice: ', parsedDefaultDevice);
 
-    if (Platform.OS === 'android' && Platform.Version >= 23) {
-      PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      ).then(result => {
-        if (result) {
-          console.log('Permission is OK');
-        } else {
-          PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          ).then(result => {
-            if (result) {
-              console.log('User accept');
-            } else {
-              console.log('User refuse');
-            }
-          });
-        }
-      });
-    }
+          const isConnected = await BleManager.isPeripheralConnected(
+            parsedDefaultDevice?.id,
+            [glucoseService],
+          );
+
+          console.log('is connected: ', isConnected);
+
+          if (!isConnected) {
+            await startScan(true);
+          }
+        })();
+      }, 5000);
+    })();
 
     return () => {
       console.log('unmount');
@@ -303,13 +142,261 @@ const App = () => {
         'BleManagerDidUpdateValueForCharacteristic',
         handleUpdateValueForCharacteristic,
       );
+
+      clearInterval();
     };
   }, []);
+
+  function handleAppStateChange(nextAppState) {
+    if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('BoardManager: App has come to the foreground!');
+      BleManager.getConnectedPeripherals([]).then(peripheralsArray => {
+        console.log(
+          'BoardManager: Connected boards: ',
+          peripheralsArray.length,
+        );
+      });
+    }
+    setAppState(nextAppState);
+  }
+
+  function handleDisconnectedPeripheral(data) {
+    let peripheral = data.peripheral;
+    console.log(
+      'BoardManager: Disconnected from: ',
+      JSON.stringify(peripheral),
+    );
+
+    // Update state
+    if (connectedPeripheral) {
+      if (peripheral === connectedPeripheral.id) {
+        console.log(
+          'BoardManager: our dev Disconnected from ' +
+            JSON.stringify(peripheral),
+        );
+
+        if (backgroundLoop) clearInterval(backgroundLoop);
+
+        setConnectedPeripheral(null);
+        setBackgroundLoop(null);
+      }
+    }
+  }
+
+  const _sleep = ms => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
+  const sleep = async ms => {
+    await _sleep(ms);
+  };
+
+  async function startScan(autoConnect) {
+    if (!isScanning) {
+      try {
+        console.log('BoardManager: Clearing Interval: ');
+
+        if (backgroundLoop) clearInterval(backgroundLoop);
+
+        console.log('BoardManager: Clearing State: ');
+
+        if (connectedPeripheral) {
+          await BleManager.disconnect(connectedPeripheral.id);
+          console.log('Disconnecting BLE From ', connectedPeripheral?.name);
+        }
+
+        setIsScanning(true);
+        setConnectedPeripheral(null);
+        setAutomaticallyConnect(autoConnect);
+        setBackgroundLoop(null);
+
+        console.log(
+          'BoardManager: Scanning with automatic connect: ',
+          autoConnect,
+        );
+        await BleManager.scan([glucoseService], 5, true);
+      } catch (error) {
+        console.log('BoardManager: Failed to Scan: ', error);
+      }
+    }
+  }
+
+  async function onSelectPeripheral(peripheral) {
+    if (peripheral) {
+      console.log('onSelectPeripheral ', JSON.stringify(peripheral));
+
+      const isConnected = await BleManager.isPeripheralConnected(
+        peripheral.id,
+        [glucoseService],
+      );
+
+      if (isConnected) {
+        try {
+          console.log('Disconnecting BLE From: ', peripheral?.name);
+          await BleManager.disconnect(peripheral.id);
+        } catch (error) {
+          console.log('BoardManager: Failed to Disconnect: ', error);
+        }
+      } else {
+        try {
+          // store default in filesystem.
+
+          if (backgroundLoop) clearInterval(backgroundLoop);
+
+          setConnectedPeripheral(peripheral);
+          setIsScanning(false);
+          setBackgroundLoop(null);
+
+          await connectToPeripheral(peripheral);
+        } catch (error) {
+          console.log('BoardManager: Connection error: ', error);
+        }
+      }
+    }
+  }
+
+  const handleStopScan = () => {
+    console.log('BoardManager: Scan is stopped');
+    setIsScanning(false);
+  };
+
+  const handleUpdateValueForCharacteristic = data => {
+    console.log(
+      'Received data from ' +
+        data.peripheral +
+        ' characteristic ' +
+        data.characteristic,
+      data.value,
+    );
+  };
+
+  const retrieveConnected = () => {
+    BleManager.getConnectedPeripherals([]).then(results => {
+      if (results.length == 0) {
+        console.log('No connected peripherals');
+      }
+      console.log('results: ', results);
+    });
+  };
+
+  const handleDiscoverPeripheral = async peripheral => {
+    try {
+      peripherals.set(peripheral.id, peripheral);
+      setList(Array.from(peripherals.values()));
+
+      // if it is your default peripheral, connect automatically.
+      const defaultDevice = await AsyncStorage.getItem('@defaultDevice');
+      const parsedDevice = JSON.parse(defaultDevice);
+
+      await sleep(1000);
+
+      if (peripheral?.id === parsedDevice?.id) {
+        await connectToPeripheral(peripheral);
+      }
+
+      await sleep(1000);
+    } catch (error) {
+      console.log('BoardManager Found Peripheral Error: ', error);
+    }
+  };
+
+  async function connectToPeripheral(peripheral) {
+    // Update state
+
+    try {
+      const isConnected = await BleManager.isPeripheralConnected(
+        peripheral.id,
+        [glucoseService],
+      );
+
+      if (!isConnected) {
+        console.log(
+          'BoardManager: Automatically Connecting To: ',
+          peripheral?.name,
+        );
+
+        setIsConnecting(true);
+
+        console.log('BLE: Connecting to device: ' + peripheral.id);
+
+        try {
+          await BleManager.connect(peripheral.id);
+
+          await AsyncStorage.setItem(
+            '@defaultDevice',
+            JSON.stringify(peripheral),
+          );
+
+          await sleep(1000);
+          console.log('BLE: Retreiving services');
+          await BleManager.retrieveServices(peripheral.id);
+
+          await sleep(1000);
+          console.log('Started notification on: ', gmCharacteristic);
+          await BleManager.startNotification(
+            peripheral.id,
+            glucoseService,
+            gmcCharacteristic,
+          );
+
+          await sleep(1000);
+          console.log('Started notification on: ', gmcCharacteristic);
+          await BleManager.startNotification(
+            peripheral.id,
+            glucoseService,
+            gmcCharacteristic,
+          );
+
+          await sleep(1000);
+          console.log('Started notification on: ', racpCharacteristic);
+          await BleManager.startNotification(
+            peripheral.id,
+            glucoseService,
+            racpCharacteristic,
+          );
+
+          await sleep(1000);
+          console.log('Started writing on: ', racpCharacteristic);
+          await BleManager.write(
+            peripheral.id,
+            glucoseService,
+            racpCharacteristic,
+            [0x01, 0x06],
+          );
+
+          await sleep(1000);
+          console.log('Started notification on: ', racpCharacteristic);
+          await BleManager.startNotification(
+            peripheral.id,
+            glucoseService,
+            racpCharacteristic,
+          );
+
+          // Update status
+          setIsConnecting(false);
+          setConnectedPeripheral(peripheral);
+
+          console.log(
+            'BLE connectToPeripheral: Now go setup and read all the state ',
+          );
+        } catch (error) {
+          console.log('BLE: Error connecting: ', error);
+          console.log(
+            'BLE: Error connecting: bledevice = ',
+            JSON.stringify(peripheral),
+          );
+          setIsConnecting(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const renderItem = item => {
     const color = item.connected ? 'green' : '#fff';
     return (
-      <TouchableHighlight onPress={() => testPeripheral(item)}>
+      <TouchableHighlight onPress={() => onSelectPeripheral(item)}>
         <View style={[styles.row, {backgroundColor: color}]}>
           <Text
             style={{
@@ -318,7 +405,7 @@ const App = () => {
               color: '#333333',
               padding: 10,
             }}>
-            {item.name}
+            {item?.name}
           </Text>
           <Text
             style={{
@@ -360,7 +447,7 @@ const App = () => {
             <View style={{margin: 10}}>
               <Button
                 title={'Scan Bluetooth (' + (isScanning ? 'on' : 'off') + ')'}
-                onPress={() => startScan()}
+                onPress={() => startScan(true)}
               />
             </View>
 
@@ -371,7 +458,7 @@ const App = () => {
               />
             </View>
 
-            {list.length == 0 && (
+            {list?.values()?.length === 0 && (
               <View style={{flex: 1, margin: 20}}>
                 <Text style={{textAlign: 'center'}}>No peripherals</Text>
               </View>
