@@ -322,6 +322,12 @@ const App = () => {
         try {
           await BleManager.connect(peripheral.id);
 
+          await sleep(1000);
+
+          console.log('refreshing....');
+          await BleManager.refreshCache(peripheral.id);
+          console.log('refreshouuu !!');
+
           await AsyncStorage.setItem(
             '@defaultDevice',
             JSON.stringify(peripheral),
@@ -336,7 +342,7 @@ const App = () => {
           await BleManager.startNotification(
             peripheral.id,
             glucoseService,
-            gmcCharacteristic,
+            gmCharacteristic,
           );
 
           await sleep(1000);
