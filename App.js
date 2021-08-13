@@ -42,10 +42,15 @@ const App = () => {
   const [list, setList] = useState([]);
   const peripherals = new Map();
 
+  const [color, setColor] = useState('#fff');
+
   const [connectedPeripheral, setConnectedPeripheral] = useState(null);
-  const [automaticallyConnect, setAutomaticallyConnect] = useState(false);
   const [appState, setAppState] = useState('');
   const [backgroundLoop, setBackgroundLoop] = useState(null);
+
+  useEffect(() => {
+    console.log('connectedPerpheral: ', connectedPeripheral);
+  }, [connectedPeripheral]);
 
   useEffect(() => {
     AppState.addEventListener('change', handleAppStateChange);
@@ -103,8 +108,6 @@ const App = () => {
           const defaultDevice = await AsyncStorage.getItem('@defaultDevice');
           const parsedDefaultDevice = JSON.parse(defaultDevice);
 
-          console.log('parsedDefaultDevice: ', parsedDefaultDevice);
-
           const isConnected = await BleManager.isPeripheralConnected(
             parsedDefaultDevice?.id,
             [glucoseService],
@@ -161,26 +164,15 @@ const App = () => {
   }
 
   function handleDisconnectedPeripheral(data) {
-    let peripheral = data.peripheral;
+    const peripheralId = data.peripheral;
     console.log(
       'BoardManager: Disconnected from: ',
-      JSON.stringify(peripheral),
+      JSON.stringify(peripheralId),
     );
 
-    // Update state
-    if (connectedPeripheral) {
-      if (peripheral === connectedPeripheral.id) {
-        console.log(
-          'BoardManager: our dev Disconnected from ' +
-            JSON.stringify(peripheral),
-        );
-
-        if (backgroundLoop) clearInterval(backgroundLoop);
-
-        setConnectedPeripheral(null);
-        setBackgroundLoop(null);
-      }
-    }
+    setColor('#fff');
+    setConnectedPeripheral(null);
+    setBackgroundLoop(null);
   }
 
   const _sleep = ms => {
@@ -192,28 +184,26 @@ const App = () => {
   };
 
   async function startScan(autoConnect) {
-    if (!isScanning) {
+    if (!isScanning && !isConnecting) {
       try {
-        console.log('BoardManager: Clearing Interval: ');
-
         if (backgroundLoop) clearInterval(backgroundLoop);
 
-        console.log('BoardManager: Clearing State: ');
-
         if (connectedPeripheral) {
-          await BleManager.disconnect(connectedPeripheral.id);
+          await BleManager.disconnect(connectedPeripheral?.id);
           console.log('Disconnecting BLE From ', connectedPeripheral?.name);
         }
 
         setIsScanning(true);
         setConnectedPeripheral(null);
-        setAutomaticallyConnect(autoConnect);
         setBackgroundLoop(null);
 
         console.log(
           'BoardManager: Scanning with automatic connect: ',
           autoConnect,
         );
+
+        // await sleep(500);
+
         await BleManager.scan([glucoseService], 5, true);
       } catch (error) {
         console.log('BoardManager: Failed to Scan: ', error);
@@ -224,31 +214,25 @@ const App = () => {
   async function onSelectPeripheral(peripheral) {
     if (peripheral) {
       console.log('onSelectPeripheral ', JSON.stringify(peripheral));
+      setIsConnecting(true);
 
       const isConnected = await BleManager.isPeripheralConnected(
         peripheral.id,
         [glucoseService],
       );
 
-      if (isConnected) {
-        try {
-          console.log('Disconnecting BLE From: ', peripheral?.name);
-          await BleManager.disconnect(peripheral.id);
-        } catch (error) {
-          console.log('BoardManager: Failed to Disconnect: ', error);
-        }
-      } else {
+      if (!isConnected) {
         try {
           // store default in filesystem.
 
           if (backgroundLoop) clearInterval(backgroundLoop);
 
-          setConnectedPeripheral(peripheral);
           setIsScanning(false);
           setBackgroundLoop(null);
 
           await connectToPeripheral(peripheral);
         } catch (error) {
+          setIsConnecting(false);
           console.log('BoardManager: Connection error: ', error);
         }
       }
@@ -257,6 +241,7 @@ const App = () => {
 
   const handleStopScan = () => {
     console.log('BoardManager: Scan is stopped');
+
     setIsScanning(false);
   };
 
@@ -290,7 +275,12 @@ const App = () => {
 
       await sleep(1000);
 
-      if (peripheral?.id === parsedDevice?.id) {
+      if (
+        !isConnecting &&
+        parsedDevice &&
+        peripheral?.id === parsedDevice?.id
+      ) {
+        setIsConnecting(true);
         await connectToPeripheral(peripheral);
       }
 
@@ -315,12 +305,13 @@ const App = () => {
           peripheral?.name,
         );
 
-        setIsConnecting(true);
-
         console.log('BLE: Connecting to device: ' + peripheral.id);
 
         try {
           await BleManager.connect(peripheral.id);
+
+          setConnectedPeripheral(peripheral);
+          setColor('green');
 
           await AsyncStorage.setItem(
             '@defaultDevice',
@@ -336,7 +327,7 @@ const App = () => {
           await BleManager.startNotification(
             peripheral.id,
             glucoseService,
-            gmcCharacteristic,
+            gmCharacteristic,
           );
 
           await sleep(1000);
@@ -374,7 +365,6 @@ const App = () => {
 
           // Update status
           setIsConnecting(false);
-          setConnectedPeripheral(peripheral);
 
           console.log(
             'BLE connectToPeripheral: Now go setup and read all the state ',
@@ -386,15 +376,17 @@ const App = () => {
             JSON.stringify(peripheral),
           );
           setIsConnecting(false);
+          setConnectedPeripheral(null);
+          setColor('#fff');
         }
       }
     } catch (error) {
+      setIsConnecting(false);
       console.log(error);
     }
   }
 
   const renderItem = item => {
-    const color = item.connected ? 'green' : '#fff';
     return (
       <TouchableHighlight onPress={() => onSelectPeripheral(item)}>
         <View style={[styles.row, {backgroundColor: color}]}>
