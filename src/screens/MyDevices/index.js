@@ -29,7 +29,6 @@ import {
   SelectDevice,
 } from './styles';
 import BluetoothContext from '../../contexts/bluetooth';
-import { sortByDate } from '../../utils/global';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);

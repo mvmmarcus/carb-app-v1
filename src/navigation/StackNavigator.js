@@ -1,32 +1,48 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import { Text, View } from 'react-native';
 
+import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/Home';
 import MyDevices from '../screens/MyDevices';
 import Measurements from '../screens/Measurements';
-
 import Header from '../components/Header';
 
 const Stack = createStackNavigator();
+
+const Screen = () => {
+  return (
+    <View>
+      <Text>Screen</Text>
+    </View>
+  );
+};
 
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        header: ({ navigation, scene, previous }) => (
-          <Header navigation={navigation} scene={scene} previous={previous} />
-        ),
-        headerMode: 'screen',
+        header: (props) => {
+          return <Header {...props} />;
+        },
       }}
+      initialRouteName="Home Screen"
     >
       <Stack.Screen name="Home Screen" component={Home} />
+      <Stack.Screen name="Screen" component={Screen} />
     </Stack.Navigator>
   );
 };
 
 const MeasurementsStackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        header: (props) => {
+          return <Header {...props} />;
+        },
+      }}
+      initialRouteName="Measurements Screen"
+    >
       <Stack.Screen name="Measurements Screen" component={Measurements} />
     </Stack.Navigator>
   );
@@ -34,7 +50,14 @@ const MeasurementsStackNavigator = () => {
 
 const MyDevicesStackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        header: (props) => {
+          return <Header {...props} />;
+        },
+      }}
+      initialRouteName="MyDevices Screen"
+    >
       <Stack.Screen name="MyDevices Screen" component={MyDevices} />
     </Stack.Navigator>
   );

@@ -9,6 +9,7 @@ import { BluetoothStatus } from 'react-native-bluetooth-status';
 
 import DrawerNavigator from '../src/navigation/DrawerNavigator';
 import { BluetoothProvider } from './contexts/bluetooth';
+import AuthNavigator from './navigation/AuthNavigator';
 
 const App = () => {
   useEffect(() => {
@@ -40,13 +41,19 @@ const App = () => {
     }
   }, []);
 
+  const isAuth = true;
+
   return (
     <PaperProvider>
       <SafeAreaProvider>
         <NavigationContainer>
-          <BluetoothProvider>
-            <DrawerNavigator />
-          </BluetoothProvider>
+          {isAuth ? (
+            <BluetoothProvider>
+              <DrawerNavigator />
+            </BluetoothProvider>
+          ) : (
+            <AuthNavigator />
+          )}
         </NavigationContainer>
       </SafeAreaProvider>
     </PaperProvider>

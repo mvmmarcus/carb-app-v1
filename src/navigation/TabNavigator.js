@@ -24,7 +24,7 @@ const BottomTabNavigator = () => {
         name="Home Stack"
         component={MainStackNavigator}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: 'Início',
           tabBarIcon: () => <IconMC name="home" size={20} color="#fff" />,
         }}
       />
@@ -32,7 +32,7 @@ const BottomTabNavigator = () => {
         name="Measurements Stack"
         component={MeasurementsStackNavigator}
         options={{
-          tabBarLabel: 'Measurements',
+          tabBarLabel: 'Registros',
           tabBarIcon: () => <IconMC name="diabetes" size={20} color="#fff" />,
         }}
       />

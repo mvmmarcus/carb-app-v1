@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { View } from 'react-native';
 import { Title } from 'react-native-paper';
@@ -18,6 +18,10 @@ const HomeScreen = () => {
     date: '2021/09/20',
     time: '19:50:30',
   });
+
+  useEffect(() => {
+    (async () => {})();
+  }, []);
 
   return (
     <SafeArea>

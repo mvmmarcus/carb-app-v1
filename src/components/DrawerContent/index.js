@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {DrawerContentScrollView} from '@react-navigation/drawer';
+import { View, StyleSheet } from 'react-native';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import {
   Avatar,
   Title,
@@ -10,7 +10,7 @@ import {
   Text,
 } from 'react-native-paper';
 
-const DrawerContent = props => {
+const DrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.drawerContent}>
@@ -26,6 +26,11 @@ const DrawerContent = props => {
         </View>
 
         <Drawer.Section title="Preferences">
+          <TouchableRipple onPress={() => props?.navigation.navigate('Screen')}>
+            <View style={styles.preference}>
+              <Text>Screen</Text>
+            </View>
+          </TouchableRipple>
           <TouchableRipple onPress={() => {}}>
             <View style={styles.preference}>
               <Text>Sair</Text>

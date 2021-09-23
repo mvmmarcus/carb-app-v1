@@ -6,8 +6,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
 
 import DrawerContent from '../components/DrawerContent';
-import RootNavigator from './RootNavigator';
 import BluetoothContext from '../contexts/bluetooth';
+import TabNavigator from './TabNavigator';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,7 +33,7 @@ const DrawerNavigator = () => {
       screenOptions={{ headerShown: false }}
       drawerContent={DrawerContent}
     >
-      <Drawer.Screen name="Root" component={RootNavigator} />
+      <Drawer.Screen name="Home" component={TabNavigator} />
     </Drawer.Navigator>
   );
 };
