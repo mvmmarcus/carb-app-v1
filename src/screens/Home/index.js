@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState } from 'react';
 import { View } from 'react-native';
+
 import { Title } from 'react-native-paper';
 
 import Measurement from '../../components/Measurement';
+
 import {
   CenteredTitle,
   Container,
@@ -18,10 +19,6 @@ const HomeScreen = () => {
     date: '2021/09/20',
     time: '19:50:30',
   });
-
-  useEffect(() => {
-    (async () => {})();
-  }, []);
 
   return (
     <SafeArea>

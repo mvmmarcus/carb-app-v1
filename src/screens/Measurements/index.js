@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FlatList, ScrollView, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import Measurement from '../../components/Measurement';
 import BluetoothContext from '../../contexts/bluetooth';

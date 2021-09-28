@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { Text } from 'react-native';
+
 import { Title, Caption } from 'react-native-paper';
 import styled, { css } from 'styled-components/native';
 
