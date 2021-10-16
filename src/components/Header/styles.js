@@ -9,7 +9,9 @@ export const HeaderContent = ({ children }) => (
       flex: 1,
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'flex-end',
+      alignItems: 'center',
+      paddingLeft: 60,
+      paddingRight: 60,
     }}
     title={children}
   />

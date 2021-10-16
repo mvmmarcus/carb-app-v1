@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Image, View } from 'react-native';
 
 import { Appbar, Avatar } from 'react-native-paper';
 
@@ -7,9 +7,14 @@ import { HeaderContent } from './styles';
 
 const Header = ({ back, navigation }) => {
   return (
-    <Appbar.Header>
+    <Appbar.Header
+      style={{
+        backgroundColor: '#509AE0',
+      }}
+    >
       {back && <Appbar.BackAction onPress={() => navigation?.goBack()} />}
       <TouchableOpacity
+        style={{ position: 'absolute', left: 10, zIndex: 2 }}
         onPress={() => {
           navigation.openDrawer();
         }}
@@ -23,7 +28,12 @@ const Header = ({ back, navigation }) => {
       </TouchableOpacity>
 
       <HeaderContent>
-        <Text>Carbapp</Text>
+        <View>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={{ width: 40, height: 44, resizeMode: 'stretch' }}
+          />
+        </View>
       </HeaderContent>
     </Appbar.Header>
   );

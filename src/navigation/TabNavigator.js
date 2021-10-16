@@ -19,7 +19,12 @@ IconMC.loadFont();
 
 const BottomTabNavigator = () => {
   return (
-    <Tab.Navigator initialRouteName="Home Stack">
+    <Tab.Navigator
+      activeColor="#fff"
+      inactiveColor="#000"
+      barStyle={{ backgroundColor: '#509AE0' }}
+      initialRouteName="Home Stack"
+    >
       <Tab.Screen
         name="Home Stack"
         component={MainStackNavigator}

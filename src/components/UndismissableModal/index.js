@@ -19,7 +19,7 @@ const UndismissableModal = () => {
     >
       <WrapperModal>
         <TitleModal>
-          Estamos conectando você{'\n'}
+          Conectando{'\n'}
           ao seu dispositivo
         </TitleModal>
         <ContentModal>

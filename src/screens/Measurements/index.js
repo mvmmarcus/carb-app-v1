@@ -29,7 +29,9 @@ const MeasurementsScreeen = () => {
 
         <View>
           <FlatList
-            data={records?.sort(sortByDate)}
+            data={records
+              ?.sort(sortByDate)
+              ?.filter((item) => item?.value >= 40)}
             renderItem={({ item }) => (
               <Measurement
                 value={item?.value}
