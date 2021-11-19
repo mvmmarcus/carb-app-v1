@@ -1,8 +1,7 @@
-/* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 
-import { Title } from 'react-native-paper';
+import { Title, Caption } from 'react-native-paper';
 import styled from 'styled-components/native';
 
 export const SafeArea = styled.SafeAreaView`
@@ -33,4 +32,8 @@ export const ResultsLabel = ({ children }) => (
 
 export const CenteredTitle = ({ children }) => (
   <Title style={{ textAlign: 'center' }}>{children}</Title>
+);
+
+export const CenteredCaption = ({ children }) => (
+  <Caption style={{ textAlign: 'center' }}>{children}</Caption>
 );

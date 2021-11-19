@@ -144,19 +144,11 @@ export const BluetoothProvider = ({ children }) => {
         const storageRecords = await AsyncStorage.getItem('@records');
         const storageRecordsParsed = JSON.parse(storageRecords);
 
-        console.log('currentRecords: ', currentRecords);
-        console.log('storageRecordsParsed: ', storageRecordsParsed);
-
         const findCommonElements = (arr1, arr2) => {
           return arr1?.find((item) =>
             arr2?.map((item2) => item?.fullDate === item2?.fullDate)
           );
         };
-
-        console.log(
-          'findCommonElements: ',
-          findCommonElements(currentRecords, storageRecordsParsed)
-        );
 
         if (findCommonElements(currentRecords, storageRecordsParsed)) {
           return;

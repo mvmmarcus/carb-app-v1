@@ -7,7 +7,3 @@ export const getBackgroundColor = (value) => {
     return 'green';
   }
 };
-
-export const sortByDate = (a, b) => {
-  return new Date(`${b.date} ${b.time}`) - new Date(`${a.date} ${a.time}`);
-};

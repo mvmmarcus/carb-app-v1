@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 
-import { Title } from 'react-native-paper';
+import { Title, Caption } from 'react-native-paper';
 import styled from 'styled-components/native';
 
 export const SafeArea = styled.SafeAreaView`
@@ -24,6 +24,10 @@ export const CenteredTitle = ({ children }) => (
   <Title style={{ textAlign: 'center' }}>{children}</Title>
 );
 
+export const CenteredCaption = ({ children }) => (
+  <Caption style={{ textAlign: 'center' }}>{children}</Caption>
+);
+
 export const LastRecordView = styled.View`
-  padding: 10px;
+  padding: 10px 10px 30px;
 `;

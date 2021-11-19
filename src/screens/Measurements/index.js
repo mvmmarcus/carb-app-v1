@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import { FlatList, View } from 'react-native';
+
 import { ActivityIndicator } from 'react-native-paper';
+
 import Measurement from '../../components/Measurement';
 import BluetoothContext from '../../contexts/bluetooth';
-import { sortByDate } from '../../utils/global';
-import { CenteredCaption } from '../MyDevices/styles';
+import { formatToBrazilianDate, sortByDate } from '../../utils/date';
 
 import {
   SafeArea,
@@ -12,6 +13,7 @@ import {
   LoadingSection,
   CustomText,
   CenteredTitle,
+  CenteredCaption,
 } from './styles';
 
 const MeasurementsScreeen = () => {
@@ -35,11 +37,11 @@ const MeasurementsScreeen = () => {
             renderItem={({ item }) => (
               <Measurement
                 value={item?.value}
-                date={item?.date}
+                date={formatToBrazilianDate(item?.date)}
                 time={item?.time}
               />
             )}
-            keyExtractor={(item) => item?.time}
+            keyExtractor={(item) => item?.fullDate}
             ListEmptyComponent={
               !isGettingRecords && (
                 <CenteredTitle>Nenhum registro encontrado</CenteredTitle>
