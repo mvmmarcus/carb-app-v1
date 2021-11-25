@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Text, TouchableHighlight, View } from 'react-native';
 
 import { ActivityIndicator } from 'react-native-paper';
+import { useEffect } from 'react/cjs/react.development';
 
 import BluetoothContext from '../../contexts/bluetooth';
 
@@ -35,15 +36,15 @@ const MyDevicesScreen = () => {
       <TouchableHighlight onPress={() => onSelectPeripheral(item)}>
         <PeripheralWrapper>
           <Text>{item?.name}</Text>
-          <Text>RSSI: {item.rssi}</Text>
-          <Text>{item.id}</Text>
+          <Text>RSSI: {item?.rssi}</Text>
+          <Text>{item?.id}</Text>
         </PeripheralWrapper>
       </TouchableHighlight>
     ) : (
       <PeripheralWrapper isConnected={isConnected}>
         <PeripheralDescription>Nome: {item?.name}</PeripheralDescription>
-        <PeripheralDescription>RSSI: {item.rssi}</PeripheralDescription>
-        <PeripheralDescription>Id: {item.id}</PeripheralDescription>
+        <PeripheralDescription>RSSI: {item?.rssi}</PeripheralDescription>
+        <PeripheralDescription>Id: {item?.id}</PeripheralDescription>
         <PeripheralDescription>
           Status:{' '}
           {isConnecting
@@ -55,6 +56,10 @@ const MyDevicesScreen = () => {
       </PeripheralWrapper>
     );
   };
+
+  useEffect(() => {
+    console.log('connectedPeripheral from my devices: ', connectedPeripheral);
+  }, [connectedPeripheral]);
 
   return (
     <SafeArea>

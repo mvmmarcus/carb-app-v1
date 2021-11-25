@@ -37,55 +37,105 @@ export const BluetoothProvider = ({ children }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isGettingRecords, setIsGettingRecords] = useState(false);
   const [records, setRecords] = useState([]);
-  const [currentRecords, setCurrentRecords] = useState([]);
   const [connectedPeripheral, setConnectedPeripheral] = useState(null);
   const [storagePeripheral, setStoragePeripheral] = useState(null);
   const [discoveredPeripherals, setDiscoveredPeripherals] = useState([]);
   const [discoveredPeripheral, setDiscoveredPeripheral] = useState(null);
+  let newRecords = [];
+  let currentDiscoveredPeripheral = null;
 
   useEffect(() => {
     (async () => {
       await BleManager.start({ showAlert: false });
 
-      bleManagerEmitter.addListener('BleManagerConnectPeripheral', (args) => {
+      const defaultPeripheral = await AsyncStorage.getItem(
+        '@defaultPeripheral'
+      );
+      const defaultPeripheralParsed = JSON.parse(defaultPeripheral);
+
+      if (defaultPeripheralParsed) {
+        setStoragePeripheral(defaultPeripheralParsed);
+        setIsFirstConnection(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      console.log('connectedPeripheral: ', connectedPeripheral);
+
+      if (!connectedPeripheral) {
+        await startScan();
+      }
+    })();
+  }, [connectedPeripheral]);
+
+  useEffect(() => {
+    const connectPeripheralSubscription = bleManagerEmitter.addListener(
+      'BleManagerConnectPeripheral',
+      (args) => {
         console.log('######## BleManagerConnectPeripheral ########');
         console.log('args: ', args);
-      });
+      }
+    );
 
-      bleManagerEmitter.addListener(
-        'BleManagerDiscoverPeripheral',
-        handleDiscoverPeripheral
-      );
+    const discoverPeripheralSubscription = bleManagerEmitter.addListener(
+      'BleManagerDiscoverPeripheral',
+      handleDiscoverPeripheral
+    );
 
-      bleManagerEmitter.addListener(
-        'BleManagerDisconnectPeripheral',
-        handleDisconnectedPeripheral
-      );
+    const disconnectPeripheralSubscription = bleManagerEmitter.addListener(
+      'BleManagerDisconnectPeripheral',
+      handleDisconnectedPeripheral
+    );
 
+    const didUpdateValueForCharacteristicSubscription =
       bleManagerEmitter.addListener(
         'BleManagerDidUpdateValueForCharacteristic',
         handleUpdateValueForCharacteristic
       );
 
-      bleManagerEmitter.addListener('BleManagerStopScan', () => {
-        console.log('scan is stopped');
-        setIsScanning(false);
-      });
-
-      await startScan();
-    })();
+    const stopScanSubscripttion = bleManagerEmitter.addListener(
+      'BleManagerStopScan',
+      handleStopScan
+    );
 
     return () => {
       console.log('unmount');
-      bleManagerEmitter.removeListener('BleManagerConnectPeripheral');
-      bleManagerEmitter.removeListener('BleManagerDiscoverPeripheral');
-      bleManagerEmitter.removeListener('BleManagerDisconnectPeripheral');
-      bleManagerEmitter.removeListener('BleManagerStopScan');
-      bleManagerEmitter.removeListener(
-        'BleManagerDidUpdateValueForCharacteristic'
-      );
+
+      connectPeripheralSubscription?.remove();
+      discoverPeripheralSubscription?.remove();
+      disconnectPeripheralSubscription?.remove();
+      didUpdateValueForCharacteristicSubscription?.remove();
+      stopScanSubscripttion?.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (discoveredPeripheral) {
+      const peripheral = discoveredPeripherals.find(
+        (item) => item?.id === discoveredPeripheral?.id
+      );
+
+      if (!peripheral) {
+        setDiscoveredPeripherals((prev) => [...prev, discoveredPeripheral]);
+      }
+    }
+  }, [discoveredPeripheral]);
+
+  useEffect(() => {
+    (async () => {
+      if (
+        storagePeripheral &&
+        storagePeripheral?.id === discoveredPeripheral?.id &&
+        !connectedPeripheral &&
+        !isGettingRecords &&
+        !isConnecting
+      ) {
+        await onSelectPeripheral(storagePeripheral);
+      }
+    })();
+  }, [storagePeripheral, discoveredPeripheral?.id]);
 
   const sleep = async (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -116,6 +166,8 @@ export const BluetoothProvider = ({ children }) => {
       );
       console.log('Started notification on: ', racpCharacteristic);
     } catch (error) {
+      setIsGettingRecords(false);
+
       console.log('error on starting notifications: ', error);
     }
   };
@@ -126,9 +178,10 @@ export const BluetoothProvider = ({ children }) => {
         peripheral?.id,
         glucoseService,
         racpCharacteristic,
-        [0x01, 0x06]
+        [0x01, 0x01]
       );
     } catch (error) {
+      setIsGettingRecords(false);
       console.log('error on writing commands: ', error);
     }
   };
@@ -137,14 +190,32 @@ export const BluetoothProvider = ({ children }) => {
     setIsConnecting(true);
     try {
       console.log('BLE: Connecting to device: ' + peripheral.id);
+      await BleManager.stopScan();
+
       await BleManager.connect(peripheral.id);
       await sleep(500);
 
       console.log('BLE: Retreiving services');
       await BleManager.retrieveServices(peripheral.id);
 
+      const defaultPeripheral = await AsyncStorage.getItem(
+        '@defaultPeripheral'
+      );
+      const defaultPeripheralParsed = JSON.parse(defaultPeripheral);
+
+      console.log('defaultPeripheralParsed: ', defaultPeripheralParsed);
+
+      if (!defaultPeripheralParsed) {
+        setIsFirstConnection(false);
+        await AsyncStorage.setItem(
+          '@defaultPeripheral',
+          JSON.stringify(peripheral)
+        );
+      }
+
       setConnectedPeripheral(peripheral);
       setIsConnecting(false);
+      setIsGettingRecords(true);
     } catch (error) {
       setIsConnecting(false);
       console.log('BLE: Error connecting: ', error);
@@ -152,9 +223,6 @@ export const BluetoothProvider = ({ children }) => {
   };
 
   const onSelectPeripheral = async (peripheral) => {
-    await BleManager.stopScan();
-    await sleep(300);
-
     await connectToPeripheral(peripheral);
     await sleep(500);
 
@@ -177,16 +245,28 @@ export const BluetoothProvider = ({ children }) => {
 
   const handleDiscoverPeripheral = (peripheral) => {
     console.log('discovered pheriferal: ', peripheral);
+
+    if (peripheral?.id !== currentDiscoveredPeripheral?.id) {
+      currentDiscoveredPeripheral = peripheral;
+
+      setDiscoveredPeripheral(peripheral);
+    }
   };
 
   const handleUpdateValueForCharacteristic = (data) => {
-    console.log(
-      'Received data from ' +
-        data.peripheral +
-        ' characteristic ' +
-        data.characteristic,
-      data.value
-    );
+    // console.log(
+    //   'Received data from ' +
+    //     data.peripheral +
+    //     ' characteristic ' +
+    //     data.characteristic,
+    //   data.value
+    // );
+
+    if (data?.characteristic === racpCharacteristic) {
+      console.log('all data received');
+      setIsGettingRecords(false);
+      setRecords(newRecords);
+    }
 
     if (data?.characteristic === gmCharacteristic) {
       const newBuffer = Buffer.from(data.value);
@@ -213,6 +293,7 @@ export const BluetoothProvider = ({ children }) => {
       };
 
       console.log('currentRecord: ', currentRecord);
+      newRecords = [...newRecords, currentRecord];
     }
   };
 
@@ -224,7 +305,16 @@ export const BluetoothProvider = ({ children }) => {
       JSON.stringify(peripheral)
     );
 
+    setDiscoveredPeripheral(null);
+    setDiscoveredPeripherals([]);
     setConnectedPeripheral(null);
+    currentDiscoveredPeripheral = null;
+    newRecords = [];
+  };
+
+  const handleStopScan = () => {
+    console.log('scan is stopped');
+    setIsScanning(false);
   };
 
   return (
