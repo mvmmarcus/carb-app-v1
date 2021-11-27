@@ -22,4 +22,4 @@ const Measurement = ({ value, date, time }) => {
   );
 };
 
-export default Measurement;
+export default React.memo(Measurement);

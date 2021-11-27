@@ -31,31 +31,33 @@ const MyDevicesScreen = () => {
     onSelectPeripheral,
   } = useContext(BluetoothContext);
 
-  const Peripheral = ({ item, isConnected = false, isTouchable = true }) => {
-    return isTouchable ? (
-      <TouchableHighlight onPress={() => onSelectPeripheral(item)}>
-        <PeripheralWrapper>
-          <Text>{item?.name}</Text>
-          <Text>RSSI: {item?.rssi}</Text>
-          <Text>{item?.id}</Text>
+  const Peripheral = React.memo(
+    ({ item, isConnected = false, isTouchable = true }) => {
+      return isTouchable ? (
+        <TouchableHighlight onPress={() => onSelectPeripheral(item)}>
+          <PeripheralWrapper>
+            <Text>{item?.name}</Text>
+            <Text>RSSI: {item?.rssi}</Text>
+            <Text>{item?.id}</Text>
+          </PeripheralWrapper>
+        </TouchableHighlight>
+      ) : (
+        <PeripheralWrapper isConnected={isConnected}>
+          <PeripheralDescription>Nome: {item?.name}</PeripheralDescription>
+          <PeripheralDescription>RSSI: {item?.rssi}</PeripheralDescription>
+          <PeripheralDescription>Id: {item?.id}</PeripheralDescription>
+          <PeripheralDescription>
+            Status:{' '}
+            {isConnecting
+              ? 'Conectando'
+              : isConnected
+              ? 'Conectado'
+              : 'Desconectado'}
+          </PeripheralDescription>
         </PeripheralWrapper>
-      </TouchableHighlight>
-    ) : (
-      <PeripheralWrapper isConnected={isConnected}>
-        <PeripheralDescription>Nome: {item?.name}</PeripheralDescription>
-        <PeripheralDescription>RSSI: {item?.rssi}</PeripheralDescription>
-        <PeripheralDescription>Id: {item?.id}</PeripheralDescription>
-        <PeripheralDescription>
-          Status:{' '}
-          {isConnecting
-            ? 'Conectando'
-            : isConnected
-            ? 'Conectado'
-            : 'Desconectado'}
-        </PeripheralDescription>
-      </PeripheralWrapper>
-    );
-  };
+      );
+    }
+  );
 
   useEffect(() => {
     console.log('connectedPeripheral from my devices: ', connectedPeripheral);

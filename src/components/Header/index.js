@@ -39,4 +39,4 @@ const Header = ({ back, navigation }) => {
   );
 };
 
-export default Header;
+export default React.memo(Header);

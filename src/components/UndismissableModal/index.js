@@ -31,4 +31,4 @@ const UndismissableModal = () => {
   );
 };
 
-export default UndismissableModal;
+export default React.memo(UndismissableModal);

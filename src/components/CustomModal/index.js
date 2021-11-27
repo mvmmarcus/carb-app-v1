@@ -10,4 +10,4 @@ const CustomModal = ({ children, modalOptions }) => {
   );
 };
 
-export default CustomModal;
+export default React.memo(CustomModal);
