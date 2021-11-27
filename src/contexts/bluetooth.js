@@ -19,7 +19,7 @@ const BluetoothContext = createContext({
   isGettingRecords: false,
   records: [],
   isConnecting: false,
-  isScanning: true,
+  scanStatus: 'start',
   storagePeripheral: null,
   connectedPeripheral: null,
   discoveredPeripherals: [],
@@ -32,7 +32,7 @@ const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 export const BluetoothProvider = ({ children }) => {
   const [isFirstConnection, setIsFirstConnection] = useState(true);
-  const [isScanning, setIsScanning] = useState(true);
+  const [scanStatus, setScanStatus] = useState('start');
   const [isConnecting, setIsConnecting] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isGettingRecords, setIsGettingRecords] = useState(false);
@@ -43,6 +43,7 @@ export const BluetoothProvider = ({ children }) => {
   const [discoveredPeripheral, setDiscoveredPeripheral] = useState(null);
   let newRecords = [];
   let currentDiscoveredPeripheral = null;
+  let disconnectScanToggle = false;
 
   useEffect(() => {
     (async () => {
@@ -61,14 +62,14 @@ export const BluetoothProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      console.log('connectedPeripheral: ', connectedPeripheral);
+    console.log({ scanStatus });
 
-      if (!connectedPeripheral) {
+    (async () => {
+      if (scanStatus === 'start') {
         await startScan();
       }
     })();
-  }, [connectedPeripheral]);
+  }, [scanStatus]);
 
   useEffect(() => {
     const connectPeripheralSubscription = bleManagerEmitter.addListener(
@@ -132,113 +133,98 @@ export const BluetoothProvider = ({ children }) => {
         !isGettingRecords &&
         !isConnecting
       ) {
+        setIsConnecting(true);
+        await sleep(500);
         await onSelectPeripheral(storagePeripheral);
       }
     })();
-  }, [storagePeripheral, discoveredPeripheral?.id]);
+  }, [storagePeripheral, discoveredPeripheral]);
 
   const sleep = async (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
   const startNotifications = async (peripheral) => {
-    try {
-      await BleManager.startNotification(
-        peripheral?.id,
-        glucoseService,
-        gmCharacteristic
-      );
-      console.log('Started notification on: ', gmCharacteristic);
-      await sleep(500);
+    await BleManager.startNotification(
+      peripheral?.id,
+      glucoseService,
+      gmCharacteristic
+    );
+    console.log('Started notification on: ', gmCharacteristic);
+    await sleep(500);
 
-      await BleManager.startNotification(
-        peripheral?.id,
-        glucoseService,
-        gmcCharacteristic
-      );
-      console.log('Started notification on: ', gmcCharacteristic);
-      await sleep(500);
+    await BleManager.startNotification(
+      peripheral?.id,
+      glucoseService,
+      gmcCharacteristic
+    );
+    console.log('Started notification on: ', gmcCharacteristic);
+    await sleep(500);
 
-      await BleManager.startNotification(
-        peripheral?.id,
-        glucoseService,
-        racpCharacteristic
-      );
-      console.log('Started notification on: ', racpCharacteristic);
-    } catch (error) {
-      setIsGettingRecords(false);
-
-      console.log('error on starting notifications: ', error);
-    }
+    await BleManager.startNotification(
+      peripheral?.id,
+      glucoseService,
+      racpCharacteristic
+    );
+    console.log('Started notification on: ', racpCharacteristic);
   };
 
   const writeCommands = async (peripheral) => {
-    try {
-      await BleManager.write(
-        peripheral?.id,
-        glucoseService,
-        racpCharacteristic,
-        [0x01, 0x01]
+    await BleManager.write(
+      peripheral?.id,
+      glucoseService,
+      racpCharacteristic,
+      [0x01, 0x01]
+    );
+
+    if (!storagePeripheral || storagePeripheral?.id !== peripheral?.id) {
+      await AsyncStorage.setItem(
+        '@defaultPeripheral',
+        JSON.stringify(peripheral)
       );
-    } catch (error) {
-      setIsGettingRecords(false);
-      console.log('error on writing commands: ', error);
     }
+
+    setStoragePeripheral(peripheral);
+    setConnectedPeripheral(peripheral);
+    setIsConnecting(false);
+    setIsGettingRecords(true);
   };
 
   const connectToPeripheral = async (peripheral) => {
-    setIsConnecting(true);
-    try {
-      console.log('BLE: Connecting to device: ' + peripheral.id);
-      await BleManager.stopScan();
+    console.log('BLE: Connecting to device: ' + peripheral.id);
+    await BleManager.stopScan();
 
-      await BleManager.connect(peripheral.id);
-      await sleep(500);
+    await BleManager.connect(peripheral.id);
+    await sleep(500);
 
-      console.log('BLE: Retreiving services');
-      await BleManager.retrieveServices(peripheral.id);
-
-      const defaultPeripheral = await AsyncStorage.getItem(
-        '@defaultPeripheral'
-      );
-      const defaultPeripheralParsed = JSON.parse(defaultPeripheral);
-
-      console.log('defaultPeripheralParsed: ', defaultPeripheralParsed);
-
-      if (!defaultPeripheralParsed) {
-        setIsFirstConnection(false);
-        await AsyncStorage.setItem(
-          '@defaultPeripheral',
-          JSON.stringify(peripheral)
-        );
-      }
-
-      setConnectedPeripheral(peripheral);
-      setIsConnecting(false);
-      setIsGettingRecords(true);
-    } catch (error) {
-      setIsConnecting(false);
-      console.log('BLE: Error connecting: ', error);
-    }
+    console.log('BLE: Retreiving services');
+    await BleManager.retrieveServices(peripheral.id);
   };
 
   const onSelectPeripheral = async (peripheral) => {
-    await connectToPeripheral(peripheral);
-    await sleep(500);
+    try {
+      setIsConnecting(true);
 
-    await startNotifications(peripheral);
-    await sleep(500);
+      await connectToPeripheral(peripheral);
+      await sleep(500);
 
-    await writeCommands(peripheral);
+      await startNotifications(peripheral);
+      await sleep(500);
+
+      await writeCommands(peripheral);
+    } catch (error) {
+      setIsConnecting(false);
+      console.log('onSelectPeripheral error: ', error);
+    }
   };
 
   const startScan = async () => {
-    setIsScanning(true);
-    console.log('is scanning');
+    setScanStatus('starting');
     try {
       await BleManager.scan([glucoseService], 0, false);
+      setScanStatus('scanning');
     } catch (error) {
-      setIsScanning(false);
+      setScanStatus('error');
       console.log('BoardManager: Failed to Scan: ', error);
     }
   };
@@ -264,8 +250,8 @@ export const BluetoothProvider = ({ children }) => {
 
     if (data?.characteristic === racpCharacteristic) {
       console.log('all data received');
-      setIsGettingRecords(false);
       setRecords(newRecords);
+      setIsGettingRecords(false);
     }
 
     if (data?.characteristic === gmCharacteristic) {
@@ -308,13 +294,25 @@ export const BluetoothProvider = ({ children }) => {
     setDiscoveredPeripheral(null);
     setDiscoveredPeripherals([]);
     setConnectedPeripheral(null);
+    setIsGettingRecords(false);
+    setIsConnecting(false);
+
+    console.log('scanStatus on disconnect: ', scanStatus);
+
+    // This condition is necessary because BleManagerDisconnectPeripheral event is called many times
+    if (!disconnectScanToggle) {
+      setScanStatus('start');
+      disconnectScanToggle = true;
+    } else {
+      disconnectScanToggle = false;
+    }
+
     currentDiscoveredPeripheral = null;
     newRecords = [];
   };
 
   const handleStopScan = () => {
-    console.log('scan is stopped');
-    setIsScanning(false);
+    setScanStatus('stoped');
   };
 
   return (
@@ -323,7 +321,7 @@ export const BluetoothProvider = ({ children }) => {
         isEnabled,
         isGettingRecords,
         records,
-        isScanning,
+        scanStatus,
         isConnecting,
         connectedPeripheral,
         storagePeripheral,

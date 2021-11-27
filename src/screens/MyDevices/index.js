@@ -27,7 +27,7 @@ const MyDevicesScreen = () => {
     isConnecting,
     connectedPeripheral,
     storagePeripheral,
-    isScanning,
+    scanStatus,
     onSelectPeripheral,
   } = useContext(BluetoothContext);
 
@@ -36,9 +36,9 @@ const MyDevicesScreen = () => {
       return isTouchable ? (
         <TouchableHighlight onPress={() => onSelectPeripheral(item)}>
           <PeripheralWrapper>
-            <Text>{item?.name}</Text>
+            <Text>Nome: {item?.name}</Text>
             <Text>RSSI: {item?.rssi}</Text>
-            <Text>{item?.id}</Text>
+            <Text>Id: {item?.id}</Text>
           </PeripheralWrapper>
         </TouchableHighlight>
       ) : (
@@ -59,10 +59,6 @@ const MyDevicesScreen = () => {
     }
   );
 
-  useEffect(() => {
-    console.log('connectedPeripheral from my devices: ', connectedPeripheral);
-  }, [connectedPeripheral]);
-
   return (
     <SafeArea>
       {isEnabled ? (
@@ -75,7 +71,7 @@ const MyDevicesScreen = () => {
             />
           )}
           <LoadingSection>
-            {isScanning &&
+            {scanStatus === 'scanning' &&
               !storagePeripheral &&
               !isConnecting &&
               !isGettingRecords && (

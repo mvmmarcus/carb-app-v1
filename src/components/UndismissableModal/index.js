@@ -8,12 +8,12 @@ import CustomModal from '../CustomModal';
 import { ContentModal, TitleModal, WrapperModal, Description } from './styles';
 
 const UndismissableModal = () => {
-  const { isConnecting, isFirstConnection } = useContext(BluetoothContext);
+  const { isConnecting } = useContext(BluetoothContext);
 
   return (
     <CustomModal
       modalOptions={{
-        visible: isConnecting && !isFirstConnection,
+        visible: isConnecting,
         dismissable: false,
       }}
     >
