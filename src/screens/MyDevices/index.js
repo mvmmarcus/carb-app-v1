@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { Text, TouchableHighlight, View } from 'react-native';
 
 import { ActivityIndicator } from 'react-native-paper';
-import { useEffect } from 'react/cjs/react.development';
 
 import BluetoothContext from '../../contexts/bluetooth';
 
@@ -21,13 +20,14 @@ import {
 
 const MyDevicesScreen = () => {
   const {
-    isEnabled,
+    isBluetoothEnabled,
     isGettingRecords,
     discoveredPeripherals,
     isConnecting,
     connectedPeripheral,
     storagePeripheral,
     scanStatus,
+    isAcceptedPermissions,
     onSelectPeripheral,
   } = useContext(BluetoothContext);
 
@@ -61,78 +61,88 @@ const MyDevicesScreen = () => {
 
   return (
     <SafeArea>
-      {isEnabled ? (
-        <Container>
-          {storagePeripheral && (
-            <Peripheral
-              item={storagePeripheral}
-              isTouchable={false}
-              isConnected={connectedPeripheral}
-            />
-          )}
-          <LoadingSection>
-            {scanStatus === 'scanning' &&
-              !storagePeripheral &&
-              !isConnecting &&
-              !isGettingRecords && (
+      {isAcceptedPermissions ? (
+        isBluetoothEnabled ? (
+          <Container>
+            {storagePeripheral && (
+              <Peripheral
+                item={storagePeripheral}
+                isTouchable={false}
+                isConnected={connectedPeripheral}
+              />
+            )}
+            <LoadingSection>
+              {scanStatus === 'scanning' &&
+                !storagePeripheral &&
+                !isConnecting &&
+                !isGettingRecords && (
+                  <>
+                    <CustomText>Buscando dispositivos</CustomText>
+                    <ActivityIndicator animating={true} />
+                  </>
+                )}
+
+              {isConnecting && (
                 <>
-                  <CustomText>Buscando dispositivos</CustomText>
+                  <CustomText>Connectando</CustomText>
                   <ActivityIndicator animating={true} />
                 </>
               )}
 
-            {isConnecting && (
-              <>
-                <CustomText>Connectando</CustomText>
-                <ActivityIndicator animating={true} />
-              </>
-            )}
+              {isGettingRecords && (
+                <>
+                  <CustomText>Atualizando registros</CustomText>
+                  <ActivityIndicator animating={true} />
+                </>
+              )}
+            </LoadingSection>
 
-            {isGettingRecords && (
-              <>
-                <CustomText>Atualizando registros</CustomText>
-                <ActivityIndicator animating={true} />
-              </>
-            )}
-          </LoadingSection>
+            {!connectedPeripheral &&
+              !isGettingRecords &&
+              (storagePeripheral ? (
+                <CenteredCaption>
+                  Glicosímetro desconectado. {'\n'}
+                  Por favor, ligue o seu dispositivo e aguarde o {'\n'}
+                  emparelhamento automático.
+                </CenteredCaption>
+              ) : (
+                <View>
+                  {discoveredPeripherals?.length !== 0 &&
+                    !isConnecting &&
+                    !isGettingRecords && (
+                      <SelectDevice>Selecione o seu dispositivo:</SelectDevice>
+                    )}
 
-          {!connectedPeripheral &&
-            !isGettingRecords &&
-            (storagePeripheral ? (
-              <CenteredCaption>
-                Glicosímetro desconectado. {'\n'}
-                Por favor, ligue o seu dispositivo e aguarde o {'\n'}
-                emparelhamento automático.
-              </CenteredCaption>
-            ) : (
-              <View>
-                {discoveredPeripherals?.length !== 0 &&
-                  !isConnecting &&
-                  !isGettingRecords && (
-                    <SelectDevice>Selecione o seu dispositivo:</SelectDevice>
-                  )}
-
-                <FlatListStyled
-                  data={discoveredPeripherals}
-                  renderItem={({ item }) => <Peripheral item={item} />}
-                  keyExtractor={(item) => item.id}
-                  ListEmptyComponent={
-                    <CenteredCaption>
-                      Nenhum dispositivo encontrado. {'\n'}
-                      Por favor, ligue o seu glicosímetro e {'\n'}
-                      inicie o emparelhamento.
-                    </CenteredCaption>
-                  }
-                />
-              </View>
-            ))}
-        </Container>
+                  <FlatListStyled
+                    data={discoveredPeripherals}
+                    renderItem={({ item }) => <Peripheral item={item} />}
+                    keyExtractor={(item) => item.id}
+                    ListEmptyComponent={
+                      <CenteredCaption>
+                        Nenhum dispositivo encontrado. {'\n'}
+                        Por favor, ligue o seu glicosímetro e {'\n'}
+                        inicie o emparelhamento.
+                      </CenteredCaption>
+                    }
+                  />
+                </View>
+              ))}
+          </Container>
+        ) : (
+          <Container>
+            <BluetoothStatusText>Bluettoth desligado</BluetoothStatusText>
+            <CenteredCaption>
+              É preciso ativar o bluetooth {'\n'}
+              para seguir com o emparelhamento
+            </CenteredCaption>
+          </Container>
+        )
       ) : (
         <Container>
-          <BluetoothStatusText>Bluettoth desligado</BluetoothStatusText>
+          <BluetoothStatusText>Permissões insuficientes</BluetoothStatusText>
           <CenteredCaption>
-            É preciso ativar o bluetooth {'\n'}
-            para seguir com o emparelhamento
+            Vá até as configurações do app e {'\n'}
+            aceite as permissões solicitadas
           </CenteredCaption>
         </Container>
       )}
