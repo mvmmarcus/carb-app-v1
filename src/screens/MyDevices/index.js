@@ -20,7 +20,7 @@ import {
 
 const MyDevicesScreen = () => {
   const {
-    isBluetoothEnabled,
+    bluetoothState,
     isGettingRecords,
     discoveredPeripherals,
     isConnecting,
@@ -62,7 +62,7 @@ const MyDevicesScreen = () => {
   return (
     <SafeArea>
       {isAcceptedPermissions ? (
-        isBluetoothEnabled ? (
+        bluetoothState === 'PoweredOn' ? (
           <Container>
             {storagePeripheral && (
               <Peripheral

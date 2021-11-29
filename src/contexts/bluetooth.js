@@ -15,7 +15,7 @@ import {
 
 const BluetoothContext = createContext({
   isFirstConnection: true,
-  isBluetoothEnabled: false,
+  bluetoothState: 'PoweredOff',
   isGettingRecords: false,
   isAcceptedPermissions: false,
   records: [],
@@ -26,7 +26,7 @@ const BluetoothContext = createContext({
   discoveredPeripherals: [],
   setScanStatus: () => {},
   setIsAcceptedPermissions: () => {},
-  setIsBluetoothEnabled: () => {},
+  setBluetoothState: () => {},
   onSelectPeripheral: () => {},
 });
 
@@ -37,7 +37,7 @@ export const BluetoothProvider = ({ children }) => {
   const [isFirstConnection, setIsFirstConnection] = useState(true);
   const [scanStatus, setScanStatus] = useState('start');
   const [isConnecting, setIsConnecting] = useState(false);
-  const [isBluetoothEnabled, setIsBluetoothEnabled] = useState(false);
+  const [bluetoothState, setBluetoothState] = useState('PoweredOff');
   const [isAcceptedPermissions, setIsAcceptedPermissions] = useState(false);
   const [isGettingRecords, setIsGettingRecords] = useState(false);
   const [records, setRecords] = useState([]);
@@ -52,7 +52,7 @@ export const BluetoothProvider = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      if (isAcceptedPermissions && isBluetoothEnabled) {
+      if (isAcceptedPermissions && bluetoothState === 'PoweredOn') {
         await BleManager.start({ showAlert: false });
         await sleep(500);
 
@@ -67,7 +67,7 @@ export const BluetoothProvider = ({ children }) => {
         }
       }
     })();
-  }, [isAcceptedPermissions, isBluetoothEnabled]);
+  }, [isAcceptedPermissions, bluetoothState]);
 
   useEffect(() => {
     console.log('reset');
@@ -118,34 +118,34 @@ export const BluetoothProvider = ({ children }) => {
     (async () => {
       if (
         isAcceptedPermissions &&
-        isBluetoothEnabled &&
-        scanStatus === 'start'
+        bluetoothState === 'PoweredOn' &&
+        scanStatus === 'start' &&
+        !connectedPeripheral
       ) {
         await startScan();
       }
     })();
-  }, [isAcceptedPermissions, isBluetoothEnabled, scanStatus]);
+  }, [isAcceptedPermissions, bluetoothState, scanStatus, connectedPeripheral]);
 
   useEffect(() => {
-    console.log('isBluetoothEnabled: ', isBluetoothEnabled);
+    console.log('bluetoothState: ', bluetoothState);
 
-    if (!isBluetoothEnabled) {
+    if (bluetoothState === 'PoweredOff') {
       setDiscoveredPeripherals([]);
       setDiscoveredPeripheral(null);
     }
 
     setIsResetListeners((prev) => !prev);
-  }, [isBluetoothEnabled]);
+  }, [bluetoothState]);
 
   useEffect(() => {
     if (discoveredPeripheral) {
-      const peripheral = discoveredPeripherals.find(
-        (item) => item?.id === discoveredPeripheral?.id
-      );
+      (async () => {
+        const discoveredDevices = await BleManager.getDiscoveredPeripherals();
+        console.log('discovered pheriferals: ', discoveredDevices);
 
-      if (!peripheral) {
-        setDiscoveredPeripherals((prev) => [...prev, discoveredPeripheral]);
-      }
+        setDiscoveredPeripherals(discoveredDevices);
+      })();
     }
   }, [discoveredPeripheral?.id]);
 
@@ -218,11 +218,11 @@ export const BluetoothProvider = ({ children }) => {
   const connectToPeripheral = async (peripheral) => {
     console.log('BLE: Connecting to device: ' + peripheral.id);
     await BleManager.stopScan();
+    await sleep(500);
 
     await BleManager.connect(peripheral.id);
     await sleep(500);
 
-    console.log('BLE: Retreiving services');
     await BleManager.retrieveServices(peripheral.id);
   };
 
@@ -239,6 +239,7 @@ export const BluetoothProvider = ({ children }) => {
       await writeCommands(peripheral);
     } catch (error) {
       setIsConnecting(false);
+      setScanStatus('start');
       console.log('onSelectPeripheral error: ', error);
     }
   };
@@ -254,8 +255,6 @@ export const BluetoothProvider = ({ children }) => {
   };
 
   const handleDiscoverPeripheral = (peripheral) => {
-    console.log('discovered pheriferal: ', peripheral);
-
     if (peripheral?.id !== currentDiscoveredPeripheral?.id) {
       currentDiscoveredPeripheral = peripheral;
       setDiscoveredPeripheral(peripheral);
@@ -263,14 +262,6 @@ export const BluetoothProvider = ({ children }) => {
   };
 
   const handleUpdateValueForCharacteristic = (data) => {
-    // console.log(
-    //   'Received data from ' +
-    //     data.peripheral +
-    //     ' characteristic ' +
-    //     data.characteristic,
-    //   data.value
-    // );
-
     if (data?.characteristic === racpCharacteristic) {
       console.log('all data received');
       setRecords(newRecords);
@@ -314,15 +305,16 @@ export const BluetoothProvider = ({ children }) => {
       JSON.stringify(peripheral)
     );
 
-    setIsResetListeners((prev) => !prev);
     setIsGettingRecords(false);
     setIsConnecting(false);
     setDiscoveredPeripheral(null);
     setDiscoveredPeripherals([]);
     setConnectedPeripheral(null);
 
-    // This condition is necessary because BleManagerDisconnectPeripheral event is called many times
+    // This condition is necessary because BleManagerDisconnectPeripheral event is called twice times
     if (!disconnectScanToggle) {
+      setIsResetListeners((prev) => !prev);
+
       setScanStatus('start');
       disconnectScanToggle = true;
     } else {
@@ -337,12 +329,10 @@ export const BluetoothProvider = ({ children }) => {
     console.log('handleStopScan');
   };
 
-  console.log('render');
-
   return (
     <BluetoothContext.Provider
       value={{
-        isBluetoothEnabled,
+        bluetoothState,
         isGettingRecords,
         records,
         scanStatus,
@@ -355,7 +345,7 @@ export const BluetoothProvider = ({ children }) => {
         setScanStatus,
         setIsAcceptedPermissions,
         onSelectPeripheral,
-        setIsBluetoothEnabled,
+        setBluetoothState,
       }}
     >
       {children}

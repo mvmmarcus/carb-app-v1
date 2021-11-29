@@ -4,7 +4,7 @@ import React, { useContext, useEffect } from 'react';
 import { Platform, PermissionsAndroid } from 'react-native';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { BluetoothStatus } from 'react-native-bluetooth-status';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 import DrawerContent from '../components/DrawerContent';
 import BluetoothContext from '../contexts/bluetooth';
@@ -13,7 +13,7 @@ import TabNavigator from './TabNavigator';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
-  const { setIsBluetoothEnabled, setIsAcceptedPermissions, setScanStatus } =
+  const { setIsAcceptedPermissions, setScanStatus, setBluetoothState } =
     useContext(BluetoothContext);
 
   useEffect(() => {
@@ -24,6 +24,12 @@ const DrawerNavigator = () => {
         if (result) {
           console.log('Permission is OK result: ', result);
           setIsAcceptedPermissions(true);
+
+          BluetoothStateManager.getState()
+            .then((bluetoothState) => {
+              setBluetoothState(bluetoothState);
+            })
+            .catch(() => setBluetoothState('PoweredOff'));
         } else {
           PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
@@ -32,6 +38,12 @@ const DrawerNavigator = () => {
             if (response === 'granted') {
               setIsAcceptedPermissions(true);
               console.log('User accept');
+
+              BluetoothStateManager.getState()
+                .then((bluetoothState) => {
+                  setBluetoothState(bluetoothState);
+                })
+                .catch(() => setBluetoothState('PoweredOff'));
             } else {
               setIsAcceptedPermissions(false);
               console.log('User refuse');
@@ -43,21 +55,18 @@ const DrawerNavigator = () => {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      const isEnabled = await BluetoothStatus.state();
+    const bluetoothStateSubscription = BluetoothStateManager.onStateChange(
+      (bluetoothState) => {
+        setBluetoothState(bluetoothState);
 
-      setIsBluetoothEnabled(isEnabled);
-
-      BluetoothStatus.addListener((isBluetoothOn) => {
-        if (isBluetoothOn) setScanStatus('start');
+        if (bluetoothState === 'PoweredOn') setScanStatus('start');
         else setScanStatus('stoped');
-
-        setIsBluetoothEnabled(isBluetoothOn);
-      });
-    })();
+      },
+      true
+    );
 
     return () => {
-      BluetoothStatus.removeListener();
+      bluetoothStateSubscription.remove();
     };
   }, []);
 
