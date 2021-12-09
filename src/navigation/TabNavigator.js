@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+import { Platform, PermissionsAndroid } from 'react-native';
 
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconFo from 'react-native-vector-icons/Fontisto';
 import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
+import BluetoothContext from '../contexts/bluetooth';
 import {
   MainStackNavigator,
   MeasurementsStackNavigator,
@@ -18,6 +21,63 @@ IconFo.loadFont();
 IconMC.loadFont();
 
 const BottomTabNavigator = () => {
+  const { setIsAcceptedPermissions, setScanStatus, setBluetoothState } =
+    useContext(BluetoothContext);
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && Platform.Version >= 23) {
+      PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      ).then((result) => {
+        if (result) {
+          console.log('Permission is OK result: ', result);
+          setIsAcceptedPermissions(true);
+
+          BluetoothStateManager.getState()
+            .then((bluetoothState) => {
+              setBluetoothState(bluetoothState);
+            })
+            .catch(() => setBluetoothState('PoweredOff'));
+        } else {
+          PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+          ).then((response) => {
+            console.log('response: ', response);
+            if (response === 'granted') {
+              setIsAcceptedPermissions(true);
+              console.log('User accept');
+
+              BluetoothStateManager.getState()
+                .then((bluetoothState) => {
+                  setBluetoothState(bluetoothState);
+                })
+                .catch(() => setBluetoothState('PoweredOff'));
+            } else {
+              setIsAcceptedPermissions(false);
+              console.log('User refuse');
+            }
+          });
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const bluetoothStateSubscription = BluetoothStateManager.onStateChange(
+      (bluetoothState) => {
+        setBluetoothState(bluetoothState);
+
+        if (bluetoothState === 'PoweredOn') setScanStatus('start');
+        else setScanStatus('stoped');
+      },
+      true
+    );
+
+    return () => {
+      bluetoothStateSubscription.remove();
+    };
+  }, []);
+
   return (
     <Tab.Navigator
       activeColor="#fff"

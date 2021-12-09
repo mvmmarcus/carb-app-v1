@@ -1,18 +1,12 @@
 import React from 'react';
+import { Text, View } from 'react-native';
 
 import { createStackNavigator } from '@react-navigation/stack';
-import { Text, View } from 'react-native';
+
+import IndexScreeen from '../screens/Index';
 
 const AuthNavigator = () => {
   const Stack = createStackNavigator();
-
-  const Index = () => {
-    return (
-      <View>
-        <Text>Index</Text>
-      </View>
-    );
-  };
 
   const Login = () => {
     return (
@@ -39,8 +33,11 @@ const AuthNavigator = () => {
   };
 
   return (
-    <Stack.Navigator initialRouteName="Index Screen">
-      <Stack.Screen name="Index Screen" component={Index} />
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="Index Screen"
+    >
+      <Stack.Screen name="Index Screen" component={IndexScreeen} />
       <Stack.Screen name="Login Screen" component={Login} />
       <Stack.Screen name="Signup Screen" component={Signup} />
       <Stack.Screen name="ForgotPassword Screen" component={ForgotPassword} />

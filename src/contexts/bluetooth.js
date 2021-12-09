@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
@@ -226,7 +226,7 @@ export const BluetoothProvider = ({ children }) => {
     await BleManager.retrieveServices(peripheral.id);
   };
 
-  const onSelectPeripheral = async (peripheral) => {
+  const onSelectPeripheral = useCallback(async (peripheral) => {
     try {
       setIsConnecting(true);
 
@@ -242,7 +242,7 @@ export const BluetoothProvider = ({ children }) => {
       setScanStatus('start');
       console.log('onSelectPeripheral error: ', error);
     }
-  };
+  }, []);
 
   const startScan = async () => {
     try {

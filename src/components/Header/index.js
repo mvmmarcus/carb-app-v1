@@ -30,7 +30,7 @@ const Header = ({ back, navigation }) => {
       <HeaderContent>
         <View>
           <Image
-            source={require('../../assets/logo.png')}
+            source={require('../../../assets/logo.png')}
             style={{ width: 40, height: 44, resizeMode: 'stretch' }}
           />
         </View>
