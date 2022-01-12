@@ -19,6 +19,7 @@ const CustomText = ({ children, style, weight = 'regular', ...props }) => {
 
   return (
     <Text
+      adjustsFontSizeToFit
       style={{
         ...style,
         fontFamily: fontStyle[weight].fontFamily,

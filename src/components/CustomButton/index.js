@@ -1,33 +1,36 @@
 import React from 'react';
+import { View } from 'react-native';
 
-import { Button } from 'react-native-paper';
+import { Button, IconButton } from 'react-native-paper';
 import CustomText from '../CustomText';
 
-import { styles } from './styles';
+import { getStyle } from './styles';
 
 const CustomButtom = ({
   children,
-  variant = 'primary',
+  variant = 'contained',
   uppercase = false,
+  fontWeight = 'medium',
+  icon,
   ...props
 }) => {
-  const modes = {
-    primary: 'contained',
-    secondary: 'contained',
-    outlined: 'outlined',
-  };
+  const styles = getStyle({ ...props });
 
-  return (
+  return icon && !children ? (
+    <IconButton style={styles[variant]} icon={icon} {...props} />
+  ) : (
     <Button
       style={styles[variant]}
       uppercase={uppercase}
-      mode={modes[variant]}
+      mode={variant}
+      icon={icon}
+      contentStyle={{
+        width: '100%',
+        height: '100%',
+      }}
       {...props}
     >
-      <CustomText
-        weight="medium"
-        style={{ ...styles.text, color: styles[variant].color }}
-      >
+      <CustomText weight={fontWeight} style={styles.text}>
         {children}
       </CustomText>
     </Button>

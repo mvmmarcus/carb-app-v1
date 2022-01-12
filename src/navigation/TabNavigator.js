@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { Platform, PermissionsAndroid } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconFo from 'react-native-vector-icons/Fontisto';
@@ -13,8 +14,11 @@ import {
   MeasurementsStackNavigator,
   MyDevicesStackNavigator,
 } from './StackNavigator';
+import QuestionsScreen from '../screens/Questions';
 
 const Tab = createMaterialBottomTabNavigator();
+
+const QuestionsStack = createStackNavigator();
 
 IconFA.loadFont();
 IconFo.loadFont();
@@ -78,7 +82,21 @@ const BottomTabNavigator = () => {
     };
   }, []);
 
-  return (
+  const isFirsrtAccess = false;
+
+  return isFirsrtAccess ? (
+    <QuestionsStack.Navigator initialRouteName="QuestionsScreen">
+      <QuestionsStack.Screen
+        name="QuestionsScreen"
+        options={{
+          headerTransparent: true,
+          title: false,
+          headerTintColor: '#fff',
+        }}
+        component={QuestionsScreen}
+      />
+    </QuestionsStack.Navigator>
+  ) : (
     <Tab.Navigator
       activeColor="#fff"
       inactiveColor="#000"

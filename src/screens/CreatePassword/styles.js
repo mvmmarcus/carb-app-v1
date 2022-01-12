@@ -30,24 +30,6 @@ export const styles = EStyleSheet.create({
     marginTop: '$xxsmall',
     color: '$white',
   },
-  description: {
-    textAlign: 'center',
-    fontSize: '$xsmall',
-    color: '$white',
-    marginTop: '$small',
-  },
-  link: {
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-    fontSize: '$xsmall',
-    color: '$secondary',
-  },
   formGroup: { width: '100%', marginBottom: '$xlarge', marginTop: '$xlarge' },
   buttonGroup: { width: '100%' },
-  radioGroup: {
-    width: '100%',
-    paddingLeft: '0.125rem',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
 });

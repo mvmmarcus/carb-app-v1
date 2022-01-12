@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
+import AuthContext from '../../contexts/auth';
 import CustomButtom from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import Input from '../../components/Input';
-import RadioInput from '../../components/RadioInput';
 import { theme } from '../../styles/theme';
 
-import IconPerson from '../../../assets/person_outline.svg';
 import IconLock from '../../../assets/lock.svg';
 import { styles } from './styles';
 
-const SignInScreen = ({ navigation }) => {
+const CreatePasswordScreen = ({ navigation }) => {
+  const { setIsAuth } = useContext(AuthContext);
+
   const { $primary, $secondary, $white, $medium, $small } = theme;
 
   const [rememberLogin, setRememberLogin] = useState(false);
@@ -26,23 +27,24 @@ const SignInScreen = ({ navigation }) => {
         <View style={styles.container}>
           <View style={styles.titleGroup}>
             <CustomText style={styles.title} weight="bold">
-              Vamos fazer seu login.
+              Crie sua senha.
             </CustomText>
             <CustomText style={styles.subTitle} weight="regular">
-              Bom te ver de volta!
+              Estamos quase acabando!
             </CustomText>
           </View>
           <View style={styles.formGroup}>
             <Input
-              label="Email"
-              placeholder="Digite seu e-mail..."
-              iconLabel={<IconPerson />}
-              marginBottom={$medium}
-              onChange={console.log}
-            />
-            <Input
               label="Senha"
               placeholder="Digite sua senha..."
+              iconLabel={<IconLock />}
+              marginBottom={$medium}
+              onChange={console.log}
+              isSecurity
+            />
+            <Input
+              label="Confirmar senha"
+              placeholder="Confirme sua senha..."
               iconLabel={<IconLock />}
               iconInput={
                 showPassword ? (
@@ -65,38 +67,15 @@ const SignInScreen = ({ navigation }) => {
               onChange={console.log}
               isSecurity={!showPassword}
             />
-            <View style={styles.radioGroup}>
-              <RadioInput
-                label="Lembrar do login"
-                selected={rememberLogin}
-                onCheck={() => setRememberLogin((prev) => !prev)}
-              />
-              <CustomText
-                weight="medium"
-                style={{ ...styles.link, color: $white }}
-              >
-                Esqueci minha senha
-              </CustomText>
-            </View>
           </View>
           <View style={styles.buttonGroup}>
             <CustomButtom
               backgroundColor={$secondary}
               color={$white}
-              onPress={() => console.log('press')}
+              onPress={() => setIsAuth(true)}
             >
-              Entrar
+              Finalizar
             </CustomButtom>
-            <CustomText weight="medium" style={styles.description}>
-              Sou novo por aqui.{' '}
-              <CustomText
-                onPress={() => navigation?.navigate('SignUpScreen')}
-                weight="medium"
-                style={styles.link}
-              >
-                Registrar-se
-              </CustomText>
-            </CustomText>
           </View>
         </View>
       </ScrollView>
@@ -104,4 +83,4 @@ const SignInScreen = ({ navigation }) => {
   );
 };
 
-export default SignInScreen;
+export default CreatePasswordScreen;
