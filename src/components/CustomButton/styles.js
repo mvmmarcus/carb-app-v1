@@ -19,7 +19,7 @@ export const getStyle = ({
       width: width || '100%',
       height: '3rem',
       borderRadius: '$borderRadius',
-      backgroundColor: 'transparent',
+      backgroundColor: backgroundColor || 'transparent',
       borderWidth: 2,
       color,
       borderColor,

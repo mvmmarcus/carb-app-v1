@@ -18,16 +18,13 @@ import { theme } from './styles/theme';
 
 EStyleSheet.build(theme);
 
-if (__DEV__) {
-  require('react-devtools');
-}
-
 const App = () => {
+  const { $secondary } = theme;
   const isAuth = true;
 
   return (
     <PaperProvider>
-      <StatusBar barStyle="default" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="default" backgroundColor={$secondary} />
       <SafeAreaProvider>
         <NavigationContainer>
           <AuthProvider>

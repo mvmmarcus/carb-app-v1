@@ -82,7 +82,7 @@ const BottomTabNavigator = () => {
     };
   }, []);
 
-  const isFirsrtAccess = false;
+  const isFirsrtAccess = true;
 
   return isFirsrtAccess ? (
     <QuestionsStack.Navigator initialRouteName="QuestionsScreen">

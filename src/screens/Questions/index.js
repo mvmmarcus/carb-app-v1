@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  FlatList,
   Animated,
   ScrollView,
   View,
   Text,
   Dimensions,
+  FlatList,
+  SafeAreaView,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,22 +21,37 @@ import { getStyle } from './styles';
 
 const QuestionsScreen = ({ navigation }) => {
   const { $primary, $secondary, $white, $xxxlarge } = theme;
-  const { width } = Dimensions.get('screen');
+  const { width, height } = Dimensions.get('screen');
+
   const SEPARATOR_WIDTH = 24;
 
-  const styles = getStyle({ width, SEPARATOR_WIDTH });
+  const styles = getStyle({ width, height, SEPARATOR_WIDTH });
 
   const [index, setIndex] = useState(0);
+  const [form, setForm] = useState({
+    type: null,
+    targetRange: null,
+    therapy: null,
+    basalInsulin: null,
+    fastInsulin: null,
+    isChoCount: null,
+    choInsulinRelationship: null,
+    fixedDoses: null,
+    correctionFactor: null,
+    meter: null,
+    sensor: null,
+  });
   const flatListRef = useRef(null);
   const onViewRef = useRef(({ viewableItems }) => {
     if (viewableItems?.length) setIndex(viewableItems[0]?.index);
   });
-  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 100 });
+  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 16 });
 
   const data = [
     {
-      id: 1,
-      title: 'Qual é seu tipo de diabetes?',
+      id: 0,
+      questionId: 'type',
+      question: 'Qual é seu tipo de diabetes?',
       options: [
         {
           label: 'Tipo 1',
@@ -46,24 +62,33 @@ const QuestionsScreen = ({ navigation }) => {
           id: 'type_2',
         },
         {
+          label: 'Lada',
+          id: 'lada',
+        },
+        {
+          label: 'Gestacional',
+          id: 'pregnant',
+        },
+        {
           label: 'Outro',
           id: 'other',
         },
       ],
     },
     {
-      id: 2,
-      title: 'Qual é a sua faixa alvo?',
+      id: 1,
+      questionId: 'targetRange',
+      question: 'Qual é a sua faixa alvo?',
       customContent: (
         <View>
           <Text>cutom</Text>
         </View>
       ),
-      options: [],
     },
     {
-      id: 3,
-      title: 'Qual a sua terapia para diabetes?',
+      id: 2,
+      questionId: 'therapy',
+      question: 'Qual a sua terapia para diabetes?',
       options: [
         {
           label: 'Caneta / Seringa',
@@ -72,22 +97,164 @@ const QuestionsScreen = ({ navigation }) => {
         {
           label: 'Bomba',
           id: 'bomb',
+        },
+        {
+          label: 'Sem insulina',
+          id: 'withoutInsulin',
+        },
+      ],
+    },
+    {
+      id: 3,
+      questionId: 'basalInsulin',
+      question: 'Selecionar insulina basal:',
+      options: [
+        {
+          label: 'Lantus',
+          id: 'lantus',
+        },
+        {
+          label: 'Basaglar',
+          id: 'basaglar',
+        },
+        {
+          label: 'Levemir',
+          id: 'levemir',
+        },
+        {
+          label: 'Toujeo',
+          id: 'toujeo',
+        },
+        {
+          label: 'Tresiba',
+          id: 'tresiba',
         },
       ],
     },
     {
       id: 4,
-      title: 'Qual a sua terapia para diabetes testeee?',
+      questionId: 'fastInsulin',
+      question: 'Selecionar insulina rápida:',
       options: [
         {
-          label: 'Caneta / Seringa',
-          id: 'pen_syringe',
+          label: 'Humalog',
+          id: 'humalog',
         },
         {
-          label: 'Bomba',
-          id: 'bomb',
+          label: 'Novorapid',
+          id: 'novorapid',
+        },
+        {
+          label: 'Apidra',
+          id: 'apidra',
+        },
+        {
+          label: 'Fiasp',
+          id: 'fiasp',
         },
       ],
+    },
+    {
+      id: 5,
+      questionId: 'isChoCount',
+      question: 'Faz contagem de CHO?',
+      options: [
+        {
+          label: 'Sim',
+          id: 'yes',
+        },
+        {
+          label: 'Não',
+          id: 'no',
+        },
+      ],
+    },
+    {
+      id: 6,
+      questionId: form.isChoCount ? 'choInsulinRelationship' : 'fixedDoses',
+      question: form.isChoCount
+        ? 'Qual sua relação insulina / CHO?'
+        : 'Inserir doses fixas:',
+      customContent: (
+        <View>
+          <Text>cutom</Text>
+        </View>
+      ),
+    },
+    // mostrar apenas se fizer contagem de cho
+    {
+      id: 7,
+      questionId: 'correctionFactor',
+      question: 'Qual seu fator de correção?',
+      customContent: (
+        <View>
+          <Text>cutom</Text>
+        </View>
+      ),
+    },
+    {
+      id: 8,
+      questionId: 'meter',
+      question: 'Qual medidor você usa?',
+      options: [
+        {
+          label: 'Accu-Chek Guide',
+          id: 'accuChekGuide',
+        },
+        {
+          label: 'Accu-Chek Guide Me',
+          id: 'accuChekGuideMe',
+        },
+        {
+          label: 'Accu-Chek Perfoma C.',
+          id: 'accuChekPerfomaC',
+        },
+        {
+          label: 'GlucoLeader',
+          id: 'glucoLeader',
+        },
+        {
+          label: 'OneCallPlus',
+          id: 'oneCallPlus',
+        },
+      ],
+    },
+    {
+      id: 9,
+      questionId: 'sensor',
+      question: 'Qual sensor você usa?',
+      options: [
+        {
+          label: 'Enlite Sensor',
+          id: 'enliteSensor',
+        },
+        {
+          label: 'Eversense Sensor',
+          id: 'eversenseSensor',
+        },
+        {
+          label: 'Freestyle Libre',
+          id: 'freestyleLibre',
+        },
+        {
+          label: 'Guardian Sensor',
+          id: 'guardianSensor',
+        },
+        {
+          label: 'Outro',
+          id: 'other',
+        },
+      ],
+    },
+    {
+      id: 10,
+      questionId: 'carbsUnitsSystem',
+      question: 'Sistema de unidades utilizadas no Carbs:',
+      customContent: (
+        <View>
+          <Text>cutom</Text>
+        </View>
+      ),
     },
   ];
 
@@ -107,7 +274,20 @@ const QuestionsScreen = ({ navigation }) => {
     });
   };
 
+  const handleToggle = ({ questionId, activeValue }) => {
+    console.log({ questionId, activeValue });
+
+    setForm({
+      ...form,
+      [questionId]: activeValue,
+    });
+  };
+
+  console.log('teste');
+
   const Separator = () => <View style={{ width: SEPARATOR_WIDTH }}></View>;
+
+  const ResponseSeparator = () => <View style={{ height: 16 }}></View>;
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
@@ -123,7 +303,7 @@ const QuestionsScreen = ({ navigation }) => {
               </CustomText>
             </View>
             <View style={styles.sliderContent}>
-              <Animated.FlatList
+              <FlatList
                 data={data}
                 ref={flatListRef}
                 onViewableItemsChanged={onViewRef?.current}
@@ -143,10 +323,54 @@ const QuestionsScreen = ({ navigation }) => {
                 renderItem={({ item }) => (
                   <View style={styles.sliderItem}>
                     <View style={styles.question}>
-                      <Text>{item?.title}</Text>
+                      <CustomText weight="medium" style={styles.questionText}>
+                        {item?.question}
+                      </CustomText>
+                      <FlatList
+                        style={styles.optionsList}
+                        contentContainerStyle={styles.optionContent}
+                        data={item?.options}
+                        keyExtractor={(item) => item?.id}
+                        ItemSeparatorComponent={ResponseSeparator}
+                        showsVerticalScrollIndicator={true}
+                        scrollEnabled
+                        renderItem={(option) => (
+                          <CustomButtom
+                            isActive={
+                              form[item?.questionId] === option?.item?.id
+                            }
+                            backgroundColor={
+                              form[item?.questionId] === option?.item?.id
+                                ? $white
+                                : $primary
+                            }
+                            color={
+                              form[item?.questionId] === option?.item?.id
+                                ? $secondary
+                                : $white
+                            }
+                            borderColor={
+                              form[item?.questionId] === option?.item?.id
+                                ? $secondary
+                                : $white
+                            }
+                            key={option?.item?.id}
+                            value={option?.item?.id}
+                            variant="outlined"
+                            onToggle={(activeValue) =>
+                              handleToggle({
+                                questionId: item?.questionId,
+                                activeValue,
+                              })
+                            }
+                          >
+                            {option?.item?.label}
+                          </CustomButtom>
+                        )}
+                      />
                     </View>
                     <View style={styles.buttonGroup}>
-                      {index > 0 && (
+                      {item?.id > 0 && (
                         <CustomButtom
                           width={$xxxlarge}
                           icon={() => <IconNavigatePrevious />}
@@ -155,7 +379,7 @@ const QuestionsScreen = ({ navigation }) => {
                           onPress={() => handleSlide({ type: 'previous' })}
                         />
                       )}
-                      {data?.length && index < data?.length - 1 && (
+                      {data?.length && item?.id < data?.length - 1 && (
                         <CustomButtom
                           width={$xxxlarge}
                           icon={() => <IconNavigateNext />}

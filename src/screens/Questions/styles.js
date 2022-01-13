@@ -10,14 +10,14 @@ export const getStyle = ({ width, SEPARATOR_WIDTH }) =>
     },
     container: {
       flex: 1,
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: '$xxxlarge',
+      paddingVertical: '$xxlarge',
     },
 
     slider: {
-      flex: 1,
       width: '100%',
+      flex: 1,
     },
     sliderHeader: {
       width: '100%',
@@ -40,6 +40,20 @@ export const getStyle = ({ width, SEPARATOR_WIDTH }) =>
     question: {
       flex: 1,
       display: 'flex',
+    },
+    questionText: {
+      color: '$white',
+      fontSize: '$small',
+      textAlign: 'center',
+      marginBottom: '$medium',
+    },
+    optionsList: {
+      height: 1,
+      flex: 1,
+    },
+    optionContent: {
+      justifyContent: 'center',
+      flex: 1,
     },
     buttonGroup: {
       justifyContent: 'center',
