@@ -45,6 +45,7 @@ export const getStyle = ({ width, SEPARATOR_WIDTH }) =>
       color: '$white',
       fontSize: '$small',
       textAlign: 'center',
+      alignSelf: 'center',
       marginBottom: '$medium',
     },
     optionsList: {

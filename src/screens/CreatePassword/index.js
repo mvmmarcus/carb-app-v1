@@ -4,13 +4,13 @@ import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
+import IconLock from '../../../assets/lock.svg';
 import AuthContext from '../../contexts/auth';
 import CustomButtom from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import Input from '../../components/Input';
 import { theme } from '../../styles/theme';
 
-import IconLock from '../../../assets/lock.svg';
 import { styles } from './styles';
 
 const CreatePasswordScreen = ({ navigation }) => {
