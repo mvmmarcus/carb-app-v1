@@ -1,10 +1,18 @@
-import React, { useRef, useState } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 import { ScrollView, View, Dimensions, FlatList } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 
+import AuthContext from '#/contexts/auth';
 import useQuestions from '#/hooks/useQuestions';
 import IconNavigateNext from '#/../assets/navigate_next.svg';
+import IconCheck from '#/../assets/check.svg';
 import IconNavigatePrevious from '#/../assets/navigate_before.svg';
 import CustomButtom from '#/components/CustomButton';
 import CustomText from '#/components/CustomText';
@@ -13,13 +21,7 @@ import { theme } from '#/styles/theme';
 import { getStyle } from './styles';
 
 const QuestionsScreen = ({ navigation }) => {
-  const { $primary, $secondary, $white, $xxxlarge } = theme;
-  const { width, height } = Dimensions.get('screen');
-
-  const SEPARATOR_WIDTH = 24;
-
-  const styles = getStyle({ width, height, SEPARATOR_WIDTH });
-
+  const { setIsFirstAccess } = useContext(AuthContext);
   const [index, setIndex] = useState(0);
   const [form, setForm] = useState({
     type: null,
@@ -42,11 +44,12 @@ const QuestionsScreen = ({ navigation }) => {
   const { questions } = useQuestions({
     isChoCount: form.isChoCount === 'yes',
     onChange: ({ questionId, activeValue }) =>
-      setForm({
-        ...form,
-        [questionId]: activeValue,
-      }),
+      handleChangeForm({ questionId, activeValue }),
   });
+  const { $primary, $secondary, $white, $xxxlarge } = theme;
+  const { width, height } = Dimensions.get('screen');
+  const SEPARATOR_WIDTH = 24;
+  const styles = getStyle({ width, height, SEPARATOR_WIDTH });
 
   const handleSlide = ({ type }) => {
     if (type === 'next') {
@@ -64,16 +67,18 @@ const QuestionsScreen = ({ navigation }) => {
     });
   };
 
-  const handleChangeForm = ({ questionId, activeValue }) => {
-    console.log({ questionId, activeValue });
-
-    setForm({
-      ...form,
-      [questionId]: activeValue,
+  const handleChangeForm = useCallback(({ questionId, activeValue }) => {
+    setForm((prev) => {
+      return {
+        ...prev,
+        [questionId]: activeValue,
+      };
     });
-  };
+  }, []);
 
-  console.log({ form });
+  useEffect(() => {
+    console.log({ form });
+  }, [form]);
 
   const Separator = () => <View style={{ width: SEPARATOR_WIDTH }}></View>;
 
@@ -117,7 +122,14 @@ const QuestionsScreen = ({ navigation }) => {
                         {item?.question}
                       </CustomText>
                       {item?.customContent ? (
-                        <>{item?.customContent}</>
+                        <View
+                          style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {item?.customContent}
+                        </View>
                       ) : (
                         <FlatList
                           style={styles.optionsList}
@@ -184,6 +196,15 @@ const QuestionsScreen = ({ navigation }) => {
                             onPress={() => handleSlide({ type: 'next' })}
                           />
                         )}
+                      {item?.id === questions?.length - 1 && (
+                        <CustomButtom
+                          width="50%"
+                          icon={() => <IconCheck />}
+                          backgroundColor={$secondary}
+                          color={$white}
+                          onPress={() => setIsFirstAccess(false)}
+                        />
+                      )}
                     </View>
                   </View>
                 )}

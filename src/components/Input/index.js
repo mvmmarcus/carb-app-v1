@@ -16,6 +16,7 @@ const Input = ({
   value = '',
   type = 'default',
   isSecurity = false,
+  labelStyles = {},
   ...props
 }) => {
   const [inputValue, setInputValue] = useState(value);
@@ -30,9 +31,11 @@ const Input = ({
     setInputValue(value);
   };
 
+  const { labelGroup } = styles;
+
   return (
     <View>
-      <View style={styles.labelGroup}>
+      <View style={{ ...labelGroup, ...labelStyles }}>
         {!!iconLabel && iconLabel}
         <CustomText weight="regular" style={styles.label}>
           {label}

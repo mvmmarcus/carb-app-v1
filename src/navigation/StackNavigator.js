@@ -25,9 +25,9 @@ const MainStackNavigator = () => {
           return <Header {...props} />;
         },
       }}
-      initialRouteName="Home Screen"
+      initialRouteName="HomeScreen"
     >
-      <Stack.Screen name="Home Screen" component={Home} />
+      <Stack.Screen name="HomeScreen" component={Home} />
       <Stack.Screen name="Screen" component={Screen} />
     </Stack.Navigator>
   );

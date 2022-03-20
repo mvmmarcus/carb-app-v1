@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
-import CustomButtom from '../../components/CustomButton';
-import CustomText from '../../components/CustomText';
-import Input from '../../components/Input';
-import RadioInput from '../../components/RadioInput';
-import { theme } from '../../styles/theme';
+import AuthContext from '#/contexts/auth';
+import CustomButton from '#/components/CustomButton';
+import CustomText from '#/components/CustomText';
+import Input from '#/components/Input';
+import RadioInput from '#/components/RadioInput';
+import { theme } from '#/styles/theme';
 
-import IconPerson from '../../../assets/person_outline.svg';
-import IconLock from '../../../assets/lock.svg';
+import IconPerson from '#/../assets/person_outline.svg';
+import IconLock from '#/../assets/lock.svg';
 import { styles } from './styles';
 
 const SignInScreen = ({ navigation }) => {
+  const { setIsAuth } = useContext(AuthContext);
   const { $primary, $secondary, $white, $medium, $small } = theme;
-
   const [rememberLogin, setRememberLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -80,13 +81,13 @@ const SignInScreen = ({ navigation }) => {
             </View>
           </View>
           <View style={styles.buttonGroup}>
-            <CustomButtom
+            <CustomButton
               backgroundColor={$secondary}
               color={$white}
-              onPress={() => console.log('press')}
+              onPress={() => setIsAuth(true)}
             >
               Entrar
-            </CustomButtom>
+            </CustomButton>
             <CustomText weight="medium" style={styles.description}>
               Sou novo por aqui.{' '}
               <CustomText

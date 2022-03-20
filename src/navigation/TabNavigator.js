@@ -8,13 +8,14 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
-import BluetoothContext from '../contexts/bluetooth';
+import BluetoothContext from '#/contexts/bluetooth';
+import AuthContext from '#/contexts/auth';
 import {
   MainStackNavigator,
   MeasurementsStackNavigator,
   MyDevicesStackNavigator,
 } from './StackNavigator';
-import QuestionsScreen from '../screens/Questions';
+import QuestionsScreen from '#/screens/Questions';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -27,6 +28,7 @@ IconMC.loadFont();
 const BottomTabNavigator = () => {
   const { setIsAcceptedPermissions, setScanStatus, setBluetoothState } =
     useContext(BluetoothContext);
+  const { isFirstAccess } = useContext(AuthContext);
 
   useEffect(() => {
     if (Platform.OS === 'android' && Platform.Version >= 23) {
@@ -82,9 +84,7 @@ const BottomTabNavigator = () => {
     };
   }, []);
 
-  const isFirsrtAccess = true;
-
-  return isFirsrtAccess ? (
+  return isFirstAccess ? (
     <QuestionsStack.Navigator initialRouteName="QuestionsScreen">
       <QuestionsStack.Screen
         name="QuestionsScreen"

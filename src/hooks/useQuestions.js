@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text } from 'react-native';
 
 import TargetRange from '#/components/TargetRange';
+import ListForm from '#/components/ListForm';
+import Input from '#/components/Input';
 
 const useQuestions = ({ isChoCount = false, onChange }) => {
   const [questions, setQuestions] = useState(questionsWithoutCho);
@@ -14,13 +16,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
     }
   }, [isChoCount]);
 
-  const handleChange = useCallback(({ questionId, activeValue }) => {
-    console.log({
-      questionId,
-      activeValue,
-    });
-    console.log('onChange: ', !!onChange);
-
+  const handleUpdateForm = useCallback(({ questionId, activeValue }) => {
     !!onChange && onChange({ questionId, activeValue });
   }, []);
 
@@ -59,7 +55,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       customContent: (
         <TargetRange
           onValuesChange={(values) =>
-            handleChange({ questionId: 'targetRange', activeValue: values })
+            handleUpdateForm({ questionId: 'targetRange', activeValue: values })
           }
         />
       ),
@@ -153,13 +149,41 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       questionId: 'fixedDoses',
       question: 'Inserir doses fixas:',
       customContent: (
-        <View>
-          <Text>fixedDoses</Text>
-        </View>
+        <ListForm
+          onComplete={(values) =>
+            handleUpdateForm({ questionId: 'fixedDoses', activeValue: values })
+          }
+          fields={[
+            {
+              id: 'morning_ui',
+              sufix: 'ui',
+              title: 'Manha',
+              subtitle: '(06:00 - 12:00)',
+            },
+            {
+              id: 'afternool_ui',
+              sufix: 'ui',
+              title: 'Tarde',
+              subtitle: '(12:00 - 18:00)',
+            },
+            {
+              id: 'night_ui',
+              sufix: 'ui',
+              title: 'Noite',
+              subtitle: '(18:00 - 00:00)',
+            },
+            {
+              id: 'dawn_ui',
+              sufix: 'ui',
+              title: 'Madrugada',
+              subtitle: '(00:00 - 06:00)',
+            },
+          ]}
+        />
       ),
     },
     {
-      id: 8,
+      id: 7,
       questionId: 'meter',
       question: 'Qual medidor você usa?',
       options: [
@@ -186,7 +210,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       ],
     },
     {
-      id: 9,
+      id: 8,
       questionId: 'sensor',
       question: 'Qual sensor você usa?',
       options: [
@@ -211,16 +235,6 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
           id: 'other',
         },
       ],
-    },
-    {
-      id: 10,
-      questionId: 'carbsUnitsSystem',
-      question: 'Sistema de unidades utilizadas no Carbs:',
-      customContent: (
-        <View>
-          <Text>cutom</Text>
-        </View>
-      ),
     },
   ];
 
@@ -259,7 +273,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       customContent: (
         <TargetRange
           onValuesChange={(values) =>
-            handleChange({ questionId: 'targetRange', activeValue: values })
+            handleUpdateForm({ questionId: 'targetRange', activeValue: values })
           }
         />
       ),
@@ -353,9 +367,40 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       questionId: 'choInsulinRelationship',
       question: 'Qual sua relação insulina / CHO?',
       customContent: (
-        <View>
-          <Text>cutom</Text>
-        </View>
+        <ListForm
+          onComplete={(values) =>
+            handleUpdateForm({
+              questionId: 'choInsulinRelationship',
+              activeValue: values,
+            })
+          }
+          fields={[
+            {
+              id: 'morning_cho',
+              prefix: '1:',
+              title: 'Manha',
+              subtitle: '(06:00 - 12:00)',
+            },
+            {
+              id: 'afternool_cho',
+              prefix: '1:',
+              title: 'Tarde',
+              subtitle: '(12:00 - 18:00)',
+            },
+            {
+              id: 'night_cho',
+              prefix: '1:',
+              title: 'Noite',
+              subtitle: '(18:00 - 00:00)',
+            },
+            {
+              id: 'dawn_cho',
+              prefix: '1:',
+              title: 'Madrugada',
+              subtitle: '(00:00 - 06:00)',
+            },
+          ]}
+        />
       ),
     },
     {
@@ -363,9 +408,18 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       questionId: 'correctionFactor',
       question: 'Qual seu fator de correção?',
       customContent: (
-        <View>
-          <Text>cutom</Text>
-        </View>
+        <Input
+          type="numeric"
+          label="Fator de correção"
+          placeholder="Digite seu fator de correção"
+          onChange={(value) =>
+            handleUpdateForm({
+              questionId: 'correctionFactor',
+              activeValue: value,
+            })
+          }
+          labelStyles={{ paddingLeft: 0 }}
+        />
       ),
     },
     {
@@ -421,16 +475,6 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
           id: 'other',
         },
       ],
-    },
-    {
-      id: 10,
-      questionId: 'carbsUnitsSystem',
-      question: 'Sistema de unidades utilizadas no Carbs:',
-      customContent: (
-        <View>
-          <Text>cutom</Text>
-        </View>
-      ),
     },
   ];
 

@@ -39,6 +39,7 @@ const IndexScreeen = ({ navigation }) => {
             onPress={() => navigation?.navigate('SignUpScreen')}
             marginTop={12}
             variant="outlined"
+            backgroundColor="transparent"
             color={$white}
           >
             Registrar-se
