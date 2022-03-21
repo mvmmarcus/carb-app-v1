@@ -1,44 +1,103 @@
 import React, { useContext } from 'react';
 import { View } from 'react-native';
 
-import { Title } from 'react-native-paper';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 
-import Measurement from '../../components/Measurement';
-import BluetoothContext from '../../contexts/bluetooth';
-import { formatToBrazilianDate } from '../../utils/date';
+import Badge from '../../components/Badge';
+import Card from '#/components/Card';
+import useOrientation from '#/hooks/useOrientation';
+import GlucoseChart from '#/components/GlucoseChart';
+import ScreenWrapper from '#/components/ScreenWrapper';
+import BluetoothContext from '#/contexts/bluetooth';
 
-import {
-  Container,
-  LastRecordView,
-  ResultsLabel,
-  SafeArea,
-  CenteredCaption,
-} from './styles';
+import { theme } from '#/styles/theme';
+import { getStyle } from './styles';
 
 const HomeScreen = () => {
+  const styles = getStyle({});
+  const { $primary } = theme;
   const { records } = useContext(BluetoothContext);
-  const lastRecord = records[0];
+  const { width } = useOrientation();
+
+  console.log({ records });
+
+  const data = {
+    labels: [
+      '01:00h',
+      '02:00h',
+      '13:00h',
+      '14:00h',
+      '12:00h',
+      '10:00h',
+      '22:00h',
+    ],
+    datasets: [
+      {
+        data: [10, 40, 180, 60, 75, 100, 90],
+      },
+    ],
+  };
+
+  const infoBadges = [
+    {
+      value: 120,
+      title: 'Média',
+      subtitle: 'mg/dL',
+    },
+    {
+      values: [1, 0],
+      title: 'Hiper',
+      subtitle: 'Hipo',
+    },
+    {
+      value: 60,
+      title: 'Carbs',
+      subtitle: 'g',
+    },
+    {
+      value: 14,
+      title: 'Bolus',
+      subtitle: 'ui',
+    },
+  ];
 
   return (
-    <SafeArea>
-      <Container>
-        <View style={{ flex: 1 }}>
-          <Title>Grafico</Title>
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <GlucoseChart width={width - 40} data={data} />
+        <View style={styles.conectMeterBox}>
+          <Card
+            subtitle="Conecte seu medidor Bluetooth"
+            buttonLabel="Conectar"
+            icon={
+              <IconMaterial
+                size={28}
+                name="perm-device-info"
+                color={$primary}
+              />
+            }
+          />
         </View>
-        <LastRecordView>
-          <ResultsLabel>Ultimo registro</ResultsLabel>
-          {lastRecord ? (
-            <Measurement
-              value={lastRecord?.value}
-              date={formatToBrazilianDate(lastRecord?.date)}
-              time={lastRecord?.time}
-            />
-          ) : (
-            <CenteredCaption>Nenhum registro encontrado</CenteredCaption>
-          )}
-        </LastRecordView>
-      </Container>
-    </SafeArea>
+        <View style={styles.infosBox}>
+          {infoBadges.map((item, index) => {
+            const isLastItem = infoBadges?.length - 1 === index;
+
+            return (
+              <Badge
+                style={{
+                  marginRight: isLastItem ? 0 : 16,
+                }}
+                key={index}
+                title={item?.title}
+                subtitle={item?.subtitle}
+                value={item?.value}
+                values={item?.values}
+              />
+            );
+          })}
+        </View>
+      </View>
+    </ScreenWrapper>
   );
 };
 

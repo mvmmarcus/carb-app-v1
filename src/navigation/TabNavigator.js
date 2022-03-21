@@ -8,17 +8,17 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
+import QuestionsScreen from '#/screens/Questions';
 import BluetoothContext from '#/contexts/bluetooth';
 import AuthContext from '#/contexts/auth';
+import { theme } from '#/styles/theme';
 import {
   MainStackNavigator,
   MeasurementsStackNavigator,
   MyDevicesStackNavigator,
 } from './StackNavigator';
-import QuestionsScreen from '#/screens/Questions';
 
 const Tab = createMaterialBottomTabNavigator();
-
 const QuestionsStack = createStackNavigator();
 
 IconFA.loadFont();
@@ -29,6 +29,7 @@ const BottomTabNavigator = () => {
   const { setIsAcceptedPermissions, setScanStatus, setBluetoothState } =
     useContext(BluetoothContext);
   const { isFirstAccess } = useContext(AuthContext);
+  const { $white, $secondary, $primary, $gray } = theme;
 
   useEffect(() => {
     if (Platform.OS === 'android' && Platform.Version >= 23) {
@@ -98,17 +99,27 @@ const BottomTabNavigator = () => {
     </QuestionsStack.Navigator>
   ) : (
     <Tab.Navigator
-      activeColor="#fff"
-      inactiveColor="#000"
-      barStyle={{ backgroundColor: '#509AE0' }}
+      activeColor={$secondary}
+      inactiveColor={$gray}
+      barStyle={{
+        backgroundColor: $white,
+      }}
       initialRouteName="Home Stack"
     >
       <Tab.Screen
         name="Home Stack"
         component={MainStackNavigator}
         options={{
-          tabBarLabel: 'Início',
-          tabBarIcon: () => <IconMC name="home" size={20} color="#fff" />,
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ focused }) => {
+            return (
+              <IconMC
+                name="home"
+                size={20}
+                color={focused ? $secondary : $gray}
+              />
+            );
+          },
         }}
       />
       <Tab.Screen
@@ -116,16 +127,42 @@ const BottomTabNavigator = () => {
         component={MeasurementsStackNavigator}
         options={{
           tabBarLabel: 'Registros',
-          tabBarIcon: () => <IconMC name="diabetes" size={20} color="#fff" />,
+          tabBarIcon: ({ focused }) => (
+            <IconMC
+              name="chart-bar"
+              size={20}
+              color={focused ? $secondary : $gray}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Sync Stack"
+        component={MyDevicesStackNavigator}
+        options={{
+          tabBarLabel: 'Sincronizar',
+          tabBarIcon: ({ focused }) => (
+            <IconMC
+              name="sync"
+              size={20}
+              color={focused ? $secondary : $gray}
+            />
+          ),
         }}
       />
 
       <Tab.Screen
-        name="MyDevices Stack"
+        name="Settings Stack"
         component={MyDevicesStackNavigator}
         options={{
-          tabBarLabel: 'Meus dispositivos',
-          tabBarIcon: () => <IconMC name="bluetooth" size={20} color="#fff" />,
+          tabBarLabel: 'Menu',
+          tabBarIcon: ({ focused }) => (
+            <IconMC
+              name="menu"
+              size={20}
+              color={focused ? $secondary : $gray}
+            />
+          ),
         }}
       />
     </Tab.Navigator>

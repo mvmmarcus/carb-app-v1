@@ -1,40 +1,39 @@
 import React from 'react';
-import { TouchableOpacity, Image, View } from 'react-native';
+import { View } from 'react-native';
 
-import { Appbar, Avatar } from 'react-native-paper';
+import { Appbar } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { HeaderContent } from './styles';
+import IconFilter from '#/../assets/filter_list.svg';
+import CustomText from '#/components/CustomText';
+import { theme } from '#/styles/theme';
 
-const Header = ({ back, navigation }) => {
+import { getStyle } from './styles';
+
+const Header = ({ back, navigation, title, onFilter }) => {
+  const styles = getStyle({});
+  const { $white } = theme;
+
   return (
-    <Appbar.Header
-      style={{
-        backgroundColor: '#509AE0',
-      }}
-    >
-      {back && <Appbar.BackAction onPress={() => navigation?.goBack()} />}
-      <TouchableOpacity
-        style={{ position: 'absolute', left: 10, zIndex: 2 }}
-        onPress={() => {
-          navigation.openDrawer();
-        }}
-      >
-        <Avatar.Image
-          size={40}
-          source={{
-            uri: 'https://media-exp1.licdn.com/dms/image/C4D03AQHjlgbSEV5uVA/profile-displayphoto-shrink_400_400/0/1608339221708?e=1637193600&v=beta&t=YHMt_dQVw_I1iqLcYC8GWhVHXI3-uTYblm-SxXk6J4A',
-          }}
+    <Appbar.Header style={styles.container}>
+      {back && (
+        <Appbar.BackAction
+          color={$white}
+          onPress={() => navigation?.goBack()}
         />
-      </TouchableOpacity>
-
-      <HeaderContent>
-        <View>
-          <Image
-            source={require('../../../assets/logo.png')}
-            style={{ width: 40, height: 44, resizeMode: 'stretch' }}
-          />
-        </View>
-      </HeaderContent>
+      )}
+      <View style={styles.content}>
+        {!!title && (
+          <CustomText style={styles.title} weight="bold">
+            {title}
+          </CustomText>
+        )}
+        {!!onFilter && (
+          <TouchableOpacity>
+            <IconFilter />
+          </TouchableOpacity>
+        )}
+      </View>
     </Appbar.Header>
   );
 };

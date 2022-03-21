@@ -5,10 +5,9 @@ import React, {
   useCallback,
   useContext,
 } from 'react';
-import { ScrollView, View, Dimensions, FlatList } from 'react-native';
+import { View, Dimensions, FlatList } from 'react-native';
 
-import LinearGradient from 'react-native-linear-gradient';
-
+import ScreenWrapper from '#/components/ScreenWrapper';
 import AuthContext from '#/contexts/auth';
 import useQuestions from '#/hooks/useQuestions';
 import IconNavigateNext from '#/../assets/navigate_next.svg';
@@ -85,135 +84,129 @@ const QuestionsScreen = ({ navigation }) => {
   const ResponseSeparator = () => <View style={{ height: 16 }}></View>;
 
   return (
-    <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.container}>
-          <View style={styles.slider}>
-            <View style={styles.sliderHeader}>
-              <CustomText weight="regular" style={{ color: $white }}>
-                Pergunta
-              </CustomText>
-              <CustomText weight="regular" style={{ color: $white }}>
-                {index + 1}
-              </CustomText>
-            </View>
-            <View style={styles.sliderContent}>
-              <FlatList
-                data={questions}
-                ref={flatListRef}
-                onViewableItemsChanged={onViewRef?.current}
-                viewabilityConfig={viewConfigRef?.current}
-                keyExtractor={(item) => item?.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                pagingEnabled
-                ItemSeparatorComponent={Separator}
-                scrollEnabled={false}
-                style={{
-                  paddingStart: SEPARATOR_WIDTH * 2,
-                }}
-                contentContainerStyle={{
-                  paddingEnd: SEPARATOR_WIDTH * 4,
-                }}
-                renderItem={({ item }) => (
-                  <View style={styles.sliderItem}>
-                    <View style={styles.question}>
-                      <CustomText weight="medium" style={styles.questionText}>
-                        {item?.question}
-                      </CustomText>
-                      {item?.customContent ? (
-                        <View
-                          style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                          }}
-                        >
-                          {item?.customContent}
-                        </View>
-                      ) : (
-                        <FlatList
-                          style={styles.optionsList}
-                          contentContainerStyle={styles.optionContent}
-                          data={item?.options}
-                          keyExtractor={(item) => item?.id}
-                          ItemSeparatorComponent={ResponseSeparator}
-                          showsVerticalScrollIndicator={true}
-                          scrollEnabled
-                          renderItem={(option) => (
-                            <CustomButtom
-                              isActive={
-                                form[item?.questionId] === option?.item?.id
-                              }
-                              backgroundColor={
-                                form[item?.questionId] === option?.item?.id
-                                  ? $white
-                                  : $primary
-                              }
-                              color={
-                                form[item?.questionId] === option?.item?.id
-                                  ? $secondary
-                                  : $white
-                              }
-                              borderColor={
-                                form[item?.questionId] === option?.item?.id
-                                  ? $secondary
-                                  : $white
-                              }
-                              key={option?.item?.id}
-                              value={option?.item?.id}
-                              variant="outlined"
-                              onToggle={(activeValue) =>
-                                handleChangeForm({
-                                  questionId: item?.questionId,
-                                  activeValue,
-                                })
-                              }
-                            >
-                              {option?.item?.label}
-                            </CustomButtom>
-                          )}
-                        />
-                      )}
-                    </View>
-                    <View style={styles.buttonGroup}>
-                      {item?.id > 0 && (
-                        <CustomButtom
-                          width={$xxxlarge}
-                          icon={() => <IconNavigatePrevious />}
-                          backgroundColor={$secondary}
-                          color={$white}
-                          onPress={() => handleSlide({ type: 'previous' })}
-                        />
-                      )}
-                      {questions?.length &&
-                        item?.id < questions?.length - 1 &&
-                        !!form[item?.questionId] && (
-                          <CustomButtom
-                            width={$xxxlarge}
-                            icon={() => <IconNavigateNext />}
-                            backgroundColor={$secondary}
-                            color={$white}
-                            onPress={() => handleSlide({ type: 'next' })}
-                          />
-                        )}
-                      {item?.id === questions?.length - 1 && (
-                        <CustomButtom
-                          width="50%"
-                          icon={() => <IconCheck />}
-                          backgroundColor={$secondary}
-                          color={$white}
-                          onPress={() => setIsFirstAccess(false)}
-                        />
-                      )}
-                    </View>
-                  </View>
-                )}
-              />
-            </View>
-          </View>
+    <ScreenWrapper>
+      <View style={styles.slider}>
+        <View style={styles.sliderHeader}>
+          <CustomText weight="regular" style={{ color: $white }}>
+            Pergunta
+          </CustomText>
+          <CustomText weight="regular" style={{ color: $white }}>
+            {index + 1}
+          </CustomText>
         </View>
-      </ScrollView>
-    </LinearGradient>
+        <View style={styles.sliderContent}>
+          <FlatList
+            data={questions}
+            ref={flatListRef}
+            onViewableItemsChanged={onViewRef?.current}
+            viewabilityConfig={viewConfigRef?.current}
+            keyExtractor={(item) => item?.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            ItemSeparatorComponent={Separator}
+            scrollEnabled={false}
+            style={{
+              paddingStart: SEPARATOR_WIDTH * 2,
+            }}
+            contentContainerStyle={{
+              paddingEnd: SEPARATOR_WIDTH * 4,
+            }}
+            renderItem={({ item }) => (
+              <View style={styles.sliderItem}>
+                <View style={styles.question}>
+                  <CustomText weight="medium" style={styles.questionText}>
+                    {item?.question}
+                  </CustomText>
+                  {item?.customContent ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {item?.customContent}
+                    </View>
+                  ) : (
+                    <FlatList
+                      style={styles.optionsList}
+                      contentContainerStyle={styles.optionContent}
+                      data={item?.options}
+                      keyExtractor={(item) => item?.id}
+                      ItemSeparatorComponent={ResponseSeparator}
+                      showsVerticalScrollIndicator={true}
+                      scrollEnabled
+                      renderItem={(option) => (
+                        <CustomButtom
+                          isActive={form[item?.questionId] === option?.item?.id}
+                          backgroundColor={
+                            form[item?.questionId] === option?.item?.id
+                              ? $white
+                              : $primary
+                          }
+                          color={
+                            form[item?.questionId] === option?.item?.id
+                              ? $secondary
+                              : $white
+                          }
+                          borderColor={
+                            form[item?.questionId] === option?.item?.id
+                              ? $secondary
+                              : $white
+                          }
+                          key={option?.item?.id}
+                          value={option?.item?.id}
+                          variant="outlined"
+                          onToggle={(activeValue) =>
+                            handleChangeForm({
+                              questionId: item?.questionId,
+                              activeValue,
+                            })
+                          }
+                        >
+                          {option?.item?.label}
+                        </CustomButtom>
+                      )}
+                    />
+                  )}
+                </View>
+                <View style={styles.buttonGroup}>
+                  {item?.id > 0 && (
+                    <CustomButtom
+                      width={$xxxlarge}
+                      icon={() => <IconNavigatePrevious />}
+                      backgroundColor={$secondary}
+                      color={$white}
+                      onPress={() => handleSlide({ type: 'previous' })}
+                    />
+                  )}
+                  {questions?.length &&
+                    item?.id < questions?.length - 1 &&
+                    !!form[item?.questionId] && (
+                      <CustomButtom
+                        width={$xxxlarge}
+                        icon={() => <IconNavigateNext />}
+                        backgroundColor={$secondary}
+                        color={$white}
+                        onPress={() => handleSlide({ type: 'next' })}
+                      />
+                    )}
+                  {item?.id === questions?.length - 1 && (
+                    <CustomButtom
+                      width="50%"
+                      icon={() => <IconCheck />}
+                      backgroundColor={$secondary}
+                      color={$white}
+                      onPress={() => setIsFirstAccess(false)}
+                    />
+                  )}
+                </View>
+              </View>
+            )}
+          />
+        </View>
+      </View>
+    </ScreenWrapper>
   );
 };
 

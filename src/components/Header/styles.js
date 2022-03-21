@@ -1,18 +1,20 @@
-/* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import EStyleSheet from 'react-native-extended-stylesheet';
 
-import { Appbar } from 'react-native-paper';
-
-export const HeaderContent = ({ children }) => (
-  <Appbar.Content
-    style={{
+export const getStyle = ({}) =>
+  EStyleSheet.create({
+    container: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+    },
+    content: {
       flex: 1,
-      display: 'flex',
-      justifyContent: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       alignItems: 'center',
-      paddingLeft: 60,
-      paddingRight: 60,
-    }}
-    title={children}
-  />
-);
+      paddingHorizontal: '$small',
+    },
+    title: {
+      color: '$white',
+      fontSize: '$medium',
+    },
+  });

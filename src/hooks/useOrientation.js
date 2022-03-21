@@ -12,7 +12,7 @@ const useOrientation = () => {
       onDimensionChange
     );
 
-    return () => dimensionsSubscription.remove();
+    return () => dimensionsSubscription?.remove();
   }, []);
 
   return {
