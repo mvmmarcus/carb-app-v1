@@ -11,7 +11,6 @@ export const getStyle = ({}) =>
       marginVertical: '$medium',
     },
     infosBox: {
-      flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
     },

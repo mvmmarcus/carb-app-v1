@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, TouchableWithoutFeedback } from 'react-native';
+import { View } from 'react-native';
 
 import IconDataNotFound from '#/../assets/data_not_found.svg';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Button } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import { Rect, Text as TextSVG, Svg } from 'react-native-svg';
 
@@ -75,17 +76,23 @@ const GlucoseChart = ({
           onChange={onChangeDate}
         />
       )}
-      <TouchableWithoutFeedback
-        onPress={() => setShowDatePicker(true)}
-        style={{ alignSelf: 'flex-start' }}
-      >
-        <View style={styles.titleContainer}>
+      <View style={styles.header}>
+        <Button
+          onPress={() => setShowDatePicker(true)}
+          uppercase={false}
+          mode="contained"
+          style={styles.filterButton}
+          labelStyle={styles.filterButtonLabel}
+        >
           <CustomText weight="bold" style={styles.day}>
-            {formatDate(date)}
+            {formatDate(date)}{' '}
           </CustomText>
           <IconFA name="caret-down" size={20} color={$white} />
-        </View>
-      </TouchableWithoutFeedback>
+        </Button>
+        <CustomText weight="bold" style={styles.unity}>
+          mg/dL
+        </CustomText>
+      </View>
 
       {data.datasets?.length ? (
         <LineChart

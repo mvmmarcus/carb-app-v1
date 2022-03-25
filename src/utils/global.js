@@ -1,7 +1,7 @@
 import { theme } from '#/styles/theme';
 
 export const getBackgroundColor = (value) => {
-  const { $red, $orange, $primary } = theme;
+  const { $red, $orange } = theme;
 
   if ((value >= 0 && value < 60) || value > 150) {
     return $red;

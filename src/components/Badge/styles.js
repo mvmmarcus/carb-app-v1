@@ -4,11 +4,9 @@ export const getStyle = ({}) =>
   EStyleSheet.create({
     container: {
       flex: 1,
-      height: '100%',
       backgroundColor: '$white',
       elevation: '$xxsmall',
       borderRadius: '$xxsmall',
-      alignSelf: 'flex-start',
       paddingVertical: '$xsmall',
       paddingHorizontal: '$small',
       maxWidth: '5.5rem',

@@ -14,7 +14,7 @@ import AuthContext from '#/contexts/auth';
 import { theme } from '#/styles/theme';
 import {
   MainStackNavigator,
-  MeasurementsStackNavigator,
+  RegistersStackNavigator,
   MyDevicesStackNavigator,
 } from './StackNavigator';
 
@@ -123,8 +123,8 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Measurements Stack"
-        component={MeasurementsStackNavigator}
+        name="Registers Stack"
+        component={RegistersStackNavigator}
         options={{
           tabBarLabel: 'Registros',
           tabBarIcon: ({ focused }) => (

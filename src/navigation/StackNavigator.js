@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/Home';
 import MyDevices from '../screens/MyDevices';
-import Measurements from '../screens/Measurements';
+import Registers from '../screens/Registers';
 import Header from '../components/Header';
 
 const Stack = createStackNavigator();
@@ -29,17 +29,13 @@ const MainStackNavigator = () => {
   );
 };
 
-const MeasurementsStackNavigator = () => {
+const RegistersStackNavigator = (props) => {
   return (
     <Stack.Navigator
-      screenOptions={{
-        header: (props) => {
-          return <Header {...props} />;
-        },
-      }}
-      initialRouteName="Measurements Screen"
+      screenOptions={{ headerShown: false }}
+      initialRouteName="RegistersScreeen"
     >
-      <Stack.Screen name="Measurements Screen" component={Measurements} />
+      <Stack.Screen name="RegistersScreeen" component={Registers} />
     </Stack.Navigator>
   );
 };
@@ -59,8 +55,4 @@ const MyDevicesStackNavigator = () => {
   );
 };
 
-export {
-  MainStackNavigator,
-  MeasurementsStackNavigator,
-  MyDevicesStackNavigator,
-};
+export { MainStackNavigator, RegistersStackNavigator, MyDevicesStackNavigator };

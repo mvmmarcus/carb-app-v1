@@ -261,9 +261,10 @@ export const BluetoothProvider = ({ children }) => {
     }
   };
 
-  const handleUpdateValueForCharacteristic = (data) => {
+  const handleUpdateValueForCharacteristic = async (data) => {
     if (data?.characteristic === racpCharacteristic) {
       console.log('all data received');
+      await AsyncStorage.setItem('@registers', JSON.stringify(newRecords));
       setRecords(newRecords);
       setIsGettingRecords(false);
     }

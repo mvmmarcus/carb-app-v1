@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 
-import Badge from '../../components/Badge';
+import Badge from '#/components/Badge';
 import Card from '#/components/Card';
 import useOrientation from '#/hooks/useOrientation';
 import GlucoseChart from '#/components/GlucoseChart';
@@ -22,18 +22,10 @@ const HomeScreen = () => {
   console.log({ records });
 
   const data = {
-    labels: [
-      '01:00h',
-      '02:00h',
-      '13:00h',
-      '14:00h',
-      '12:00h',
-      '10:00h',
-      '22:00h',
-    ],
+    labels: ['01:00h', '02:00h', '13:00h', '14:00h'],
     datasets: [
       {
-        data: [10, 40, 180, 60, 75, 100, 90],
+        data: [100, 40, 180, 60],
       },
     ],
   };

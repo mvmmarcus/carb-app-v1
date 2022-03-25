@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
-import React from 'react';
-import { StatusBar } from 'react-native';
+import React, { useEffect } from 'react';
+import { StatusBar, LogBox } from 'react-native';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,6 +17,10 @@ EStyleSheet.build(theme);
 
 const App = () => {
   const { $secondary } = theme;
+
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, []);
 
   return (
     <PaperProvider>

@@ -8,6 +8,29 @@ export const formatToBrazilianDate = (date) => {
   return brazilianDate || '';
 };
 
-export const sortByDate = (a, b) => {
+export const sortByDateAndTime = (a, b) => {
   return new Date(`${b.date} ${b.time}`) - new Date(`${a.date} ${a.time}`);
 };
+
+export const sortByDate = (a, b) => {
+  return new Date(b.date) - new Date(a.date);
+};
+
+export const sortByMonth = (a, b) => {
+  return new Date(b.month) - new Date(a.month);
+};
+
+export const monthNames = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+];
