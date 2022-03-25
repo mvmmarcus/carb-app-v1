@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View } from 'react-native';
 
 import FallbackMessage from '../../components/FallbackMessage';
@@ -16,16 +16,11 @@ const SyncScreen = () => {
     discoveredPeripherals,
     connectedPeripheral,
     storagePeripheral,
+    onSelectPeripheral,
   } = useContext(BluetoothContext);
   const [activeNav, setActiveNav] = useState('close');
 
   const styles = getStyle({});
-
-  console.log({
-    discoveredPeripherals,
-    connectedPeripheral,
-    storagePeripheral,
-  });
 
   return (
     <ScreenWrapper>
@@ -43,11 +38,20 @@ const SyncScreen = () => {
                   activeOption={activeNav}
                 />
               </View>
-              {discoveredPeripherals?.length > 0 ? (
+              {activeNav === 'history' ? (
+                <Peripheral
+                  {...storagePeripheral}
+                  isConnected={
+                    storagePeripheral?.id === connectedPeripheral?.id
+                  }
+                  onConnect={onSelectPeripheral}
+                />
+              ) : discoveredPeripherals?.length > 0 ? (
                 discoveredPeripherals?.map((item) => (
                   <Peripheral
                     {...item}
                     isConnected={connectedPeripheral?.id === item?.id}
+                    onConnect={onSelectPeripheral}
                   />
                 ))
               ) : (

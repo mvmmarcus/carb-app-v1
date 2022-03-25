@@ -14,9 +14,15 @@ const Peripheral = ({
   rssi = '',
   isConnected = false,
   isTouchable = true,
+  onConnect,
 }) => {
   const styles = getStyle({});
   const { $secondary, $white, $primary } = theme;
+
+  const handleConnect = (peripheral) => {
+    console.log('selected peripheral: ', peripheral);
+    !!onConnect && onConnect(peripheral);
+  };
 
   return (
     <View
@@ -45,7 +51,7 @@ const Peripheral = ({
       </View>
 
       <Button
-        onPress={() => null}
+        onPress={() => handleConnect({ name, id, rssi })}
         uppercase={false}
         mode="contained"
         style={{
