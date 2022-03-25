@@ -2,10 +2,10 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import { createStackNavigator } from '@react-navigation/stack';
+
 import Home from '../screens/Home';
-import MyDevices from '../screens/MyDevices';
+import Sync from '../screens/Sync';
 import Registers from '../screens/Registers';
-import Header from '../components/Header';
 
 const Stack = createStackNavigator();
 
@@ -40,19 +40,15 @@ const RegistersStackNavigator = (props) => {
   );
 };
 
-const MyDevicesStackNavigator = () => {
+const SyncStackNavigator = () => {
   return (
     <Stack.Navigator
-      screenOptions={{
-        header: (props) => {
-          return <Header {...props} />;
-        },
-      }}
-      initialRouteName="MyDevices Screen"
+      screenOptions={{ headerShown: false }}
+      initialRouteName="SyncScreen"
     >
-      <Stack.Screen name="MyDevices Screen" component={MyDevices} />
+      <Stack.Screen name="SyncScreen" component={Sync} />
     </Stack.Navigator>
   );
 };
 
-export { MainStackNavigator, RegistersStackNavigator, MyDevicesStackNavigator };
+export { MainStackNavigator, RegistersStackNavigator, SyncStackNavigator };

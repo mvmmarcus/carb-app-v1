@@ -15,7 +15,7 @@ import { theme } from '#/styles/theme';
 import {
   MainStackNavigator,
   RegistersStackNavigator,
-  MyDevicesStackNavigator,
+  SyncStackNavigator,
 } from './StackNavigator';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -104,10 +104,10 @@ const BottomTabNavigator = () => {
       barStyle={{
         backgroundColor: $white,
       }}
-      initialRouteName="Home Stack"
+      initialRouteName="HomeStack"
     >
       <Tab.Screen
-        name="Home Stack"
+        name="HomeStack"
         component={MainStackNavigator}
         options={{
           tabBarLabel: 'Home',
@@ -123,7 +123,7 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Registers Stack"
+        name="RegistersStack"
         component={RegistersStackNavigator}
         options={{
           tabBarLabel: 'Registros',
@@ -137,8 +137,8 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Sync Stack"
-        component={MyDevicesStackNavigator}
+        name="SyncStack"
+        component={SyncStackNavigator}
         options={{
           tabBarLabel: 'Sincronizar',
           tabBarIcon: ({ focused }) => (
@@ -152,8 +152,8 @@ const BottomTabNavigator = () => {
       />
 
       <Tab.Screen
-        name="Settings Stack"
-        component={MyDevicesStackNavigator}
+        name="SettingsStack"
+        component={SyncStackNavigator}
         options={{
           tabBarLabel: 'Menu',
           tabBarIcon: ({ focused }) => (

@@ -16,7 +16,7 @@ import { theme } from '#/styles/theme';
 
 const RegistersScreeen = (props) => {
   const styles = getStyle({});
-  const { $white, $secondary } = theme;
+  const { $secondary } = theme;
 
   const { isGettingRecords, records } = useContext(BluetoothContext);
   const [year, setYear] = useState('2022');
@@ -149,13 +149,15 @@ const RegistersScreeen = (props) => {
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <DropDownPicker
-          defaultValue={year}
-          data={['2022', '2021']}
-          onSelect={setYear}
-          buttonStyle={styles.filterButton}
-          buttonTextStyle={styles.filterButtonLabel}
-        />
+        {mealsByMonth?.length > 0 && (
+          <DropDownPicker
+            defaultValue={year}
+            data={['2022', '2021']}
+            onSelect={setYear}
+            buttonStyle={styles.filterButton}
+            buttonTextStyle={styles.filterButtonLabel}
+          />
+        )}
 
         <FlatList
           contentContainerStyle={{
