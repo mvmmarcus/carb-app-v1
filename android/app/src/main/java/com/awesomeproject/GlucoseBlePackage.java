@@ -1,6 +1,6 @@
 // GlucoseBlePackage.java
 
-package com.awesomeproject;
+package com.carbs;
 
 import java.util.Arrays;
 import java.util.Collections;

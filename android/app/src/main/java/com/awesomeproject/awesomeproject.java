@@ -1,4 +1,4 @@
-package com.awesomeproject;
+package com.carbs;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -11,7 +11,7 @@ import androidx.annotation.StringRes;
 import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.awesomeproject.Services.BluetoothGlucoseMeter;
+import com.carbs.Services.BluetoothGlucoseMeter;
 
 
 

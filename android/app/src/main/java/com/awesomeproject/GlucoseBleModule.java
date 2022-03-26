@@ -1,12 +1,12 @@
 // GlucoseBleModule.java
 
-package com.awesomeproject;
+package com.carbs;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
-import com.awesomeproject.Services.BluetoothGlucoseMeter;
+import com.carbs.Services.BluetoothGlucoseMeter;
 
 public class GlucoseBleModule extends ReactContextBaseJavaModule {
 

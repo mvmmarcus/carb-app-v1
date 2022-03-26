@@ -1,4 +1,4 @@
-package com.awesomeproject.Services;
+package com.carbs.Services;
 
 import android.annotation.TargetApi;
 import android.app.Service;
@@ -27,7 +27,7 @@ import android.os.PowerManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.awesomeproject.awesomeproject;
+import com.carbs.awesomeproject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

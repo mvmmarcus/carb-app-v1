@@ -1,4 +1,4 @@
-package com.awesomeproject;
+package com.carbs;
 
 import android.os.Bundle;
 
