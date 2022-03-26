@@ -14,6 +14,7 @@ import AuthContext from '#/contexts/auth';
 import { theme } from '#/styles/theme';
 import {
   MainStackNavigator,
+  MenuStackNavigator,
   RegistersStackNavigator,
   SyncStackNavigator,
 } from './StackNavigator';
@@ -152,8 +153,8 @@ const BottomTabNavigator = () => {
       />
 
       <Tab.Screen
-        name="SettingsStack"
-        component={SyncStackNavigator}
+        name="MenuStack"
+        component={MenuStackNavigator}
         options={{
           tabBarLabel: 'Menu',
           tabBarIcon: ({ focused }) => (

@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/Home';
 import Sync from '../screens/Sync';
 import Registers from '../screens/Registers';
+import Menu from '../screens/Menu';
 
 const Stack = createStackNavigator();
 
@@ -51,4 +52,20 @@ const SyncStackNavigator = () => {
   );
 };
 
-export { MainStackNavigator, RegistersStackNavigator, SyncStackNavigator };
+const MenuStackNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="MenuScreen"
+    >
+      <Stack.Screen name="MenuScreen" component={Menu} />
+    </Stack.Navigator>
+  );
+};
+
+export {
+  MainStackNavigator,
+  RegistersStackNavigator,
+  SyncStackNavigator,
+  MenuStackNavigator,
+};

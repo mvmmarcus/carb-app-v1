@@ -10,6 +10,7 @@ import { theme } from '#/styles/theme';
 
 const FallbackMessage = ({
   icon = { name: '', size: 80 },
+  customIcon,
   title,
   subtitle,
 }) => {
@@ -18,6 +19,7 @@ const FallbackMessage = ({
 
   return (
     <View style={styles.fallbackContainer}>
+      {!!customIcon && customIcon}
       {!!icon?.name && (
         <IconMC name={icon?.name} size={icon?.size} color={$secondary} />
       )}
@@ -27,7 +29,9 @@ const FallbackMessage = ({
         </CustomText>
       )}
       {!!subtitle && (
-        <CustomText style={styles.fallbackSubtitle}>{subtitle}</CustomText>
+        <CustomText weight="medium" style={styles.fallbackSubtitle}>
+          {subtitle}
+        </CustomText>
       )}
     </View>
   );

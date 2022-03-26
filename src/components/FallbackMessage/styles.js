@@ -8,7 +8,7 @@ export const getStyle = ({}) =>
       alignItems: 'center',
     },
     fallbackTitle: {
-      fontSize: '$small',
+      fontSize: '1.125rem',
       color: '$secondary',
       textAlign: 'center',
     },
@@ -16,5 +16,6 @@ export const getStyle = ({}) =>
       color: '$secondary',
       textAlign: 'center',
       fontSize: '$xsmall',
+      maxWidth: '22rem',
     },
   });

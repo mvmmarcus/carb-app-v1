@@ -13,6 +13,7 @@ import { sortByDate, monthNames, sortByMonth } from '../../utils/date';
 
 import { getStyle } from './styles';
 import { theme } from '#/styles/theme';
+import FallbackMessage from '../../components/FallbackMessage';
 
 const RegistersScreeen = (props) => {
   const styles = getStyle({});
@@ -189,21 +190,17 @@ const RegistersScreeen = (props) => {
           keyExtractor={(item) => item?.month}
           ListEmptyComponent={
             !isGettingRecords && (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <IconDataNotFound color={$secondary} width={120} height={120} />
-                <CustomText weight="bold" style={styles.dataNotFoundTitle}>
-                  Nenhum registro encontrado
-                </CustomText>
-                <CustomText style={styles.dataNotFoundSubtitle}>
-                  Tente selecionar uma data diferente!
-                </CustomText>
-              </View>
+              <FallbackMessage
+                customIcon={
+                  <IconDataNotFound
+                    color={$secondary}
+                    width={100}
+                    height={100}
+                  />
+                }
+                title="Nenhum registro encontrado"
+                subtitle="Tente selecionar uma data diferente!"
+              />
             )
           }
         />

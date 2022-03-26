@@ -26,7 +26,7 @@ const SyncScreen = () => {
     <ScreenWrapper>
       <View style={styles.container}>
         {isAcceptedPermissions ? (
-          bluetoothState === 'PoweredOn' ? (
+          bluetoothState !== 'PoweredOn' ? (
             <View style={styles.content}>
               <View style={styles.navContainer}>
                 <Nav
@@ -39,13 +39,21 @@ const SyncScreen = () => {
                 />
               </View>
               {activeNav === 'history' ? (
-                <Peripheral
-                  {...storagePeripheral}
-                  isConnected={
-                    storagePeripheral?.id === connectedPeripheral?.id
-                  }
-                  onConnect={onSelectPeripheral}
-                />
+                storagePeripheral ? (
+                  <Peripheral
+                    {...storagePeripheral}
+                    isConnected={
+                      storagePeripheral?.id === connectedPeripheral?.id
+                    }
+                    onConnect={onSelectPeripheral}
+                  />
+                ) : (
+                  <FallbackMessage
+                    title="Nenhum dispositivo encontrado"
+                    subtitle="Os dispositivos aparecerão nesta lista após conexão bem sucedida"
+                    icon={{ name: 'text-search', size: 80 }}
+                  />
+                )
               ) : discoveredPeripherals?.length > 0 ? (
                 discoveredPeripherals?.map((item) => (
                   <Peripheral

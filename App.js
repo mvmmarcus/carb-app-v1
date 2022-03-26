@@ -12,6 +12,7 @@ import Navigation from '#/navigation';
 import { AuthProvider } from '#/contexts/auth';
 
 import { theme } from '#/styles/theme';
+import { AppProvider } from './src/contexts/app';
 
 EStyleSheet.build(theme);
 
@@ -27,9 +28,11 @@ const App = () => {
       <StatusBar barStyle="default" backgroundColor={$secondary} />
       <SafeAreaProvider>
         <NavigationContainer>
-          <AuthProvider>
-            <Navigation />
-          </AuthProvider>
+          <AppProvider>
+            <AuthProvider>
+              <Navigation />
+            </AuthProvider>
+          </AppProvider>
         </NavigationContainer>
       </SafeAreaProvider>
     </PaperProvider>
