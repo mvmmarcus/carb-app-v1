@@ -2,7 +2,8 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 
 export const styles = EStyleSheet.create({
   gradient: {
-    paddingTop: '5rem',
+    paddingTop: '3rem',
+    paddingHorizontal: '$small',
     flex: 1,
   },
   scrollView: {
@@ -12,7 +13,6 @@ export const styles = EStyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: '$small',
     paddingBottom: '$xxxlarge',
   },
   titleGroup: {

@@ -27,7 +27,7 @@ import android.os.PowerManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.carbs.awesomeproject;
+import com.carbs.carbs;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -434,7 +434,7 @@ public class BluetoothGlucoseMeter extends Service {
     private static void broadcastUpdate(final String action, final String data) {
         final Intent intent = new Intent(action);
         intent.putExtra("data", data);
-        LocalBroadcastManager.getInstance(awesomeproject.getAppContext()).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(carbs.getAppContext()).sendBroadcast(intent);
     }
 
     private static boolean ack_blocking() {
@@ -644,14 +644,14 @@ public class BluetoothGlucoseMeter extends Service {
 
     // remote api for stopping
     public static void stop_service() {
-        final Intent stop_intent = new Intent(awesomeproject.getAppContext(), BluetoothGlucoseMeter.class);
-        awesomeproject.getAppContext().stopService(stop_intent);
+        final Intent stop_intent = new Intent(carbs.getAppContext(), BluetoothGlucoseMeter.class);
+        carbs.getAppContext().stopService(stop_intent);
     }
 
     // remote api for starting
     public static void start_service(String connect_address) {
         stop_service(); // is this right?
-        final Intent start_intent = new Intent(awesomeproject.getAppContext(), BluetoothGlucoseMeter.class);
+        final Intent start_intent = new Intent(carbs.getAppContext(), BluetoothGlucoseMeter.class);
         if ((connect_address != null) && (connect_address.length() > 0)) {
             if (connect_address.equals("auto")) {
                 connect_address = "78:04:73:C7:55:7D";
@@ -661,17 +661,17 @@ public class BluetoothGlucoseMeter extends Service {
         } else {
             start_intent.putExtra("service_action", "scan");
         }
-        awesomeproject.getAppContext().startService(start_intent);
+        carbs.getAppContext().startService(start_intent);
     }
 
     // remote api for forgetting
     public static void start_forget(String forget_address) {
         stop_service(); // is this right?
-        final Intent start_intent = new Intent(awesomeproject.getAppContext(), BluetoothGlucoseMeter.class);
+        final Intent start_intent = new Intent(carbs.getAppContext(), BluetoothGlucoseMeter.class);
         if ((forget_address != null) && (forget_address.length() > 0)) {
             start_intent.putExtra("service_action", "forget");
             start_intent.putExtra("forget_address", forget_address);
-            awesomeproject.getAppContext().startService(start_intent);
+            carbs.getAppContext().startService(start_intent);
         }
     }
 

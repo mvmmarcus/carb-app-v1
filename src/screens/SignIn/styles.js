@@ -2,7 +2,7 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 
 export const styles = EStyleSheet.create({
   gradient: {
-    paddingTop: '5rem',
+    paddingTop: '3rem',
     flex: 1,
   },
   scrollView: {

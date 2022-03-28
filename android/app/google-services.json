@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "411675459339",
+    "project_id": "carbs-app-v1",
+    "storage_bucket": "carbs-app-v1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:411675459339:android:de58e5038bbf217a3e6c0e",
+        "android_client_info": {
+          "package_name": "com.carbs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "411675459339-9dc3nv2bjo5e2ud6fvohgp2vavcn66o0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC00KS5si-7kuJrdoUV_o4OPZMTiTgHiOo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "411675459339-9dc3nv2bjo5e2ud6fvohgp2vavcn66o0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

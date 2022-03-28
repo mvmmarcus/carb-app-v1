@@ -21,9 +21,9 @@ import com.carbs.Services.BluetoothGlucoseMeter;
  * Created by Emma Black on 3/21/15.
  */
 
-public class awesomeproject extends MultiDexApplication {
+public class carbs extends MultiDexApplication {
 
-    private static final String TAG = "awesomeproject.java";
+    private static final String TAG = "carbs.java";
     @SuppressLint("StaticFieldLeak")
     private static Context context;
     private static boolean fabricInited = false;
@@ -34,17 +34,17 @@ public class awesomeproject extends MultiDexApplication {
 
     @Override
     public void onCreate() {
-        awesomeproject.context = getApplicationContext();
+        carbs.context = getApplicationContext();
         super.onCreate();
     }
 
     public static Context getAppContext() {
-        return awesomeproject.context;
+        return carbs.context;
     }
 
     public static boolean checkAppContext(Context context) {
         if (getAppContext() == null) {
-            awesomeproject.context = context;
+            carbs.context = context;
             return false;
         } else {
             return true;

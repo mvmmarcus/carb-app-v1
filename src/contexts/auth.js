@@ -2,14 +2,14 @@
 import React, { createContext, useState } from 'react';
 
 const AuthContext = createContext({
-  isAuth: true,
+  isAuth: false,
   isFirstAccess: false,
   setIsAuth: () => {},
   setIsFirstAccess: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
-  const [isAuth, setIsAuth] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
   const [isFirstAccess, setIsFirstAccess] = useState(false);
 
   return (
