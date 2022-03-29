@@ -6,7 +6,7 @@ import { Button } from 'react-native-paper';
 import CustomText from '../CustomText';
 
 import { getStyle } from './styles';
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 
 const Peripheral = ({
   name = '',

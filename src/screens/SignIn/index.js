@@ -5,17 +5,17 @@ import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 import Snackbar from '../../components/Snackbar';
-import IconPerson from '#/../assets/person_outline.svg';
-import IconLock from '#/../assets/lock.svg';
+import IconPerson from '../../../assets/person_outline.svg';
+import IconLock from '../../../assets/lock.svg';
 import AuthContext from '../../contexts/auth';
-import CustomButton from '#/components/CustomButton';
-import CustomText from '#/components/CustomText';
-import Input from '#/components/Input';
-// import RadioInput from '#/components/RadioInput';
+import CustomButton from '../../components/CustomButton';
+import CustomText from '../../components/CustomText';
+import Input from '../../components/Input';
+// import RadioInput from '../../components/RadioInput';
 import { getErrorMessage } from '../../utils/errors';
 
 import { styles } from './styles';
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 
 const SignInScreen = ({ navigation }) => {
   const { $primary, $secondary, $white, $medium, $small } = theme;

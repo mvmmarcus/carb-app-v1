@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 
-import IconDataNotFound from '#/../assets/data_not_found.svg';
+import IconDataNotFound from '../../../assets/data_not_found.svg';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import { Rect, Text as TextSVG, Svg } from 'react-native-svg';
 
-import CustomText from '#/components/CustomText';
-import { getBackgroundColor } from '#/utils/global';
+import CustomText from '../CustomText';
+import { getBackgroundColor } from '../../utils/global';
 
 import { getStyle } from './styles';
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 
 const GlucoseChart = ({
   width = 350,

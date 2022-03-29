@@ -8,10 +8,10 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
-import QuestionsScreen from '#/screens/Questions';
-import BluetoothContext from '#/contexts/bluetooth';
+import QuestionsScreen from '../screens/Questions';
+import BluetoothContext from '../contexts/bluetooth';
 import UserContext from '../contexts/user';
-import { theme } from '#/styles/theme';
+import { theme } from '../styles/theme';
 import {
   MainStackNavigator,
   MenuStackNavigator,

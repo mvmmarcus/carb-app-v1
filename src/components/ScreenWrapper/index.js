@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const ScreenWrapper = ({ children }) => {

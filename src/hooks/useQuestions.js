@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text } from 'react-native';
 
-import TargetRange from '#/components/TargetRange';
-import ListForm from '#/components/ListForm';
-import Input from '#/components/Input';
+import TargetRange from '../components/TargetRange';
+import ListForm from '../components/ListForm';
+import Input from '../components/Input';
 
 const useQuestions = ({ isChoCount = false, onChange }) => {
   const [questions, setQuestions] = useState(questionsWithoutCho);

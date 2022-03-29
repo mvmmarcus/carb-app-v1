@@ -5,7 +5,7 @@ import { ActivityIndicator } from 'react-native-paper';
 
 import LogoSvg from '../../../assets/full_logo.svg';
 
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const SplashScreen = () => {

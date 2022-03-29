@@ -3,17 +3,17 @@ import { View, Dimensions, FlatList, ScrollView } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
-import ScreenWrapper from '#/components/ScreenWrapper';
+import ScreenWrapper from '../../components/ScreenWrapper';
 import UserContext from '../../contexts/user';
 import AuthContext from '../../contexts/auth';
-import useQuestions from '#/hooks/useQuestions';
-import IconNavigateNext from '#/../assets/navigate_next.svg';
-import IconCheck from '#/../assets/check.svg';
-import IconNavigatePrevious from '#/../assets/navigate_before.svg';
-import CustomButtom from '#/components/CustomButton';
-import CustomText from '#/components/CustomText';
+import useQuestions from '../../hooks/useQuestions';
+import IconNavigateNext from '../../../assets/navigate_next.svg';
+import IconCheck from '../../../assets/check.svg';
+import IconNavigatePrevious from '../../../assets/navigate_before.svg';
+import CustomButtom from '../../components/CustomButton';
+import CustomText from '../../components/CustomText';
 
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const QuestionsScreen = ({ navigation }) => {

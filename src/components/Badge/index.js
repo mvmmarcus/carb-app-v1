@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import CustomText from '#/components/CustomText';
+import CustomText from '../CustomText';
 
 import { getStyle } from './styles';
 import { Divider } from 'react-native-paper';

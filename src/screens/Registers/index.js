@@ -4,16 +4,16 @@ import { FlatList, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import DropDownPicker from 'react-native-select-dropdown';
 
-import IconDataNotFound from '#/../assets/data_not_found.svg';
+import FallbackMessage from '../../components/FallbackMessage';
+import IconDataNotFound from '../../../assets/data_not_found.svg';
 import MealAccordion from '../../components/MealAccordion';
-import ScreenWrapper from '#/components/ScreenWrapper';
+import ScreenWrapper from '../../components/ScreenWrapper';
 import CustomText from '../../components/CustomText';
 import BluetoothContext from '../../contexts/bluetooth';
 import { sortByDate, monthNames, sortByMonth } from '../../utils/date';
 
 import { getStyle } from './styles';
-import { theme } from '#/styles/theme';
-import FallbackMessage from '../../components/FallbackMessage';
+import { theme } from '../../styles/theme';
 
 const RegistersScreeen = (props) => {
   const styles = getStyle({});

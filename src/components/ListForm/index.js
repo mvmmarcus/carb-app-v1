@@ -3,7 +3,7 @@ import { View, TextInput } from 'react-native';
 
 import CustomText from '../CustomText';
 
-import colors from '#/styles/colors';
+import colors from '../../styles/colors';
 import { getStyle } from './styles';
 
 const ListForm = ({ fields = [], initialValues = {}, onComplete }) => {

@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import FallbackMessage from '../../components/FallbackMessage';
 import Peripheral from '../../components/Peripheral';
 import Nav from '../../components/Nav';
-import ScreenWrapper from '#/components/ScreenWrapper';
+import ScreenWrapper from '../../components/ScreenWrapper';
 import BluetoothContext from '../../contexts/bluetooth';
 
 import { getStyle } from './styles';

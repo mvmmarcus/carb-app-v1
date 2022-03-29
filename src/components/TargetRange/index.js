@@ -3,9 +3,9 @@ import { View } from 'react-native';
 
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
-import CustomText from '#/components/CustomText';
-import ArrowDown from '#/../assets/arrow_down.svg';
-import ArrowUp from '#/../assets/arrow_up.svg';
+import CustomText from '../CustomText';
+import ArrowDown from '../../../assets/arrow_down.svg';
+import ArrowUp from '../../../assets/arrow_up.svg';
 
 import { getStyle } from './styles';
 

@@ -4,9 +4,9 @@ import { View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import IconFilter from '#/../assets/filter_list.svg';
-import CustomText from '#/components/CustomText';
-import { theme } from '#/styles/theme';
+import IconFilter from '../../../assets/filter_list.svg';
+import CustomText from '../CustomText';
+import { theme } from '../../styles/theme';
 
 import { getStyle } from './styles';
 

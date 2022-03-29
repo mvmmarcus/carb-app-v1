@@ -3,12 +3,12 @@ import React, { useContext } from 'react';
 import SplashScreen from '../screens/Splash';
 import AddRegisterModal from '../components/AddRegisterModal';
 import useAuth from '../hooks/useAuth';
-import TabNavigator from '#/navigation/TabNavigator';
-import AuthNavigator from '#/navigation/AuthNavigator';
-import UndismissableModal from '#/components/UndismissableModal';
+import TabNavigator from '../navigation/TabNavigator';
+import AuthNavigator from '../navigation/AuthNavigator';
+import UndismissableModal from '../components/UndismissableModal';
 import UserContext from '../contexts/user';
 import FloatingButton from '../components/FloatingButton';
-import { BluetoothProvider } from '#/contexts/bluetooth';
+import { BluetoothProvider } from '../contexts/bluetooth';
 
 const Navigation = ({}) => {
   const { user } = useAuth();

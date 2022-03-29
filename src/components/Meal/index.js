@@ -3,11 +3,11 @@ import { ScrollView, View } from 'react-native';
 
 import { IconButton } from 'react-native-paper';
 
-import IconTime from '#/../assets/time.svg';
+import IconTime from '../../../assets/time.svg';
 import CustomText from '../CustomText';
 import { getBackgroundColor } from '../../utils/global';
 
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const Meal = ({

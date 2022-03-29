@@ -5,14 +5,14 @@ import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 
 import UserContext from '../../contexts/user';
 import AuthContext from '../../contexts/auth';
-import Badge from '#/components/Badge';
-import Card from '#/components/Card';
-import useOrientation from '#/hooks/useOrientation';
-import GlucoseChart from '#/components/GlucoseChart';
-import ScreenWrapper from '#/components/ScreenWrapper';
-import BluetoothContext from '#/contexts/bluetooth';
+import Badge from '../../components/Badge';
+import Card from '../../components/Card';
+import useOrientation from '../../hooks/useOrientation';
+import GlucoseChart from '../../components/GlucoseChart';
+import ScreenWrapper from '../../components/ScreenWrapper';
+import BluetoothContext from '../../contexts/bluetooth';
 
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const HomeScreen = () => {

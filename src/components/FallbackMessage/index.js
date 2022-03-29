@@ -6,7 +6,7 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../CustomText';
 
 import { getStyle } from './styles';
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 
 const FallbackMessage = ({
   icon = { name: '', size: 80 },

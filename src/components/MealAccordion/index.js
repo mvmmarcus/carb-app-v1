@@ -5,7 +5,7 @@ import { List } from 'react-native-paper';
 
 import Meal from '../Meal';
 
-import { theme } from '#/styles/theme';
+import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const MealAccordion = ({ title = '', id = '1', meals = [] }) => {

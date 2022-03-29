@@ -4,14 +4,14 @@ import { View } from 'react-native';
 import { Avatar } from 'react-native-paper';
 
 import AuthContext from '../../contexts/auth';
-import IconPerson from '#/../assets/person.svg';
-import IconSettings from '#/../assets/settings.svg';
-import IconLogout from '#/../assets/logout.svg';
-import IconLightbulb from '#/../assets/lightbulb.svg';
-import IconChevronRight from '#/../assets/chevron_right.svg';
+import IconPerson from '../../../assets/person.svg';
+import IconSettings from '../../../assets/settings.svg';
+import IconLogout from '../../../assets/logout.svg';
+import IconLightbulb from '../../../assets/lightbulb.svg';
+import IconChevronRight from '../../../assets/chevron_right.svg';
 import Card from '../../components/Card';
 import CustomText from '../../components/CustomText';
-import ScreenWrapper from '#/components/ScreenWrapper';
+import ScreenWrapper from '../../components/ScreenWrapper';
 
 import { getStyle } from './styles';
 

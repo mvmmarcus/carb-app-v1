@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Button } from 'react-native-paper';
 
-import CustomText from '#/components/CustomText';
+import CustomText from '../CustomText';
 
 import { getStyle } from './styles';
 

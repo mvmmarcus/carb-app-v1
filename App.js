@@ -8,10 +8,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-import Navigation from '#/navigation';
-import { AuthProvider } from '#/contexts/auth';
+import Navigation from './src/navigation';
+import { AuthProvider } from './src/contexts/auth';
 
-import { theme } from '#/styles/theme';
+import { theme } from './src/styles/theme';
 import { AppProvider } from './src/contexts/user';
 
 EStyleSheet.build(theme);
