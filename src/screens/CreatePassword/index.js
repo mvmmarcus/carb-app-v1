@@ -14,8 +14,6 @@ import { theme } from '../../styles/theme';
 import { styles } from './styles';
 
 const CreatePasswordScreen = ({ navigation }) => {
-  const { setIsAuth } = useContext(AuthContext);
-
   const { $primary, $secondary, $white, $medium, $small } = theme;
 
   const [rememberLogin, setRememberLogin] = useState(false);
@@ -72,7 +70,7 @@ const CreatePasswordScreen = ({ navigation }) => {
             <CustomButtom
               backgroundColor={$secondary}
               color={$white}
-              onPress={() => setIsAuth(true)}
+              onPress={() => null}
             >
               Finalizar
             </CustomButtom>

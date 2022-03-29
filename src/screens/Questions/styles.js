@@ -49,7 +49,6 @@ export const getStyle = ({ width, SEPARATOR_WIDTH }) =>
       marginBottom: '$medium',
     },
     optionsList: {
-      height: 1,
       flex: 1,
     },
     optionContent: {

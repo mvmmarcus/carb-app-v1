@@ -48,6 +48,6 @@ export const styles = EStyleSheet.create({
     width: '100%',
     paddingLeft: '0.125rem',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
 });

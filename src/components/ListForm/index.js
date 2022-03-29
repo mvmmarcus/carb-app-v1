@@ -15,8 +15,6 @@ const ListForm = ({ fields = [], initialValues = {}, onComplete }) => {
     if (isFormValid) {
       !!onComplete && onComplete(formValues);
     }
-
-    console.log({ formValues, isFormValid });
   }, [formValues]);
 
   const validateFields = (formValues) => {

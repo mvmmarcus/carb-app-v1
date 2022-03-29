@@ -1,20 +1,47 @@
 import React from 'react';
+import { Dimensions } from 'react-native';
 
 import { Snackbar as PaperSnacknar } from 'react-native-paper';
 
-const Snackbar = ({ message }) => {
-  const [visible, setVisible] = React.useState(!!message);
+import CustomText from '../CustomText';
+
+import { styles } from './styles';
+
+const Snackbar = ({
+  type = 'error',
+  message = '',
+  actionLabel = 'Ok',
+  textColor = 'white',
+  isTop = true,
+  style = {},
+  onDismiss = () => null,
+}) => {
+  const { width } = Dimensions.get('screen');
+
+  const wrapperStyles = isTop ? { top: 0 } : { bottom: 0 };
+
+  const stylesByType = {
+    error: 'errorContainer',
+    success: 'successContainer',
+  };
+
   return (
     <PaperSnacknar
-      onDismiss={() => setVisible(false)}
-      visible={visible}
-      duration={2000}
+      theme={{ colors: { accent: textColor } }}
+      wrapperStyle={{
+        ...wrapperStyles,
+        width: width,
+      }}
+      style={{ ...styles[stylesByType[type]], ...style }}
+      visible={!!message}
+      onDismiss={onDismiss}
       action={{
-        label: 'Ok',
-        onPress: () => setVisible(false),
+        label: actionLabel,
       }}
     >
-      {message}
+      <CustomText style={{ ...styles.text, color: textColor }}>
+        {message}
+      </CustomText>
     </PaperSnacknar>
   );
 };

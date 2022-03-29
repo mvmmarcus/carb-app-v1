@@ -17,6 +17,7 @@ const Card = ({
   onCallAction,
   style = {},
   as = 'card',
+  onPress = () => null,
 }) => {
   const styles = getStyle({});
 
@@ -53,7 +54,10 @@ const Card = ({
       )}
     </View>
   ) : (
-    <TouchableOpacity style={{ ...styles.container, ...style }}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={{ ...styles.container, ...style }}
+    >
       <View style={styles.titleContainer}>
         {!!icon && icon}
         <View style={styles.textContainer}>

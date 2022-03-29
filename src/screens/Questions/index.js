@@ -1,14 +1,11 @@
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
-import { View, Dimensions, FlatList } from 'react-native';
+import React, { useRef, useState, useCallback, useContext } from 'react';
+import { View, Dimensions, FlatList, ScrollView } from 'react-native';
+
+import AsyncStorage from '@react-native-community/async-storage';
 
 import ScreenWrapper from '#/components/ScreenWrapper';
-import AuthContext from '#/contexts/auth';
+import UserContext from '../../contexts/user';
+import AuthContext from '../../contexts/auth';
 import useQuestions from '#/hooks/useQuestions';
 import IconNavigateNext from '#/../assets/navigate_next.svg';
 import IconCheck from '#/../assets/check.svg';
@@ -20,20 +17,18 @@ import { theme } from '#/styles/theme';
 import { getStyle } from './styles';
 
 const QuestionsScreen = ({ navigation }) => {
-  const { setIsFirstAccess } = useContext(AuthContext);
+  const { setIsFirstAccess, setInsulinParams } = useContext(UserContext);
+  const { user } = useContext(AuthContext);
   const [index, setIndex] = useState(0);
   const [form, setForm] = useState({
     type: null,
     targetRange: null,
     therapy: null,
-    basalInsulin: null,
-    fastInsulin: null,
     isChoCount: null,
     choInsulinRelationship: null,
     fixedDoses: null,
     correctionFactor: null,
     meter: null,
-    sensor: null,
   });
   const flatListRef = useRef(null);
   const onViewRef = useRef(({ viewableItems }) => {
@@ -75,9 +70,20 @@ const QuestionsScreen = ({ navigation }) => {
     });
   }, []);
 
-  useEffect(() => {
-    console.log({ form });
-  }, [form]);
+  const onFinishQuestions = async (insulinParams, user) => {
+    await AsyncStorage.setItem(
+      `@carbs:${user?.uid}`,
+      JSON.stringify({
+        isFirstAccess: false,
+        insulinParams: insulinParams,
+      })
+    );
+
+    console.log({ insulinParams });
+
+    setIsFirstAccess(false);
+    setInsulinParams(insulinParams);
+  };
 
   const Separator = () => <View style={{ width: SEPARATOR_WIDTH }}></View>;
 
@@ -191,15 +197,16 @@ const QuestionsScreen = ({ navigation }) => {
                         onPress={() => handleSlide({ type: 'next' })}
                       />
                     )}
-                  {item?.id === questions?.length - 1 && (
-                    <CustomButtom
-                      width="50%"
-                      icon={() => <IconCheck />}
-                      backgroundColor={$secondary}
-                      color={$white}
-                      onPress={() => setIsFirstAccess(false)}
-                    />
-                  )}
+                  {item?.id === questions?.length - 1 &&
+                    !!form[item?.questionId] && (
+                      <CustomButtom
+                        width="50%"
+                        icon={() => <IconCheck />}
+                        backgroundColor={$secondary}
+                        color={$white}
+                        onPress={() => onFinishQuestions(form, user)}
+                      />
+                    )}
                 </View>
               </View>
             )}

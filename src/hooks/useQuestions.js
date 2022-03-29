@@ -28,11 +28,11 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       options: [
         {
           label: 'Tipo 1',
-          id: 'type_1',
+          id: 'type1',
         },
         {
           label: 'Tipo 2',
-          id: 'type_2',
+          id: 'type2',
         },
         {
           label: 'Lada',
@@ -67,7 +67,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       options: [
         {
           label: 'Caneta / Seringa',
-          id: 'pen_syringe',
+          id: 'penSyringe',
         },
         {
           label: 'Bomba',
@@ -81,56 +81,6 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
     },
     {
       id: 3,
-      questionId: 'basalInsulin',
-      question: 'Selecionar insulina basal:',
-      options: [
-        {
-          label: 'Lantus',
-          id: 'lantus',
-        },
-        {
-          label: 'Basaglar',
-          id: 'basaglar',
-        },
-        {
-          label: 'Levemir',
-          id: 'levemir',
-        },
-        {
-          label: 'Toujeo',
-          id: 'toujeo',
-        },
-        {
-          label: 'Tresiba',
-          id: 'tresiba',
-        },
-      ],
-    },
-    {
-      id: 4,
-      questionId: 'fastInsulin',
-      question: 'Selecionar insulina rápida:',
-      options: [
-        {
-          label: 'Humalog',
-          id: 'humalog',
-        },
-        {
-          label: 'Novorapid',
-          id: 'novorapid',
-        },
-        {
-          label: 'Apidra',
-          id: 'apidra',
-        },
-        {
-          label: 'Fiasp',
-          id: 'fiasp',
-        },
-      ],
-    },
-    {
-      id: 5,
       questionId: 'isChoCount',
       question: 'Faz contagem de CHO?',
       options: [
@@ -145,7 +95,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       ],
     },
     {
-      id: 6,
+      id: 4,
       questionId: 'fixedDoses',
       question: 'Inserir doses fixas:',
       customContent: (
@@ -155,25 +105,25 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
           }
           fields={[
             {
-              id: 'morning_ui',
+              id: 'morningUi',
               sufix: 'ui',
               title: 'Manha',
               subtitle: '(06:00 - 12:00)',
             },
             {
-              id: 'afternool_ui',
+              id: 'afternoolUi',
               sufix: 'ui',
               title: 'Tarde',
               subtitle: '(12:00 - 18:00)',
             },
             {
-              id: 'night_ui',
+              id: 'nightUi',
               sufix: 'ui',
               title: 'Noite',
               subtitle: '(18:00 - 00:00)',
             },
             {
-              id: 'dawn_ui',
+              id: 'dawnUi',
               sufix: 'ui',
               title: 'Madrugada',
               subtitle: '(00:00 - 06:00)',
@@ -183,7 +133,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       ),
     },
     {
-      id: 7,
+      id: 5,
       questionId: 'meter',
       question: 'Qual medidor você usa?',
       options: [
@@ -204,33 +154,6 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
           id: 'glucoLeader',
         },
         {
-          label: 'OneCallPlus',
-          id: 'oneCallPlus',
-        },
-      ],
-    },
-    {
-      id: 8,
-      questionId: 'sensor',
-      question: 'Qual sensor você usa?',
-      options: [
-        {
-          label: 'Enlite Sensor',
-          id: 'enliteSensor',
-        },
-        {
-          label: 'Eversense Sensor',
-          id: 'eversenseSensor',
-        },
-        {
-          label: 'Freestyle Libre',
-          id: 'freestyleLibre',
-        },
-        {
-          label: 'Guardian Sensor',
-          id: 'guardianSensor',
-        },
-        {
           label: 'Outro',
           id: 'other',
         },
@@ -246,11 +169,11 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       options: [
         {
           label: 'Tipo 1',
-          id: 'type_1',
+          id: 'type1',
         },
         {
           label: 'Tipo 2',
-          id: 'type_2',
+          id: 'type2',
         },
         {
           label: 'Lada',
@@ -285,7 +208,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       options: [
         {
           label: 'Caneta / Seringa',
-          id: 'pen_syringe',
+          id: 'penSyringe',
         },
         {
           label: 'Bomba',
@@ -297,58 +220,9 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
         },
       ],
     },
+
     {
       id: 3,
-      questionId: 'basalInsulin',
-      question: 'Selecionar insulina basal:',
-      options: [
-        {
-          label: 'Lantus',
-          id: 'lantus',
-        },
-        {
-          label: 'Basaglar',
-          id: 'basaglar',
-        },
-        {
-          label: 'Levemir',
-          id: 'levemir',
-        },
-        {
-          label: 'Toujeo',
-          id: 'toujeo',
-        },
-        {
-          label: 'Tresiba',
-          id: 'tresiba',
-        },
-      ],
-    },
-    {
-      id: 4,
-      questionId: 'fastInsulin',
-      question: 'Selecionar insulina rápida:',
-      options: [
-        {
-          label: 'Humalog',
-          id: 'humalog',
-        },
-        {
-          label: 'Novorapid',
-          id: 'novorapid',
-        },
-        {
-          label: 'Apidra',
-          id: 'apidra',
-        },
-        {
-          label: 'Fiasp',
-          id: 'fiasp',
-        },
-      ],
-    },
-    {
-      id: 5,
       questionId: 'isChoCount',
       question: 'Faz contagem de CHO?',
       options: [
@@ -363,7 +237,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       ],
     },
     {
-      id: 6,
+      id: 4,
       questionId: 'choInsulinRelationship',
       question: 'Qual sua relação insulina / CHO?',
       customContent: (
@@ -376,25 +250,25 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
           }
           fields={[
             {
-              id: 'morning_cho',
+              id: 'morningCho',
               prefix: '1:',
               title: 'Manha',
               subtitle: '(06:00 - 12:00)',
             },
             {
-              id: 'afternool_cho',
+              id: 'afternoolCho',
               prefix: '1:',
               title: 'Tarde',
               subtitle: '(12:00 - 18:00)',
             },
             {
-              id: 'night_cho',
+              id: 'nightCho',
               prefix: '1:',
               title: 'Noite',
               subtitle: '(18:00 - 00:00)',
             },
             {
-              id: 'dawn_cho',
+              id: 'dawnCho',
               prefix: '1:',
               title: 'Madrugada',
               subtitle: '(00:00 - 06:00)',
@@ -404,7 +278,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       ),
     },
     {
-      id: 7,
+      id: 5,
       questionId: 'correctionFactor',
       question: 'Qual seu fator de correção?',
       customContent: (
@@ -423,7 +297,7 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
       ),
     },
     {
-      id: 8,
+      id: 6,
       questionId: 'meter',
       question: 'Qual medidor você usa?',
       options: [
@@ -442,33 +316,6 @@ const useQuestions = ({ isChoCount = false, onChange }) => {
         {
           label: 'GlucoLeader',
           id: 'glucoLeader',
-        },
-        {
-          label: 'OneCallPlus',
-          id: 'oneCallPlus',
-        },
-      ],
-    },
-    {
-      id: 9,
-      questionId: 'sensor',
-      question: 'Qual sensor você usa?',
-      options: [
-        {
-          label: 'Enlite Sensor',
-          id: 'enliteSensor',
-        },
-        {
-          label: 'Eversense Sensor',
-          id: 'eversenseSensor',
-        },
-        {
-          label: 'Freestyle Libre',
-          id: 'freestyleLibre',
-        },
-        {
-          label: 'Guardian Sensor',
-          id: 'guardianSensor',
         },
         {
           label: 'Outro',

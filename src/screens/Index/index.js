@@ -7,7 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButtom from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import LogoSvg from '../../../assets/full_logo.svg';
-import GoogleButton from '../../../assets/google_btn.svg';
+// import GoogleButton from '../../../assets/google_btn.svg';
 import IconWomanAvatar from '../../../assets/woman_avatar.svg';
 
 import { styles } from './styles';
@@ -45,12 +45,12 @@ const IndexScreeen = ({ navigation }) => {
             Registrar-se
           </CustomButtom>
         </View>
-        <GoogleButton
+        {/* <GoogleButton
           onPress={() => console.log('teste')}
           width={60}
           height={60}
           marginTop={16}
-        />
+        /> */}
       </View>
     </LinearGradient>
   );

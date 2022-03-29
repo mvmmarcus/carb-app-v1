@@ -4,25 +4,40 @@ import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
-import AuthContext from '#/contexts/auth';
+import Snackbar from '../../components/Snackbar';
+import IconPerson from '#/../assets/person_outline.svg';
+import IconLock from '#/../assets/lock.svg';
+import AuthContext from '../../contexts/auth';
 import CustomButton from '#/components/CustomButton';
 import CustomText from '#/components/CustomText';
 import Input from '#/components/Input';
-import RadioInput from '#/components/RadioInput';
+// import RadioInput from '#/components/RadioInput';
+import { getErrorMessage } from '../../utils/errors';
+
+import { styles } from './styles';
 import { theme } from '#/styles/theme';
 
-import IconPerson from '#/../assets/person_outline.svg';
-import IconLock from '#/../assets/lock.svg';
-import { styles } from './styles';
-
 const SignInScreen = ({ navigation }) => {
-  const { setIsAuth } = useContext(AuthContext);
   const { $primary, $secondary, $white, $medium, $small } = theme;
-  const [rememberLogin, setRememberLogin] = useState(false);
+  // const [rememberLogin, setRememberLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [formError, setFormError] = useState('');
+  const { signin } = useContext(AuthContext);
+
+  const handleSignin = async (email, password) => {
+    try {
+      await signin(email, password);
+    } catch (error) {
+      console.log('handleSignin error: ', error?.code);
+      setFormError(getErrorMessage(error?.code));
+    }
+  };
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
+      <Snackbar message={formError} onDismiss={() => setFormError(null)} />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.container}>
           <View style={styles.titleGroup}>
@@ -36,14 +51,14 @@ const SignInScreen = ({ navigation }) => {
           <View style={styles.formGroup}>
             <Input
               label="Email"
-              placeholder="Digite seu e-mail..."
+              placeholder="Digite seu e-mail"
               iconLabel={<IconPerson />}
               marginBottom={$medium}
-              onChange={console.log}
+              onChange={(email) => setUserEmail(email)}
             />
             <Input
               label="Senha"
-              placeholder="Digite sua senha..."
+              placeholder="Digite sua senha"
               iconLabel={<IconLock />}
               iconInput={
                 showPassword ? (
@@ -63,15 +78,15 @@ const SignInScreen = ({ navigation }) => {
                 )
               }
               marginBottom={$small}
-              onChange={console.log}
+              onChange={(password) => setPassword(password)}
               isSecurity={!showPassword}
             />
             <View style={styles.radioGroup}>
-              <RadioInput
+              {/* <RadioInput
                 label="Lembrar do login"
                 selected={rememberLogin}
                 onCheck={() => setRememberLogin((prev) => !prev)}
-              />
+              /> */}
               <CustomText
                 weight="medium"
                 style={{ ...styles.link, color: $white }}
@@ -82,9 +97,10 @@ const SignInScreen = ({ navigation }) => {
           </View>
           <View style={styles.buttonGroup}>
             <CustomButton
+              disabled={!userEmail || !password}
               backgroundColor={$secondary}
               color={$white}
-              onPress={() => setIsAuth(true)}
+              onPress={() => handleSignin(userEmail, password)}
             >
               Entrar
             </CustomButton>

@@ -10,7 +10,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 
 import QuestionsScreen from '#/screens/Questions';
 import BluetoothContext from '#/contexts/bluetooth';
-import AuthContext from '#/contexts/auth';
+import UserContext from '../contexts/user';
 import { theme } from '#/styles/theme';
 import {
   MainStackNavigator,
@@ -29,8 +29,8 @@ IconMC.loadFont();
 const BottomTabNavigator = () => {
   const { setIsAcceptedPermissions, setScanStatus, setBluetoothState } =
     useContext(BluetoothContext);
-  const { isFirstAccess } = useContext(AuthContext);
-  const { $white, $secondary, $primary, $gray } = theme;
+  const { isFirstAccess } = useContext(UserContext);
+  const { $white, $secondary, $gray } = theme;
 
   useEffect(() => {
     if (Platform.OS === 'android' && Platform.Version >= 23) {
@@ -38,7 +38,6 @@ const BottomTabNavigator = () => {
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       ).then((result) => {
         if (result) {
-          console.log('Permission is OK result: ', result);
           setIsAcceptedPermissions(true);
 
           BluetoothStateManager.getState()
@@ -50,10 +49,8 @@ const BottomTabNavigator = () => {
           PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
           ).then((response) => {
-            console.log('response: ', response);
             if (response === 'granted') {
               setIsAcceptedPermissions(true);
-              console.log('User accept');
 
               BluetoothStateManager.getState()
                 .then((bluetoothState) => {
@@ -62,7 +59,6 @@ const BottomTabNavigator = () => {
                 .catch(() => setBluetoothState('PoweredOff'));
             } else {
               setIsAcceptedPermissions(false);
-              console.log('User refuse');
             }
           });
         }

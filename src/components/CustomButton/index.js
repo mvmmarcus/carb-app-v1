@@ -14,6 +14,7 @@ const CustomButtom = ({
   onToggle,
   isActive = false,
   value,
+  disabled = false,
   ...props
 }) => {
   const styles = getStyle({ ...props });
@@ -26,7 +27,8 @@ const CustomButtom = ({
     <IconButton style={styles[variant]} icon={icon} {...props} />
   ) : !!onToggle ? (
     <Button
-      style={styles[variant]}
+      disabled={disabled}
+      style={disabled ? styles.disabled : styles[variant]}
       uppercase={uppercase}
       mode={variant}
       icon={icon}
@@ -43,7 +45,8 @@ const CustomButtom = ({
     </Button>
   ) : (
     <Button
-      style={styles[variant]}
+      disabled={disabled}
+      style={disabled ? styles.disabled : styles[variant]}
       uppercase={uppercase}
       mode={variant}
       icon={icon}

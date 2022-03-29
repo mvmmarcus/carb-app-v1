@@ -24,6 +24,13 @@ export const getStyle = ({
       color,
       borderColor,
     },
+    disabled: {
+      width: width || '100%',
+      height: '3rem',
+      borderRadius: '$borderRadius',
+      backgroundColor: '$gray',
+      color,
+    },
     text: {
       fontSize: fontSize,
       lineHeight: 24,

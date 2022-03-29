@@ -12,7 +12,7 @@ import Navigation from '#/navigation';
 import { AuthProvider } from '#/contexts/auth';
 
 import { theme } from '#/styles/theme';
-import { AppProvider } from './src/contexts/app';
+import { AppProvider } from './src/contexts/user';
 
 EStyleSheet.build(theme);
 

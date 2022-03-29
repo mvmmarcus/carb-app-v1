@@ -70,13 +70,10 @@ export const BluetoothProvider = ({ children }) => {
   }, [isAcceptedPermissions, bluetoothState]);
 
   useEffect(() => {
-    console.log('reset');
-
     const connectPeripheralSubscription = bleManagerEmitter.addListener(
       'BleManagerConnectPeripheral',
       (args) => {
         console.log('######## BleManagerConnectPeripheral ########');
-        console.log('args: ', args);
       }
     );
 
@@ -102,8 +99,6 @@ export const BluetoothProvider = ({ children }) => {
     );
 
     return () => {
-      console.log('unmount');
-
       connectPeripheralSubscription?.remove();
       discoverPeripheralSubscription?.remove();
       disconnectPeripheralSubscription?.remove();
@@ -263,7 +258,7 @@ export const BluetoothProvider = ({ children }) => {
 
   const handleUpdateValueForCharacteristic = async (data) => {
     if (data?.characteristic === racpCharacteristic) {
-      console.log('all data received');
+      console.log('@@@@@@@@@ all data received @@@@@@@');
       await AsyncStorage.setItem('@registers', JSON.stringify(newRecords));
       setRecords(newRecords);
       setIsGettingRecords(false);

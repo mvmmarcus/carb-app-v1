@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View } from 'react-native';
 
 import { Avatar } from 'react-native-paper';
 
+import AuthContext from '../../contexts/auth';
 import IconPerson from '#/../assets/person.svg';
 import IconSettings from '#/../assets/settings.svg';
 import IconLogout from '#/../assets/logout.svg';
@@ -16,6 +17,15 @@ import { getStyle } from './styles';
 
 const MenuScreen = () => {
   const styles = getStyle({});
+  const { signout, user } = useContext(AuthContext);
+
+  const handleSignout = async () => {
+    try {
+      await signout();
+    } catch (error) {
+      console.log('handleSignout error: ', error);
+    }
+  };
 
   return (
     <ScreenWrapper>
@@ -28,7 +38,7 @@ const MenuScreen = () => {
             labelStyle={styles.avatarLabel}
           />
           <CustomText weight="medium" style={styles.userName}>
-            VIctor Hugo
+            {user?.displayName}
           </CustomText>
         </View>
         <Card
@@ -61,6 +71,7 @@ const MenuScreen = () => {
           title="Sair do aplicativo"
           icon={<IconLogout />}
           iconRight={<IconChevronRight />}
+          onPress={handleSignout}
         />
       </View>
     </ScreenWrapper>

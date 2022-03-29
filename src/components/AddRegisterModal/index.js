@@ -12,7 +12,7 @@ import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
 
 const AddRegisterModal = ({ isOpen = false, onClose }) => {
-  const { width, $white } = Dimensions.get('screen');
+  const { width } = Dimensions.get('screen');
   const { $secondary } = theme;
   const styles = getStyle({ width });
   const [mealType, setMealType] = useState('Almoço');

@@ -1,22 +1,31 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
+import SplashScreen from '../screens/Splash';
+import AddRegisterModal from '../components/AddRegisterModal';
+import useAuth from '../hooks/useAuth';
 import TabNavigator from '#/navigation/TabNavigator';
 import AuthNavigator from '#/navigation/AuthNavigator';
 import UndismissableModal from '#/components/UndismissableModal';
-import AuthContext from '#/contexts/auth';
-import AppContext from '#/contexts/app';
+import UserContext from '../contexts/user';
 import FloatingButton from '../components/FloatingButton';
 import { BluetoothProvider } from '#/contexts/bluetooth';
-import AddRegisterModal from '../components/AddRegisterModal';
 
 const Navigation = ({}) => {
-  const { isAuth } = useContext(AuthContext);
-  const { isAddRegisterModalOpen, setIsAddRegisterModalOpen } =
-    useContext(AppContext);
+  const { user } = useAuth();
+  const {
+    isAddRegisterModalOpen,
+    isFirstAccess,
+    isLoading,
+    setIsAddRegisterModalOpen,
+  } = useContext(UserContext);
+
+  if (isLoading) {
+    return <SplashScreen />;
+  }
 
   return (
     <>
-      {isAuth ? (
+      {!!user ? (
         <BluetoothProvider>
           <TabNavigator />
           <UndismissableModal />
@@ -24,7 +33,7 @@ const Navigation = ({}) => {
             isOpen={isAddRegisterModalOpen}
             onClose={() => setIsAddRegisterModalOpen(false)}
           />
-          {!isAddRegisterModalOpen && (
+          {!isFirstAccess && !isAddRegisterModalOpen && (
             <FloatingButton onPress={() => setIsAddRegisterModalOpen(true)} />
           )}
         </BluetoothProvider>

@@ -1,8 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 
+import UserContext from '../../contexts/user';
+import AuthContext from '../../contexts/auth';
 import Badge from '#/components/Badge';
 import Card from '#/components/Card';
 import useOrientation from '#/hooks/useOrientation';
@@ -18,8 +20,12 @@ const HomeScreen = () => {
   const { $primary } = theme;
   const { records } = useContext(BluetoothContext);
   const { width } = useOrientation();
+  const { isFirstAccess, insulinParams } = useContext(UserContext);
+  const { user } = useContext(AuthContext);
 
-  console.log({ records });
+  useEffect(() => {
+    console.log({ user, isFirstAccess, insulinParams });
+  }, []);
 
   const data = {
     labels: ['01:00h', '02:00h', '13:00h', '14:00h'],
