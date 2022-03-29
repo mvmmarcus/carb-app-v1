@@ -10,7 +10,7 @@ import { styles } from './styles';
 const Snackbar = ({
   type = 'error',
   message = '',
-  actionLabel = 'Ok',
+  duration = 1500,
   textColor = 'white',
   isTop = true,
   style = {},
@@ -18,7 +18,7 @@ const Snackbar = ({
 }) => {
   const { width } = Dimensions.get('screen');
 
-  const wrapperStyles = isTop ? { top: 0 } : { bottom: 0 };
+  const wrapperStyles = isTop ? { top: 40 } : { bottom: 0 };
 
   const stylesByType = {
     error: 'errorContainer',
@@ -32,11 +32,12 @@ const Snackbar = ({
         ...wrapperStyles,
         width: width,
       }}
+      duration={duration}
       style={{ ...styles[stylesByType[type]], ...style }}
       visible={!!message}
       onDismiss={onDismiss}
       action={{
-        label: actionLabel,
+        label: '',
       }}
     >
       <CustomText style={{ ...styles.text, color: textColor }}>

@@ -1,8 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 import { Appbar } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import IconFilter from '../../../assets/filter_list.svg';
 import CustomText from '../CustomText';

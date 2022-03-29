@@ -33,7 +33,7 @@ const IndexScreeen = ({ navigation }) => {
               <MaterialIcons name="login" size={16} color={$secondary} />
             )}
           >
-            Iniciar sessão
+            Fazer login
           </CustomButtom>
           <CustomButtom
             onPress={() => navigation?.navigate('SignUpScreen')}

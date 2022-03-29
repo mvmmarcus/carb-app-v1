@@ -1,14 +1,14 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Home from '../screens/Home';
 import Sync from '../screens/Sync';
 import Registers from '../screens/Registers';
 import Menu from '../screens/Menu';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const Screen = () => {
   return (

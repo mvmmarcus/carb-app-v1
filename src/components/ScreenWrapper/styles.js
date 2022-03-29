@@ -11,7 +11,7 @@ export const getStyle = ({}) =>
     container: {
       flex: 1,
       justifyContent: 'center',
-      paddingTop: '$xxlarge',
+      paddingTop: '$small',
       paddingBottom: '$xxxlarge',
     },
   });

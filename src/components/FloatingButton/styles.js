@@ -5,7 +5,7 @@ export const getStyle = ({}) =>
     container: {
       position: 'absolute',
       marginHorizontal: '$small',
-      marginVertical: '4rem',
+      marginBottom: '3.5rem',
       right: 0,
       bottom: 0,
       width: '3.5rem',

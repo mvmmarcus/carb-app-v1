@@ -27,6 +27,10 @@ export const AuthProvider = ({ children }) => {
     return { ...response.user, displayName: name };
   };
 
+  const forgotPassword = async (email) => {
+    await auth().sendPasswordResetEmail(email);
+  };
+
   const signout = async () => {
     await auth().signOut();
     setUser(null);
@@ -39,6 +43,7 @@ export const AuthProvider = ({ children }) => {
         setUser,
         signin,
         signup,
+        forgotPassword,
         signout,
       }}
     >

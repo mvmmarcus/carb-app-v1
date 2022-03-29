@@ -17,8 +17,6 @@ const useAuth = () => {
       await AsyncStorage.getItem(`@carbs:${user?.uid}`)
     );
 
-    console.log('getInitialValues: ', { userInfosByUid });
-
     setUser(user);
     setIsFirstAccess(
       userInfosByUid === null ? true : userInfosByUid?.isFirstAccess
@@ -29,11 +27,9 @@ const useAuth = () => {
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user) => {
-      console.log('unsubscribe user: ', user?.displayName);
       if (user) {
         getInitialValues(user);
       } else {
-        console.log('else');
         setUser(null);
         setIsLoading(false);
       }

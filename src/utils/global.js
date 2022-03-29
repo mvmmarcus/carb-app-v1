@@ -11,3 +11,11 @@ export const getBackgroundColor = (value) => {
     return 'green';
   }
 };
+
+export const getCaptalizedFirstName = (fullName = '') => {
+  let captalizedFirstName = fullName?.split(' ')[0];
+  captalizedFirstName =
+    captalizedFirstName?.charAt(0)?.toUpperCase() +
+    captalizedFirstName?.slice(1);
+  return captalizedFirstName;
+};

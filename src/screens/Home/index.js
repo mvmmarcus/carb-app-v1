@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 
+import CustomText from '../../components/CustomText';
 import UserContext from '../../contexts/user';
 import AuthContext from '../../contexts/auth';
 import Badge from '../../components/Badge';
@@ -11,6 +12,7 @@ import useOrientation from '../../hooks/useOrientation';
 import GlucoseChart from '../../components/GlucoseChart';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import BluetoothContext from '../../contexts/bluetooth';
+import { getCaptalizedFirstName } from '../../utils/global';
 
 import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
@@ -22,10 +24,6 @@ const HomeScreen = () => {
   const { width } = useOrientation();
   const { isFirstAccess, insulinParams } = useContext(UserContext);
   const { user } = useContext(AuthContext);
-
-  useEffect(() => {
-    console.log({ user, isFirstAccess, insulinParams });
-  }, []);
 
   const data = {
     labels: ['01:00h', '02:00h', '13:00h', '14:00h'],
@@ -62,6 +60,9 @@ const HomeScreen = () => {
   return (
     <ScreenWrapper>
       <View style={styles.container}>
+        <CustomText weight="bold" style={styles.userName}>
+          Olá, {getCaptalizedFirstName(user?.displayName)}
+        </CustomText>
         <GlucoseChart width={width - 40} data={data} />
         <View style={styles.conectMeterBox}>
           <Card

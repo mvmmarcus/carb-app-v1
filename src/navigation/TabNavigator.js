@@ -1,12 +1,12 @@
 import React, { useContext, useEffect } from 'react';
 import { Platform, PermissionsAndroid } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconFo from 'react-native-vector-icons/Fontisto';
 import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import QuestionsScreen from '../screens/Questions';
 import BluetoothContext from '../contexts/bluetooth';
@@ -19,8 +19,8 @@ import {
   SyncStackNavigator,
 } from './StackNavigator';
 
-const Tab = createMaterialBottomTabNavigator();
-const QuestionsStack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const QuestionsStack = createNativeStackNavigator();
 
 IconFA.loadFont();
 IconFo.loadFont();
@@ -88,7 +88,7 @@ const BottomTabNavigator = () => {
         name="QuestionsScreen"
         options={{
           headerTransparent: true,
-          title: false,
+          title: '',
           headerTintColor: '#fff',
         }}
         component={QuestionsScreen}
@@ -96,10 +96,16 @@ const BottomTabNavigator = () => {
     </QuestionsStack.Navigator>
   ) : (
     <Tab.Navigator
-      activeColor={$secondary}
-      inactiveColor={$gray}
       barStyle={{
         backgroundColor: $white,
+      }}
+      screenOptions={{
+        tabBarStyle: {
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          paddingBottom: 4,
+        },
+        tabBarActiveTintColor: $secondary,
       }}
       initialRouteName="HomeStack"
     >
@@ -107,6 +113,7 @@ const BottomTabNavigator = () => {
         name="HomeStack"
         component={MainStackNavigator}
         options={{
+          headerShown: false,
           tabBarLabel: 'Home',
           tabBarIcon: ({ focused }) => {
             return (
@@ -123,6 +130,7 @@ const BottomTabNavigator = () => {
         name="RegistersStack"
         component={RegistersStackNavigator}
         options={{
+          headerShown: false,
           tabBarLabel: 'Registros',
           tabBarIcon: ({ focused }) => (
             <IconMC
@@ -137,6 +145,7 @@ const BottomTabNavigator = () => {
         name="SyncStack"
         component={SyncStackNavigator}
         options={{
+          headerShown: false,
           tabBarLabel: 'Sincronizar',
           tabBarIcon: ({ focused }) => (
             <IconMC
@@ -152,6 +161,7 @@ const BottomTabNavigator = () => {
         name="MenuStack"
         component={MenuStackNavigator}
         options={{
+          headerShown: false,
           tabBarLabel: 'Menu',
           tabBarIcon: ({ focused }) => (
             <IconMC

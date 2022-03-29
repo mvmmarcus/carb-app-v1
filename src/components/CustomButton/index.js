@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button, IconButton } from 'react-native-paper';
-import CustomText from '../CustomText';
+import CustomText from '../../components/CustomText';
 
 import { getStyle } from './styles';
 
@@ -15,6 +15,7 @@ const CustomButtom = ({
   isActive = false,
   value,
   disabled = false,
+  isLoading = false,
   ...props
 }) => {
   const styles = getStyle({ ...props });
@@ -45,6 +46,8 @@ const CustomButtom = ({
     </Button>
   ) : (
     <Button
+      labelStyle={{ color: styles.text.color }}
+      loading={isLoading}
       disabled={disabled}
       style={disabled ? styles.disabled : styles[variant]}
       uppercase={uppercase}

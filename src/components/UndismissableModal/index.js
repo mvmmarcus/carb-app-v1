@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
+import { View } from 'react-native';
 
 import { ActivityIndicator } from 'react-native-paper';
 
 import BluetoothContext from '../../contexts/bluetooth';
-import CustomModal from '../CustomModal';
-
-import { ContentModal, TitleModal, WrapperModal, Description } from './styles';
+import CustomModal from '../../components/CustomModal';
+import CustomText from '../../components/CustomText';
 
 const UndismissableModal = () => {
   const { isConnecting } = useContext(BluetoothContext);
@@ -17,16 +17,16 @@ const UndismissableModal = () => {
         dismissable: false,
       }}
     >
-      <WrapperModal>
-        <TitleModal>
+      <View>
+        <CustomText>
           Conectando{'\n'}
           ao seu dispositivo
-        </TitleModal>
-        <ContentModal>
-          <Description>Por favor, aguarde.</Description>
+        </CustomText>
+        <View>
+          <CustomText>Por favor, aguarde.</CustomText>
           <ActivityIndicator animating={true} />
-        </ContentModal>
-      </WrapperModal>
+        </View>
+      </View>
     </CustomModal>
   );
 };

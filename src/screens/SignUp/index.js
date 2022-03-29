@@ -20,6 +20,7 @@ const SignUpScreen = ({ navigation }) => {
   const { $primary, $small, $secondary, $white, $medium } = theme;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoadingSignup, setIsLoadingSignup] = useState(false);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,6 +29,7 @@ const SignUpScreen = ({ navigation }) => {
   const { signup } = useContext(AuthContext);
 
   const handleSignup = async () => {
+    setIsLoadingSignup(true);
     try {
       if (password !== confirmPassword) {
         setFormError('A confirmação de senha falhou. Tente novamente');
@@ -38,6 +40,8 @@ const SignUpScreen = ({ navigation }) => {
     } catch (error) {
       console.log('handleSignup error: ', error);
       setFormError(getErrorMessage(error?.code));
+    } finally {
+      setIsLoadingSignup(false);
     }
   };
 
@@ -121,14 +125,15 @@ const SignUpScreen = ({ navigation }) => {
           </View>
           <View style={styles.buttonGroup}>
             <CustomButtom
+              isLoading={isLoadingSignup}
               disabled={
                 !userEmail || !password || !confirmPassword || !userName
               }
               backgroundColor={$secondary}
               color={$white}
-              onPress={() => handleSignup()}
+              onPress={() => !isLoadingSignup && handleSignup()}
             >
-              Confirmar
+              {isLoadingSignup ? '' : 'Confirmar'}
             </CustomButtom>
             <CustomText weight="medium" style={styles.description}>
               Já tenho cadastro.{' '}
@@ -137,7 +142,7 @@ const SignUpScreen = ({ navigation }) => {
                 weight="medium"
                 style={styles.link}
               >
-                Iniciar sessão
+                Fazer login
               </CustomText>
             </CustomText>
           </View>

@@ -1,17 +1,17 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import IndexScreeen from '../screens/Index';
 import SignInScreeen from '../screens/SignIn';
 import SignUpScreen from '../screens/SignUp';
-import SmsVerificationScreen from '../screens/SmsVerification';
-import CreatePasswordScreen from '../screens/CreatePassword';
+// import SmsVerificationScreen from '../screens/SmsVerification';
+import ForgotPasswordScreen from '../screens/ForgotPassword';
 
 import { theme } from '../styles/theme';
 
 const AuthNavigator = () => {
-  const Stack = createStackNavigator();
+  const Stack = createNativeStackNavigator();
 
   const { $white } = theme;
 
@@ -25,7 +25,7 @@ const AuthNavigator = () => {
       <Stack.Screen
         options={{
           headerTransparent: true,
-          title: false,
+          title: '',
           headerTintColor: $white,
         }}
         name="SignInScreen"
@@ -34,29 +34,29 @@ const AuthNavigator = () => {
       <Stack.Screen
         options={{
           headerTransparent: true,
-          title: false,
+          title: '',
           headerTintColor: $white,
         }}
         name="SignUpScreen"
         component={SignUpScreen}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         options={{
           headerTransparent: true,
-          title: false,
+          title: '',
           headerTintColor: $white,
         }}
         name="SmsVerificationScreen"
         component={SmsVerificationScreen}
-      />
+      /> */}
       <Stack.Screen
         options={{
           headerTransparent: true,
-          title: false,
+          title: '',
           headerTintColor: $white,
         }}
-        name="CreatePasswordScreen"
-        component={CreatePasswordScreen}
+        name="ForgotPasswordScreen"
+        component={ForgotPasswordScreen}
       />
     </Stack.Navigator>
   );

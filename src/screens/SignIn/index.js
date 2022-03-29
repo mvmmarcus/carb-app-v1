@@ -11,7 +11,6 @@ import AuthContext from '../../contexts/auth';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import Input from '../../components/Input';
-// import RadioInput from '../../components/RadioInput';
 import { getErrorMessage } from '../../utils/errors';
 
 import { styles } from './styles';
@@ -19,19 +18,22 @@ import { theme } from '../../styles/theme';
 
 const SignInScreen = ({ navigation }) => {
   const { $primary, $secondary, $white, $medium, $small } = theme;
-  // const [rememberLogin, setRememberLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoadingSignin, setIsLoadingSignin] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
   const { signin } = useContext(AuthContext);
 
   const handleSignin = async (email, password) => {
+    setIsLoadingSignin(true);
     try {
       await signin(email, password);
     } catch (error) {
       console.log('handleSignin error: ', error?.code);
       setFormError(getErrorMessage(error?.code));
+    } finally {
+      setIsLoadingSignin(false);
     }
   };
 
@@ -82,12 +84,8 @@ const SignInScreen = ({ navigation }) => {
               isSecurity={!showPassword}
             />
             <View style={styles.radioGroup}>
-              {/* <RadioInput
-                label="Lembrar do login"
-                selected={rememberLogin}
-                onCheck={() => setRememberLogin((prev) => !prev)}
-              /> */}
               <CustomText
+                onPress={() => navigation?.navigate('ForgotPasswordScreen')}
                 weight="medium"
                 style={{ ...styles.link, color: $white }}
               >
@@ -97,12 +95,15 @@ const SignInScreen = ({ navigation }) => {
           </View>
           <View style={styles.buttonGroup}>
             <CustomButton
+              isLoading={isLoadingSignin}
               disabled={!userEmail || !password}
               backgroundColor={$secondary}
               color={$white}
-              onPress={() => handleSignin(userEmail, password)}
+              onPress={() =>
+                !isLoadingSignin && handleSignin(userEmail, password)
+              }
             >
-              Entrar
+              {isLoadingSignin ? '' : 'Entrar'}
             </CustomButton>
             <CustomText weight="medium" style={styles.description}>
               Sou novo por aqui.{' '}
