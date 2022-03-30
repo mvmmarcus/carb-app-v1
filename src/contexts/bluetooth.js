@@ -1,11 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import BleManager from 'react-native-ble-manager';
 import { Buffer } from 'buffer';
 
+import AuthContext from '../contexts/auth';
+import { jsonParse } from '../utils/jsonParse';
 import {
   glucoseService,
   gmcCharacteristic,
@@ -14,16 +22,16 @@ import {
 } from '../utils/glucoseServices';
 
 const BluetoothContext = createContext({
-  isFirstConnection: true,
   bluetoothState: 'PoweredOff',
-  isGettingRecords: false,
+  isGettingBloodGlucoses: false,
   isAcceptedPermissions: false,
   isConnecting: false,
-  records: [],
+  bloodGlucoses: [],
   scanStatus: 'start',
   storagePeripheral: null,
   connectedPeripheral: null,
   discoveredPeripherals: [],
+  setBloodGlucoses: () => {},
   setScanStatus: () => {},
   setIsAcceptedPermissions: () => {},
   setBluetoothState: () => {},
@@ -33,20 +41,33 @@ const BluetoothContext = createContext({
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
+let fakeBloodGlucoses = [
+  { value: 100, time: '12:00', date: '2022/03/29', carbs: 10, bolus: 2 },
+  { value: 60, time: '14:00', date: '2022/03/29', carbs: 10, bolus: 2 },
+  { value: 70, time: '16:00', date: '2022/03/29', carbs: 10, bolus: 2 },
+  { value: 145, time: '18:00', date: '2022/03/29' },
+  { value: 150, time: '19:00', date: '2022/03/29' },
+  { value: 40, time: '20:00', date: '2022/04/01', carbs: 10, bolus: 2 },
+  { value: 130, time: '22:00', date: '2022/04/01' },
+];
+
+fakeBloodGlucoses = [];
+
 export const BluetoothProvider = ({ children }) => {
-  const [isFirstConnection, setIsFirstConnection] = useState(true);
   const [scanStatus, setScanStatus] = useState('start');
   const [isConnecting, setIsConnecting] = useState(false);
   const [bluetoothState, setBluetoothState] = useState('PoweredOff');
   const [isAcceptedPermissions, setIsAcceptedPermissions] = useState(false);
-  const [isGettingRecords, setIsGettingRecords] = useState(false);
-  const [records, setRecords] = useState([]);
+  const [isGettingBloodGlucoses, setIsGettingBloodGlucoses] = useState(false);
+  const [bloodGlucoses, setBloodGlucoses] = useState([]);
   const [connectedPeripheral, setConnectedPeripheral] = useState(null);
   const [storagePeripheral, setStoragePeripheral] = useState(null);
   const [discoveredPeripherals, setDiscoveredPeripherals] = useState([]);
   const [discoveredPeripheral, setDiscoveredPeripheral] = useState(null);
   const [isResetListeners, setIsResetListeners] = useState(false);
-  let newRecords = [];
+  const { user } = useContext(AuthContext);
+
+  let newBloodGlucoses = [];
   let currentDiscoveredPeripheral = null;
   let disconnectScanToggle = false;
 
@@ -56,50 +77,45 @@ export const BluetoothProvider = ({ children }) => {
         await BleManager.start({ showAlert: false });
         await sleep(500);
 
-        const defaultPeripheral = await AsyncStorage.getItem(
-          '@defaultPeripheral'
+        const userInfosByUid = jsonParse(
+          await AsyncStorage.getItem(`@carbs:${user?.uid}`)
         );
-        const defaultPeripheralParsed = JSON.parse(defaultPeripheral);
+        const defaultPeripheral = userInfosByUid?.defaultPeripheral;
 
-        if (defaultPeripheralParsed) {
-          setStoragePeripheral(defaultPeripheralParsed);
-          setIsFirstConnection(false);
+        if (defaultPeripheral) {
+          setStoragePeripheral(defaultPeripheral);
         }
       }
     })();
   }, [isAcceptedPermissions, bluetoothState]);
 
   useEffect(() => {
-    const connectPeripheralSubscription = bleManagerEmitter.addListener(
-      'BleManagerConnectPeripheral',
-      (args) => {
-        console.log('######## BleManagerConnectPeripheral ########');
-      }
-    );
-
+    // Observador disparado ao encontrar um dispositivo novo compatível com o serviço escaneado
     const discoverPeripheralSubscription = bleManagerEmitter.addListener(
       'BleManagerDiscoverPeripheral',
       handleDiscoverPeripheral
     );
 
+    // Observador disparado ao perder a conexão com o dispositivo conectado atual
     const disconnectPeripheralSubscription = bleManagerEmitter.addListener(
       'BleManagerDisconnectPeripheral',
       handleDisconnectedPeripheral
     );
 
+    // Observador disparado ao receber uma notificação de alguma caracteristica do servidor
     const didUpdateValueForCharacteristicSubscription =
       bleManagerEmitter.addListener(
         'BleManagerDidUpdateValueForCharacteristic',
         handleUpdateValueForCharacteristic
       );
 
+    // Observador disparado ao encerrar a varredura por novos dispositivos
     const stopScanSubscripttion = bleManagerEmitter.addListener(
       'BleManagerStopScan',
       handleStopScan
     );
 
     return () => {
-      connectPeripheralSubscription?.remove();
       discoverPeripheralSubscription?.remove();
       disconnectPeripheralSubscription?.remove();
       didUpdateValueForCharacteristicSubscription?.remove();
@@ -150,7 +166,7 @@ export const BluetoothProvider = ({ children }) => {
         storagePeripheral &&
         storagePeripheral?.id === discoveredPeripheral?.id &&
         !connectedPeripheral &&
-        !isGettingRecords &&
+        !isGettingBloodGlucoses &&
         !isConnecting
       ) {
         setIsConnecting(true);
@@ -198,16 +214,25 @@ export const BluetoothProvider = ({ children }) => {
     );
 
     if (storagePeripheral?.id !== peripheral?.id) {
-      await AsyncStorage.setItem(
-        '@defaultPeripheral',
-        JSON.stringify(peripheral)
+      const userInfosByUid = jsonParse(
+        await AsyncStorage.getItem(`@carbs:${user?.uid}`)
       );
+
+      await AsyncStorage.setItem(
+        `@carbs:${user?.uid}`,
+        JSON.stringify({
+          ...userInfosByUid,
+          bloodGlucoses: newBloodGlucoses,
+          defaultPeripheral: peripheral,
+        })
+      );
+
       setStoragePeripheral(peripheral);
     }
 
     setConnectedPeripheral(peripheral);
     setIsConnecting(false);
-    setIsGettingRecords(true);
+    setIsGettingBloodGlucoses(true);
   };
 
   const connectToPeripheral = async (peripheral) => {
@@ -258,38 +283,57 @@ export const BluetoothProvider = ({ children }) => {
 
   const handleUpdateValueForCharacteristic = async (data) => {
     if (data?.characteristic === racpCharacteristic) {
-      console.log('@@@@@@@@@ all data received @@@@@@@');
-      await AsyncStorage.setItem('@registers', JSON.stringify(newRecords));
-      setRecords(newRecords);
-      setIsGettingRecords(false);
+      console.log('@@@@@@@@@@@@@@@ all data received @@@@@@@@@@@@@@');
+
+      setBloodGlucoses(newBloodGlucoses);
+      setIsGettingBloodGlucoses(false);
+
+      const userInfosByUid = jsonParse(
+        await AsyncStorage.getItem(`@carbs:${user?.uid}`)
+      );
+
+      await AsyncStorage.setItem(
+        `@carbs:${user?.uid}`,
+        JSON.stringify({
+          ...userInfosByUid,
+          bloodGlucoses: newBloodGlucoses,
+        })
+      );
     }
 
     if (data?.characteristic === gmCharacteristic) {
+      // Criar um buffer a partir dos dados brutos recebidos pelo servidor no formato de byte array
       const newBuffer = Buffer.from(data.value);
+
+      // Converter valor para string e arredondar para duas casas decimais
+      const convertNumberToString = (value) =>
+        value?.toString()?.padStart(2, '0');
+
+      // Formatar e extrair os dados de interesse
       const year = newBuffer.readUInt16LE(3);
       const month = data.value[5];
       const day = data.value[6];
       const hours = data.value[7];
       const minutes = data.value[8];
       const seconds = data.value[9];
-      const value = data.value[12];
+      const value = data.value[12]; // Valor da glicemia
+      const date = `${year}/${convertNumberToString(
+        month
+      )}/${convertNumberToString(day)}`;
+      const time = `${convertNumberToString(hours)}:${convertNumberToString(
+        minutes
+      )}:${convertNumberToString(seconds)}`;
 
-      const date = `${year}/${month?.toString()?.padStart(2, '0')}/${day
-        ?.toString()
-        ?.padStart(2, '0')}`;
-      const time = `${hours?.toString()?.padStart(2, '0')}:${minutes
-        ?.toString()
-        ?.padStart(2, '0')}:${seconds?.toString()?.padStart(2, '0')}`;
-
-      const currentRecord = {
+      // Objeto reunindo todas as informações coletadas
+      const currentBloodGlucose = {
         value,
         date,
         time,
         fullDate: `${date} ${time}`,
       };
 
-      console.log('currentRecord: ', currentRecord);
-      newRecords = [...newRecords, currentRecord];
+      // Junção de todos os registros em um array de objetos (valor e data do registro da glicemia no dispositivo)
+      newBloodGlucoses = [...newBloodGlucoses, currentBloodGlucose];
     }
   };
 
@@ -301,7 +345,7 @@ export const BluetoothProvider = ({ children }) => {
       JSON.stringify(peripheral)
     );
 
-    setIsGettingRecords(false);
+    setIsGettingBloodGlucoses(false);
     setIsConnecting(false);
     setDiscoveredPeripheral(null);
     setDiscoveredPeripherals([]);
@@ -318,7 +362,7 @@ export const BluetoothProvider = ({ children }) => {
     }
 
     currentDiscoveredPeripheral = null;
-    newRecords = [];
+    newBloodGlucoses = [];
   };
 
   const handleStopScan = () => {
@@ -329,15 +373,15 @@ export const BluetoothProvider = ({ children }) => {
     <BluetoothContext.Provider
       value={{
         bluetoothState,
-        isGettingRecords,
-        records,
+        isGettingBloodGlucoses,
+        bloodGlucoses,
         scanStatus,
         isConnecting,
         connectedPeripheral,
         storagePeripheral,
         discoveredPeripherals,
-        isFirstConnection,
         isAcceptedPermissions,
+        setBloodGlucoses,
         setScanStatus,
         setIsAcceptedPermissions,
         onSelectPeripheral,

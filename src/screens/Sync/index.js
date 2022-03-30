@@ -26,7 +26,7 @@ const SyncScreen = () => {
     <ScreenWrapper>
       <View style={styles.container}>
         {isAcceptedPermissions ? (
-          bluetoothState !== 'PoweredOn' ? (
+          bluetoothState === 'PoweredOn' ? (
             <View style={styles.content}>
               <View style={styles.navContainer}>
                 <Nav

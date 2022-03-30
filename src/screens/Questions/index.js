@@ -79,8 +79,6 @@ const QuestionsScreen = ({ navigation }) => {
       })
     );
 
-    console.log({ insulinParams });
-
     setIsFirstAccess(false);
     setInsulinParams(insulinParams);
   };

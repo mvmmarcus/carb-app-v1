@@ -15,10 +15,15 @@ export const getStyle = ({}) =>
     avatar: {
       backgroundColor: '$secondary',
       marginBottom: '$xxsmall',
+      borderWidth: '0.25rem',
+      borderColor: '$primary',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     avatarLabel: {
       fontSize: '$large',
       fontWeight: 'bold',
+      lineHeight: '$xxxlarge',
     },
     userName: { fontSize: '$medium', color: 'white' },
     menuOption: { paddingHorizontal: '$large', marginTop: '$small' },

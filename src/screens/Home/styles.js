@@ -7,11 +7,16 @@ export const getStyle = ({}) =>
       justifyContent: 'flex-start',
       paddingHorizontal: '$small',
     },
-    userName: { color: '$white', fontSize: '$medium' },
+    userName: {
+      color: '$white',
+      fontSize: '$medium',
+      marginBottom: '$small',
+    },
     conectMeterBox: {
-      marginVertical: '$medium',
+      marginTop: '$medium',
     },
     infosBox: {
+      marginVertical: '$medium',
       flexDirection: 'row',
       justifyContent: 'space-between',
     },

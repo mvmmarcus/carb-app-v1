@@ -6,10 +6,11 @@ export const getStyle = ({}) =>
       flex: 1,
       justifyContent: 'flex-start',
       paddingHorizontal: '$small',
+      position: 'relative',
     },
     registerTitle: {
       color: '$white',
-      fontSize: '$small',
+      fontSize: '1.25rem',
       marginTop: '$xxsmall',
     },
     filterButton: {

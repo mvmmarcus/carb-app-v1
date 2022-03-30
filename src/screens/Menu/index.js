@@ -33,7 +33,7 @@ const MenuScreen = () => {
         <View style={styles.avatarContainer}>
           <Avatar.Text
             size={72}
-            label="VH"
+            label="MV"
             style={styles.avatar}
             labelStyle={styles.avatarLabel}
           />

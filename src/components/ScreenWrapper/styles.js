@@ -7,11 +7,12 @@ export const getStyle = ({}) =>
     },
     scrollView: {
       flexGrow: 1,
+      justifyContent: 'center',
     },
     container: {
       flex: 1,
       justifyContent: 'center',
-      paddingTop: '$small',
+      paddingTop: '$large',
       paddingBottom: '$xxxlarge',
     },
   });

@@ -17,9 +17,15 @@ const useAuth = () => {
       await AsyncStorage.getItem(`@carbs:${user?.uid}`)
     );
 
+    console.log({ userInfosByUid });
+
     setUser(user);
     setIsFirstAccess(
       userInfosByUid === null ? true : userInfosByUid?.isFirstAccess
+    );
+    console.log(
+      'userInfosByUid?.bloodGlucoses: ',
+      userInfosByUid?.bloodGlucoses
     );
     setInsulinParams(userInfosByUid?.insulinParams);
     setIsLoading(false);

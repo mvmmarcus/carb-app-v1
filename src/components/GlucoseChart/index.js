@@ -21,6 +21,7 @@ const GlucoseChart = ({
     labels: [],
     datasets: [],
   },
+  onDateChange = () => null,
 }) => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -34,12 +35,13 @@ const GlucoseChart = ({
   const styles = getStyle({});
   const { $white, $secondary, $primary } = theme;
 
-  const onChangeDate = (event, selectedDate) => {
-    console.log({ selectedDate });
+  const handleChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate;
 
     setShowDatePicker(false);
     setDate(currentDate);
+
+    !!onDateChange && onDateChange(currentDate);
   };
 
   const formatDate = (selectedDate) => {
@@ -73,7 +75,7 @@ const GlucoseChart = ({
           mode="date"
           is24Hour={true}
           display="default"
-          onChange={onChangeDate}
+          onChange={handleChangeDate}
         />
       )}
       <View style={styles.header}>
@@ -94,7 +96,7 @@ const GlucoseChart = ({
         </CustomText>
       </View>
 
-      {data.datasets?.length ? (
+      {data.labels?.length ? (
         <LineChart
           style={{ marginBottom: data.datasets[0]?.data.length > 4 ? 20 : 0 }}
           data={data}

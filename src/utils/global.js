@@ -19,3 +19,23 @@ export const getCaptalizedFirstName = (fullName = '') => {
     captalizedFirstName?.slice(1);
   return captalizedFirstName;
 };
+
+export const getAverageValue = ({ values = [], decimals = 0 }) => {
+  if (values?.length) {
+    const average = (
+      values?.reduce((a, b) => a + b, 0) / values?.length
+    )?.toFixed(decimals);
+    return average !== 'NaN' ? average : 0;
+  } else {
+    return 0;
+  }
+};
+
+export const getTotal = (values = []) => {
+  if (values?.length) {
+    const total = values?.reduce((total, curr) => total + curr);
+    return total !== 'NaN' ? total : 0;
+  } else {
+    return 0;
+  }
+};

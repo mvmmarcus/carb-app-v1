@@ -4,7 +4,6 @@ export const styles = EStyleSheet.create({
   errorContainer: {
     backgroundColor: '$red',
   },
-
   successContainer: {
     backgroundColor: 'green',
   },

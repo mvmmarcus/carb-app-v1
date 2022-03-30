@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FlatList, View } from 'react-native';
 
-import AsyncStorage from '@react-native-community/async-storage';
 import DropDownPicker from 'react-native-select-dropdown';
 
 import FallbackMessage from '../../components/FallbackMessage';
@@ -15,13 +14,11 @@ import { sortByDate, monthNames, sortByMonth } from '../../utils/date';
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
 
-const RegistersScreeen = (props) => {
+const RegistersScreeen = ({ navigation }) => {
   const styles = getStyle({});
   const { $secondary } = theme;
-
-  const { isGettingRecords, records } = useContext(BluetoothContext);
   const [year, setYear] = useState('2022');
-  const [registers, setRegisters] = useState([]);
+  const { bloodGlucoses } = useContext(BluetoothContext);
 
   const meals = [
     {
@@ -76,26 +73,6 @@ const RegistersScreeen = (props) => {
     },
   ];
 
-  useEffect(() => {
-    const getRecords = async () => {
-      const storadeRegisters = await AsyncStorage.getItem('@registers');
-      const registers = JSON.parse(storadeRegisters);
-
-      const formatedRegisters = registers?.map((item, index) => {
-        return {
-          ...item,
-          time: item?.time?.slice(0, 5),
-          glucose: item?.value,
-          id: index + 1,
-        };
-      });
-
-      setRegisters(formatedRegisters);
-    };
-
-    getRecords();
-  }, []);
-
   // filtrar por ano antes de entrar aqui
   const groupMealsByMonth = (meals = []) => {
     const dateGroups = meals.reduce((dateGroups, meal) => {
@@ -136,6 +113,19 @@ const RegistersScreeen = (props) => {
     return groupArraysByMonth || [];
   };
 
+  const filterBloodGlucosesByMonth = (bloodGlucoses = []) => {
+    const formattedBloodGlucoses = bloodGlucoses?.map((item, index) => {
+      return {
+        ...item,
+        time: item?.time?.slice(0, 5),
+        glucose: item?.value,
+        id: index + 1,
+      };
+    });
+
+    return groupMealsByMonth(formattedBloodGlucoses);
+  };
+
   const formatDateByDayAndMonth = (selectedDate) => {
     const date = new Date(selectedDate);
     const day = date?.getDate();
@@ -145,12 +135,14 @@ const RegistersScreeen = (props) => {
     return formattedDate;
   };
 
-  const mealsByMonth = groupMealsByMonth(registers);
+  const mealsByMonth = filterBloodGlucosesByMonth(bloodGlucoses);
+
+  console.log('mealsByMonth: ', { mealsByMonth, bloodGlucoses });
 
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        {mealsByMonth?.length > 0 && (
+        {/* {mealsByMonth?.length > 0 && (
           <DropDownPicker
             defaultValue={year}
             data={['2022', '2021']}
@@ -158,7 +150,7 @@ const RegistersScreeen = (props) => {
             buttonStyle={styles.filterButton}
             buttonTextStyle={styles.filterButtonLabel}
           />
-        )}
+        )} */}
 
         <FlatList
           contentContainerStyle={{
@@ -189,19 +181,13 @@ const RegistersScreeen = (props) => {
           }}
           keyExtractor={(item) => item?.month}
           ListEmptyComponent={
-            !isGettingRecords && (
-              <FallbackMessage
-                customIcon={
-                  <IconDataNotFound
-                    color={$secondary}
-                    width={100}
-                    height={100}
-                  />
-                }
-                title="Nenhum registro encontrado"
-                subtitle="Tente selecionar uma data diferente!"
-              />
-            )
+            <FallbackMessage
+              customIcon={
+                <IconDataNotFound color={$secondary} width={100} height={100} />
+              }
+              title="Nenhum registro encontrado"
+              subtitle="Tente selecionar uma data diferente!"
+            />
           }
         />
       </View>
