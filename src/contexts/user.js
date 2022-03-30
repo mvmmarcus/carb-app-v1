@@ -2,7 +2,7 @@
 import React, { createContext, useState } from 'react';
 
 const AppContext = createContext({
-  isAddRegisterModalOpen: true,
+  isAddRegisterModalOpen: false,
   isLoading: true,
   isFirstAccess: true,
   insulinParams: null,

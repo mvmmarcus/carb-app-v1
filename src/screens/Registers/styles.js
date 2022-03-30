@@ -16,15 +16,17 @@ export const getStyle = ({}) =>
     filterButton: {
       borderRadius: '0.5rem',
       alignSelf: 'flex-end',
-      backgroundColor: '$primary',
-      elevation: 8,
+      backgroundColor: '$white',
+      elevation: '$xxsmall',
       width: '6rem',
       height: '$xxlarge',
+      borderWidth: 2,
+      borderColor: '$secondary',
     },
     filterButtonLabel: {
       fontSize: '$small',
       fontWeight: '700',
-      color: '$white',
+      color: '$secondary',
       marginHorizontal: 0,
     },
     dataNotFoundTitle: {

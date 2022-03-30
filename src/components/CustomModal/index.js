@@ -2,12 +2,12 @@ import React from 'react';
 
 import { Modal, Portal } from 'react-native-paper';
 
-const CustomModal = ({ children, modalOptions }) => {
+const CustomModal = ({ children, ...props }) => {
   return (
     <Portal>
-      <Modal {...modalOptions}>{children}</Modal>
+      <Modal {...props}>{children}</Modal>
     </Portal>
   );
 };
 
-export default React.memo(CustomModal);
+export default CustomModal;

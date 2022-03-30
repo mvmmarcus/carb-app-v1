@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ScrollView, Dimensions, View } from 'react-native';
 
 import IconFA from 'react-native-vector-icons/FontAwesome';
@@ -6,6 +6,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-select-dropdown';
 import { Button, Dialog, IconButton } from 'react-native-paper';
 
+import SearchFoodModal from '../SearchFoodModal';
+import CustomButtom from '../CustomButton';
+import BluetoothContext from '../../contexts/bluetooth';
 import CustomText from '../CustomText';
 
 import { getStyle } from './styles';
@@ -13,11 +16,13 @@ import { theme } from '../../styles/theme';
 
 const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const { width } = Dimensions.get('screen');
-  const { $secondary } = theme;
+  const { $secondary, $white } = theme;
   const styles = getStyle({ width });
   const [mealType, setMealType] = useState('Almoço');
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [openFoodModal, setOpenFoodModal] = useState(false);
+  const { bloodGlucoses } = useContext(BluetoothContext);
 
   const onChangeDate = (event, selectedDate) => {
     console.log({ selectedDate });
@@ -27,9 +32,18 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
     setDate(currentDate);
   };
 
+  console.log({ bloodGlucoses });
+
+  const lastBloodGlucoseValue =
+    bloodGlucoses?.length > 0 ? bloodGlucoses[bloodGlucoses?.length - 1] : null;
+
   return (
     <Dialog dismissable={false} style={styles.container} visible={isOpen}>
       <Dialog.ScrollArea style={styles.scrollArea}>
+        <SearchFoodModal
+          isOpen={openFoodModal}
+          onClose={() => setOpenFoodModal(false)}
+        />
         <View style={styles.header}>
           <IconButton
             style={styles.closeButton}
@@ -56,10 +70,10 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                 labelStyle={styles.buttonLabel}
                 icon="clock-time-four-outline"
               >
-                18:52
+                {lastBloodGlucoseValue?.time}
               </Button>
               <Button
-                onPress={() => setShowDatePicker(true)}
+                // onPress={() => setShowDatePicker(true)}
                 uppercase={false}
                 mode="contained"
                 style={styles.button}
@@ -67,10 +81,13 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                 labelStyle={styles.buttonLabel}
                 icon="calendar"
               >
-                {date?.toLocaleString('pt-BR', {
-                  dateStyle: 'short',
-                })}{' '}
-                <IconFA name="caret-down" size={14} />
+                {new Date(lastBloodGlucoseValue?.date)?.toLocaleString(
+                  'pt-BR',
+                  {
+                    dateStyle: 'short',
+                  }
+                )}
+                {/* <IconFA name="caret-down" size={14} /> */}
               </Button>
               {showDatePicker && (
                 <DateTimePicker
@@ -98,6 +115,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                 labelStyle={styles.buttonLabel}
                 icon="book-open-variant"
                 uppercase={false}
+                onPress={() => setOpenFoodModal(true)}
               >
                 Adicionar alimento
               </Button>
@@ -122,10 +140,13 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                 Glicemia:
               </CustomText>
               <CustomText weight="bold" style={styles.text}>
-                120 mg/dL
+                {!!lastBloodGlucoseValue
+                  ? `${lastBloodGlucoseValue?.value} mg/dL`
+                  : '-'}
               </CustomText>
             </View>
             <View style={styles.diviser} />
+
             <View style={styles.infoRow}>
               <CustomText weight="bold" style={styles.text}>
                 Insulina (refeição):
@@ -135,7 +156,6 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
               </CustomText>
             </View>
             <View style={styles.diviser} />
-
             <View style={styles.infoRow}>
               <CustomText weight="bold" style={styles.text}>
                 Insulina (correção):
@@ -146,6 +166,14 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
             </View>
           </View>
         </ScrollView>
+        <CustomButtom
+          style={styles.calcButton}
+          backgroundColor={$secondary}
+          color={$white}
+          onPress={() => null}
+        >
+          Calcular insulina
+        </CustomButtom>
       </Dialog.ScrollArea>
     </Dialog>
   );

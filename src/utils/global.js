@@ -20,6 +20,11 @@ export const getCaptalizedFirstName = (fullName = '') => {
   return captalizedFirstName;
 };
 
+export const getInitialsOfName = (fullName = '') => {
+  const nameInitials = fullName?.match(/\b(\w)/g);
+  return nameInitials?.join('')?.slice(0, 2);
+};
+
 export const getAverageValue = ({ values = [], decimals = 0 }) => {
   if (values?.length) {
     const average = (

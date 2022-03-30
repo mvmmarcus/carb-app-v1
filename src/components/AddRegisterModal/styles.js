@@ -16,6 +16,7 @@ export const getStyle = ({ width }) =>
       paddingHorizontal: 0,
       borderTopWidth: 0,
       borderBottomWidth: 0,
+      position: 'relative',
     },
     header: {
       backgroundColor: '$white',
@@ -25,7 +26,7 @@ export const getStyle = ({ width }) =>
       position: 'relative',
       height: '$xxxlarge',
     },
-    closeButton: { position: 'absolute', left: 0 },
+    closeButton: { position: 'absolute', right: 0 },
     headerTitle: {
       color: '$secondary',
       fontSize: '$small',
@@ -44,12 +45,20 @@ export const getStyle = ({ width }) =>
       flexDirection: 'column',
       marginBottom: '$medium',
     },
+    calcButton: {
+      bottom: '4rem',
+      elevation: 0,
+      width: width - 32,
+      alignSelf: 'center',
+      position: 'absolute',
+    },
     button: {
       backgroundColor: '$white',
       borderWidth: 2,
       borderColor: '$secondary',
       height: '$xxlarge',
       borderRadius: '$xxsmall',
+      elevation: 0,
     },
     buttonFullWidth: {
       backgroundColor: '$white',
@@ -97,4 +106,5 @@ export const getStyle = ({ width }) =>
       height: 1,
       backgroundColor: '$secondary',
     },
+    foodModal: {},
   });

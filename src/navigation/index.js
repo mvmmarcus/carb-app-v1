@@ -29,10 +29,12 @@ const Navigation = ({}) => {
         <BluetoothProvider>
           <TabNavigator />
           <UndismissableModal />
-          <AddRegisterModal
-            isOpen={isAddRegisterModalOpen}
-            onClose={() => setIsAddRegisterModalOpen(false)}
-          />
+          {!!isAddRegisterModalOpen && (
+            <AddRegisterModal
+              isOpen={isAddRegisterModalOpen}
+              onClose={() => setIsAddRegisterModalOpen(false)}
+            />
+          )}
           {!isFirstAccess && !isAddRegisterModalOpen && (
             <FloatingButton onPress={() => setIsAddRegisterModalOpen(true)} />
           )}

@@ -12,6 +12,7 @@ import IconChevronRight from '../../../assets/chevron_right.svg';
 import Card from '../../components/Card';
 import CustomText from '../../components/CustomText';
 import ScreenWrapper from '../../components/ScreenWrapper';
+import { getInitialsOfName } from '../../utils/global';
 
 import { getStyle } from './styles';
 
@@ -33,7 +34,7 @@ const MenuScreen = () => {
         <View style={styles.avatarContainer}>
           <Avatar.Text
             size={72}
-            label="MV"
+            label={getInitialsOfName(user?.displayName)}
             style={styles.avatar}
             labelStyle={styles.avatarLabel}
           />
