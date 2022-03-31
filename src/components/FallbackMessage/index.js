@@ -13,12 +13,13 @@ const FallbackMessage = ({
   customIcon,
   title,
   subtitle,
+  style = {},
 }) => {
   const styles = getStyle({});
   const { $secondary } = theme;
 
   return (
-    <View style={styles.fallbackContainer}>
+    <View style={{ ...styles.fallbackContainer, ...style }}>
       {!!customIcon && customIcon}
       {!!icon?.name && (
         <IconMC name={icon?.name} size={icon?.size} color={$secondary} />

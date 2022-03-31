@@ -11,12 +11,16 @@ export const getStyle = ({ width }) =>
       backgroundColor: '$primary',
       overflow: 'hidden',
     },
+
     scrollArea: {
       flex: 1,
       paddingHorizontal: 0,
       borderTopWidth: 0,
       borderBottomWidth: 0,
       position: 'relative',
+    },
+    scrollAreaContent: {
+      flex: 1,
     },
     header: {
       backgroundColor: '$white',
@@ -34,7 +38,11 @@ export const getStyle = ({ width }) =>
     },
     content: {
       paddingHorizontal: '$small',
-      paddingVertical: '$medium',
+      paddingTop: '$medium',
+      paddingBottom: '4.5rem',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      flexGrow: 1,
     },
     text: {
       fontSize: '$small',
@@ -46,11 +54,13 @@ export const getStyle = ({ width }) =>
       marginBottom: '$medium',
     },
     calcButton: {
-      bottom: '4rem',
-      elevation: 0,
-      width: width - 32,
-      alignSelf: 'center',
-      position: 'absolute',
+      width: '100%',
+      marginTop: '$xxsmall',
+    },
+    saveButton: {
+      width: '50%',
+      marginTop: '$xxsmall',
+      alignSelf: 'flex-end',
     },
     button: {
       backgroundColor: '$white',
@@ -106,5 +116,76 @@ export const getStyle = ({ width }) =>
       height: 1,
       backgroundColor: '$secondary',
     },
-    foodModal: {},
+    accordionContainer: {
+      marginVertical: '$small',
+    },
+    iconLeft: {
+      marginRight: 0,
+      width: 30,
+      height: 30,
+    },
+    accordion: {
+      backgroundColor: '$secondary',
+      paddingVertical: 0,
+      elevation: '$xxsmall',
+    },
+    accordionTitle: {
+      color: '$white',
+      fontWeight: 'bold',
+      fontSize: '$small',
+    },
+    accordionDescription: {
+      color: '$white',
+      fontSize: '$small',
+    },
+    accordionItem: {
+      backgroundColor: '$primary',
+      paddingLeft: '$xsmall',
+      paddingRight: '$xsmall',
+      paddingVertical: '$xxsmall',
+      flex: 1,
+      borderBottomLeftRadius: 8,
+      borderBottomRightRadius: 8,
+      elevation: 8,
+    },
+    food: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: '$xxsmall',
+    },
+    foodNameContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingRight: '$xxsmall',
+    },
+    foodName: {
+      color: '$white',
+      fontSize: '$small',
+    },
+    portionInputLabel: {
+      paddingLeft: 0,
+    },
+    portionInputLabelText: {
+      marginLeft: 0,
+    },
+    iconEdit: {
+      alignSelf: 'center',
+      margin: 0,
+      padding: 0,
+    },
+    iconDelete: {
+      alignSelf: 'center',
+      margin: 0,
+      padding: 0,
+      marginTop: '$xsmall',
+    },
+    iconGroup: {
+      flexDirection: 'column',
+      alignSelf: 'center',
+      marginLeft: '$xxsmall',
+    },
+    fallbackContainer: {
+      marginHorizontal: '$xxsmall',
+    },
   });

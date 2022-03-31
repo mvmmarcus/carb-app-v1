@@ -76,4 +76,13 @@ export const getStyle = ({ width, height }) =>
       marginRight: '$xxsmall',
       color: '$secondary',
     },
+    selectedFoodsTitle: {
+      marginLeft: '0.25rem',
+      marginBottom: '0.25rem',
+      color: '$secondary',
+    },
+    addButtom: {
+      width: '100%',
+      marginTop: '$medium',
+    },
   });

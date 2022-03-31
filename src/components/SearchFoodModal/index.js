@@ -10,6 +10,7 @@ import {
 } from 'react-native-paper';
 import { debounce } from 'lodash';
 
+import CustomButtom from '../CustomButton';
 import IconDataNotFound from '../../../assets/data_not_found.svg';
 import CustomText from '../CustomText';
 import FallbackMessage from '../FallbackMessage';
@@ -19,9 +20,14 @@ import { getFoodsNutritionalInfos } from '../../services/food';
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
 
-const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
+const SearchFoodModal = ({
+  isOpen = false,
+  initialSelectedFoods = [],
+  onClose = () => null,
+  onAddFoods = () => null,
+}) => {
   const { width, height } = Dimensions.get('screen');
-  const { $secondary } = theme;
+  const { $secondary, $white } = theme;
   const styles = getStyle({ width, height });
   const [isLoading, setIsLoading] = useState(false);
   const [foodResults, setFoodResults] = useState({
@@ -29,10 +35,8 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
     totalPages: 0,
     totalResults: 0,
   });
-  const [selectedFoods, setSelectedFoods] = useState([]);
+  const [selectedFoods, setSelectedFoods] = useState(initialSelectedFoods);
   const [searchQuery, setSearchQuery] = useState('');
-  const modalRef = useRef(null);
-
   const [page, setPage] = useState(1);
 
   const handleTranslateAndSearchFood = async ({ query = '', page = 1 }) => {
@@ -127,6 +131,11 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
     !!onClose && onClose();
   };
 
+  const handleAddFoods = (selectedFoods) => {
+    !!onAddFoods && onAddFoods(selectedFoods);
+    !!onClose && onClose();
+  };
+
   const isFoodSelected = (food = {}, selectedFoods = []) => {
     return !!selectedFoods?.find((item) => item?.fdcId === food?.fdcId);
   };
@@ -143,7 +152,15 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
     } else {
       setSelectedFoods((prev) => [
         ...prev,
-        { fdcId: food?.fdcId, description: food?.description },
+        {
+          fdcId: food?.fdcId,
+          description: food?.description,
+          cho: {
+            ...food?.choInfos,
+            defaultValue: food?.choInfos?.value,
+            defaultGramPortion: '100',
+          },
+        },
       ]);
     }
   };
@@ -177,22 +194,32 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
               <ActivityIndicator size={16} color={$secondary} />
             </View>
           )}
-
           <ScrollView contentContainerStyle={styles.scrollView}>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-              {selectedFoods?.map((item) => (
-                <Chip
-                  theme={{ colors: { text: $secondary } }}
-                  key={item?.fdcId}
-                  mode="outlined"
-                  style={{ margin: 4, borderWidth: 1, borderColor: $secondary }}
-                  textStyle={{ color: $secondary }}
-                  onClose={() => handleSelectFood(item, selectedFoods)}
-                >
-                  {item?.description}
-                </Chip>
-              ))}
-            </View>
+            {selectedFoods?.length > 0 && (
+              <>
+                <CustomText weight="medium" style={styles.selectedFoodsTitle}>
+                  Alimentos selecionados:
+                </CustomText>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {selectedFoods?.map((item) => (
+                    <Chip
+                      theme={{ colors: { text: $secondary } }}
+                      key={item?.fdcId}
+                      mode="outlined"
+                      style={{
+                        margin: 4,
+                        borderWidth: 1,
+                        borderColor: $secondary,
+                      }}
+                      textStyle={{ color: $secondary }}
+                      onClose={() => handleSelectFood(item, selectedFoods)}
+                    >
+                      {item?.description}
+                    </Chip>
+                  ))}
+                </View>
+              </>
+            )}
             {foodResults?.results?.length > 0 && (
               <DataTable style={styles.table}>
                 <DataTable.Header>
@@ -216,7 +243,9 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
                     !!choValue && (
                       <DataTable.Row
                         key={food?.fdcId}
-                        onPress={() => handleSelectFood(food, selectedFoods)}
+                        onPress={() =>
+                          handleSelectFood({ ...food, choInfos }, selectedFoods)
+                        }
                         style={
                           isFoodSelected(food, selectedFoods)
                             ? styles.modalSelectedRow
@@ -270,7 +299,16 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
                 />
               </DataTable>
             )}
-            {!selectedFoods?.length > 0 &&
+            {selectedFoods?.length > 0 ? (
+              <CustomButtom
+                style={styles.addButtom}
+                backgroundColor={$secondary}
+                color={$white}
+                onPress={() => handleAddFoods(selectedFoods)}
+              >
+                Adicionar alimentos
+              </CustomButtom>
+            ) : (
               foodResults?.results?.length === 0 && (
                 <FallbackMessage
                   customIcon={
@@ -283,7 +321,8 @@ const SearchFoodModal = ({ isOpen = false, onClose = () => null }) => {
                   title="Nenhum alimento selecionado"
                   subtitle="Pesquise e selecione todos os alimentos da refeição"
                 />
-              )}
+              )
+            )}
           </ScrollView>
         </View>
       </View>

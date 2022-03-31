@@ -18,7 +18,7 @@ const Screen = () => {
   );
 };
 
-const MainStackNavigator = () => {
+const MainStackNavigator = (props) => {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}

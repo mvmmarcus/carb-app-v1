@@ -17,11 +17,9 @@ const UndismissableModal = () => {
 
   return (
     <CustomModal
-      modalOptions={{
-        visible: isConnecting,
-        dismissable: false,
-        style: styles.container,
-      }}
+      visible={isConnecting}
+      dismissable={false}
+      style={styles.container}
     >
       <View style={styles.infoBox}>
         <CustomText weight="bold" style={styles.title}>
