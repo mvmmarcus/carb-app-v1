@@ -124,7 +124,7 @@ export const BluetoothProvider = ({ children }) => {
   }, [isResetListeners]);
 
   useEffect(() => {
-    console.log('scanStatus: ', scanStatus);
+    // console.log('scanStatus: ', scanStatus);
 
     (async () => {
       if (
@@ -139,7 +139,7 @@ export const BluetoothProvider = ({ children }) => {
   }, [isAcceptedPermissions, bluetoothState, scanStatus, connectedPeripheral]);
 
   useEffect(() => {
-    console.log('bluetoothState: ', bluetoothState);
+    // console.log('bluetoothState: ', bluetoothState);
 
     if (bluetoothState === 'PoweredOff') {
       setDiscoveredPeripherals([]);
@@ -186,7 +186,7 @@ export const BluetoothProvider = ({ children }) => {
       glucoseService,
       gmCharacteristic
     );
-    console.log('Started notification on: ', gmCharacteristic);
+    // console.log('Started notification on: ', gmCharacteristic);
     await sleep(500);
 
     await BleManager.startNotification(
@@ -194,7 +194,7 @@ export const BluetoothProvider = ({ children }) => {
       glucoseService,
       gmcCharacteristic
     );
-    console.log('Started notification on: ', gmcCharacteristic);
+    // console.log('Started notification on: ', gmcCharacteristic);
     await sleep(500);
 
     await BleManager.startNotification(
@@ -202,7 +202,7 @@ export const BluetoothProvider = ({ children }) => {
       glucoseService,
       racpCharacteristic
     );
-    console.log('Started notification on: ', racpCharacteristic);
+    // console.log('Started notification on: ', racpCharacteristic);
   };
 
   const writeCommands = async (peripheral) => {
@@ -235,7 +235,7 @@ export const BluetoothProvider = ({ children }) => {
   };
 
   const connectToPeripheral = async (peripheral) => {
-    console.log('BLE: Connecting to device: ' + peripheral.id);
+    // console.log('BLE: Connecting to device: ' + peripheral.id);
     await BleManager.stopScan();
     await sleep(500);
 
@@ -259,7 +259,7 @@ export const BluetoothProvider = ({ children }) => {
     } catch (error) {
       setIsConnecting(false);
       setScanStatus('start');
-      console.log('onSelectPeripheral error: ', error);
+      // console.log('onSelectPeripheral error: ', error);
     }
   }, []);
 
@@ -269,7 +269,7 @@ export const BluetoothProvider = ({ children }) => {
       setScanStatus('scanning');
     } catch (error) {
       setScanStatus('error');
-      console.log('BoardManager: Failed to Scan: ', error);
+      // console.log('BoardManager: Failed to Scan: ', error);
     }
   };
 
@@ -282,7 +282,7 @@ export const BluetoothProvider = ({ children }) => {
 
   const handleUpdateValueForCharacteristic = async (data) => {
     if (data?.characteristic === racpCharacteristic) {
-      console.log('@@@@@@@@@@@@@@@ all data received @@@@@@@@@@@@@@');
+      // console.log('@@@@@@@@@@@@@@@ all data received @@@@@@@@@@@@@@');
 
       setBloodGlucoses(newBloodGlucoses);
       setIsGettingBloodGlucoses(false);
@@ -340,10 +340,10 @@ export const BluetoothProvider = ({ children }) => {
   const handleDisconnectedPeripheral = (data) => {
     const peripheral = data?.peripheral;
 
-    console.log(
-      'BoardManager: Disconnected from: ',
-      JSON.stringify(peripheral)
-    );
+    //  console.log(
+    //   'BoardManager: Disconnected from: ',
+    //   JSON.stringify(peripheral)
+    // );
 
     setIsGettingBloodGlucoses(false);
     setIsConnecting(false);
@@ -366,7 +366,7 @@ export const BluetoothProvider = ({ children }) => {
   };
 
   const handleStopScan = () => {
-    console.log('handleStopScan');
+    // console.log('handleStopScan');
   };
 
   return (
