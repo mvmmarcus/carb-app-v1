@@ -158,7 +158,7 @@ const SearchFoodModal = ({
           cho: {
             ...food?.choInfos,
             defaultValue: food?.choInfos?.value,
-            defaultGramPortion: '100',
+            gramPortion: '100',
           },
         },
       ]);
@@ -183,9 +183,16 @@ const SearchFoodModal = ({
             />
           </View>
           <Searchbar
-            placeholder="Digite o nome do alimento"
+            placeholder="Ex: Abacaxi"
             onChangeText={onChangeSearch}
             value={searchQuery}
+            style={styles.searchInput}
+            theme={{
+              colors: {
+                accent: $secondary,
+                text: $secondary,
+              },
+            }}
           />
 
           {isLoading && (

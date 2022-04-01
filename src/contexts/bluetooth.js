@@ -153,7 +153,7 @@ export const BluetoothProvider = ({ children }) => {
     if (discoveredPeripheral) {
       (async () => {
         const discoveredDevices = await BleManager.getDiscoveredPeripherals();
-        console.log('discovered pheriferals: ', discoveredDevices);
+        //  console.log('discovered pheriferals: ', discoveredDevices);
 
         setDiscoveredPeripherals(discoveredDevices);
       })();
@@ -222,7 +222,6 @@ export const BluetoothProvider = ({ children }) => {
         `@carbs:${user?.uid}`,
         JSON.stringify({
           ...userInfosByUid,
-          bloodGlucoses: newBloodGlucoses,
           defaultPeripheral: peripheral,
         })
       );
@@ -330,6 +329,7 @@ export const BluetoothProvider = ({ children }) => {
         date,
         time,
         fullDate: `${date} ${time}`,
+        isFromMeter: true,
       };
 
       // Junção de todos os registros em um array de objetos (valor e data do registro da glicemia no dispositivo)

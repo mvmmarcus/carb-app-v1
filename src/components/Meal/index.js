@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 
-import { IconButton } from 'react-native-paper';
+// import { IconButton } from 'react-native-paper';
 
 import IconTime from '../../../assets/time.svg';
 import CustomText from '../CustomText';
@@ -9,17 +9,19 @@ import { getBackgroundColor } from '../../utils/global';
 
 import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
+import { calculateCorrectionInsulin } from '../../utils/bloodGlucose';
 
 const Meal = ({
-  glucose = '-',
-  carbs = '-',
-  insulin = '-',
-  correction = '-',
-  time = '-',
-  type = '-',
+  glucose = '0',
+  carbs = '0',
+  insulin = '0',
+  correction = '0',
+  time = '0',
+  type = '0',
+  insulinParams = null,
 }) => {
   const styles = getStyle({
-    glucoseBadgeBg: getBackgroundColor(glucose),
+    glucoseBadgeBg: getBackgroundColor(glucose, insulinParams?.targetRange),
   });
   const { $secondary, $white } = theme;
 
@@ -36,13 +38,13 @@ const Meal = ({
       unity: 'g',
     },
     {
-      title: 'Insulina',
+      title: 'Bolus',
       value: insulin,
       unity: 'ui',
     },
     {
       title: 'Correção',
-      value: correction,
+      value: calculateCorrectionInsulin(glucose, insulinParams),
       unity: 'ui',
     },
   ];
@@ -104,7 +106,7 @@ const Meal = ({
             </View>
           );
         })}
-        {type !== '-' && (
+        {/* {type !== '-' && (
           <IconButton
             icon="pencil"
             color={$white}
@@ -112,7 +114,7 @@ const Meal = ({
             size={20}
             style={styles.iconEdit}
           />
-        )}
+        )} */}
       </ScrollView>
     </View>
   );

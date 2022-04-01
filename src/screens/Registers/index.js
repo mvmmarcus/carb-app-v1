@@ -11,6 +11,7 @@ import MealAccordion from '../../components/MealAccordion';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import CustomText from '../../components/CustomText';
 import BluetoothContext from '../../contexts/bluetooth';
+import UserContext from '../../contexts/user';
 import { sortByDate, monthNames, sortByMonth } from '../../utils/date';
 
 import { getStyle } from './styles';
@@ -22,59 +23,7 @@ const RegistersScreeen = ({ navigation }) => {
   const [year, setYear] = useState('2022');
   const [filterYears, setFilterYears] = useState([]);
   const { bloodGlucoses } = useContext(BluetoothContext);
-
-  const meals = [
-    {
-      id: 1,
-      date: '2022/03/23',
-      time: '12:00',
-      type: 'Almoço',
-      glucose: 100,
-      carbs: 30,
-      insulin: 4,
-      correction: 2,
-    },
-    {
-      id: 2,
-      date: '2022/03/23',
-      time: '16:00',
-      type: 'Lanche',
-      glucose: 70,
-      carbs: 30,
-      insulin: 4,
-      correction: 1,
-    },
-    {
-      id: 3,
-      date: '2022/03/25',
-      time: '16:00',
-      type: 'Lanche',
-      glucose: 70,
-      carbs: 30,
-      insulin: 4,
-      correction: 1,
-    },
-    {
-      id: 4,
-      date: '2022/02/22',
-      time: '04:04',
-      type: 'Jantar',
-      glucose: 150,
-      carbs: 30,
-      insulin: 4,
-      correction: 2,
-    },
-    {
-      id: 5,
-      date: '2022/01/23',
-      time: '22:00',
-      type: 'Lanche',
-      glucose: 60,
-      carbs: 30,
-      insulin: 4,
-      correction: 2,
-    },
-  ];
+  const { insulinParams } = useContext(UserContext);
 
   // filtrar por ano antes de entrar aqui
   const groupMealsByMonth = (meals = []) => {
@@ -169,6 +118,7 @@ const RegistersScreeen = ({ navigation }) => {
         id={item?.date}
         meals={item?.meals}
         key={item?.id}
+        insulinParams={insulinParams}
       />
     );
   }, []);

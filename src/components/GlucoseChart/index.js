@@ -9,7 +9,8 @@ import { LineChart } from 'react-native-chart-kit';
 import { Rect, Text as TextSVG, Svg } from 'react-native-svg';
 
 import CustomText from '../CustomText';
-import { getBackgroundColor } from '../../utils/global';
+import { convertNumberToString, getBackgroundColor } from '../../utils/global';
+import { weekDays } from '../../utils/date';
 
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
@@ -22,6 +23,7 @@ const GlucoseChart = ({
     datasets: [],
   },
   onDateChange = () => null,
+  insulinParams = null,
 }) => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -40,6 +42,7 @@ const GlucoseChart = ({
 
     setShowDatePicker(false);
     setDate(currentDate);
+    setTooltipPos({ visible: false });
 
     !!onDateChange && onDateChange(currentDate);
   };
@@ -47,19 +50,9 @@ const GlucoseChart = ({
   const formatDate = (selectedDate) => {
     const date = new Date(selectedDate);
 
-    const weekDays = {
-      0: 'Dom',
-      1: 'Seg',
-      2: 'Ter',
-      3: 'Qua',
-      4: 'Qui',
-      5: 'Sex',
-      6: 'Sab',
-    };
-
     const weekDay = weekDays[date?.getDay()];
-    const day = date?.getDate();
-    const month = String(date?.getMonth() + 1)?.padStart(2, '0');
+    const day = convertNumberToString(date?.getDate());
+    const month = convertNumberToString(date?.getMonth() + 1);
     const fullYear = date?.getFullYear();
     const formattedDate = `${weekDay}, ${day}/${month}/${fullYear}`;
 
@@ -91,12 +84,14 @@ const GlucoseChart = ({
           </CustomText>
           <IconFA name="caret-down" size={20} color={$white} />
         </Button>
-        <CustomText weight="bold" style={styles.unity}>
-          mg/dL
-        </CustomText>
+        {data.labels?.length > 0 && (
+          <CustomText weight="bold" style={styles.unity}>
+            mg/dL
+          </CustomText>
+        )}
       </View>
 
-      {data.labels?.length ? (
+      {data.labels?.length > 0 ? (
         <LineChart
           style={{ marginBottom: data.datasets[0]?.data.length > 4 ? 20 : 0 }}
           data={data}
@@ -175,7 +170,7 @@ const GlucoseChart = ({
             ) : null;
           }}
           getDotColor={(dataPoint) => {
-            return getBackgroundColor(dataPoint);
+            return getBackgroundColor(dataPoint, insulinParams?.targetRange);
           }}
           onDataPointClick={(clickedData) => {
             const labels = data.labels;

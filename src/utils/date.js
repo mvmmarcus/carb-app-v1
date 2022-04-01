@@ -34,3 +34,13 @@ export const monthNames = [
   'Novembro',
   'Dezembro',
 ];
+
+export const weekDays = {
+  0: 'Dom',
+  1: 'Seg',
+  2: 'Ter',
+  3: 'Qua',
+  4: 'Qui',
+  5: 'Sex',
+  6: 'Sab',
+};

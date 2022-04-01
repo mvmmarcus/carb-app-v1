@@ -12,6 +12,7 @@ import useOrientation from '../../hooks/useOrientation';
 import GlucoseChart from '../../components/GlucoseChart';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import BluetoothContext from '../../contexts/bluetooth';
+import UserContext from '../../contexts/user';
 import { jsonParse } from '../../utils/jsonParse';
 import {
   getAverageValue,
@@ -26,15 +27,16 @@ const HomeScreen = ({ navigation }) => {
   const styles = getStyle({});
   const { $primary } = theme;
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
   const {
     bloodGlucoses,
     connectedPeripheral,
     isGettingBloodGlucoses,
     setBloodGlucoses,
   } = useContext(BluetoothContext);
-  const { width } = useOrientation();
-  const [isLoading, setIsLoading] = useState(false);
   const { user } = useContext(AuthContext);
+  const { insulinParams } = useContext(UserContext);
+  const { width } = useOrientation();
 
   const getStoragedBloodGlucoses = async (user) => {
     setIsLoading(true);
@@ -54,7 +56,6 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (bloodGlucoses?.length === 0 && !isGettingBloodGlucoses) {
-      console.log('ola: ', { bloodGlucoses });
       getStoragedBloodGlucoses(user);
     }
   }, []);
@@ -112,12 +113,18 @@ const HomeScreen = ({ navigation }) => {
       subtitle: 'Hipo',
     },
     {
-      value: getTotal(filteredBloodGlucoses?.map((item) => item?.carbs || 0)),
+      value: getTotal(
+        filteredBloodGlucoses?.map((item) => parseFloat(item?.carbs) || 0)
+      )?.toFixed(0),
       title: 'Carbs',
       subtitle: 'g',
     },
     {
-      value: getTotal(filteredBloodGlucoses?.map((item) => item?.bolus || 0)),
+      value: getTotal(
+        filteredBloodGlucoses?.map(
+          (item) => item?.correction + item?.insulin || 0
+        )
+      ),
       title: 'Bolus',
       subtitle: 'ui',
     },
@@ -132,6 +139,7 @@ const HomeScreen = ({ navigation }) => {
         <GlucoseChart
           width={width - 40}
           data={bloodGlucoseChartData}
+          insulinParams={insulinParams}
           onDateChange={setSelectedDate}
         />
         {!connectedPeripheral && (
@@ -146,7 +154,7 @@ const HomeScreen = ({ navigation }) => {
                   color={$primary}
                 />
               }
-              onCallAction={() => navigation?.navigate('SyncScreen')}
+              onCallAction={() => navigation?.navigate('SyncStack')}
             />
           </View>
         )}

@@ -1,11 +1,17 @@
 import { theme } from '../styles/theme';
 
-export const getBackgroundColor = (value) => {
+export const getBackgroundColor = (value, targetRange = []) => {
   const { $red, $orange } = theme;
 
-  if ((value >= 0 && value < 60) || value > 150) {
+  const minTarget = targetRange[0];
+  const maxTarget = targetRange[1];
+
+  if ((value >= 0 && value <= 70) || value >= 140) {
     return $red;
-  } else if ((value >= 50 && value < 80) || (value >= 120 && value < 150)) {
+  } else if (
+    (value > 70 && value < minTarget) ||
+    (value > maxTarget && value < 140)
+  ) {
     return $orange;
   } else {
     return 'green';
@@ -44,3 +50,6 @@ export const getTotal = (values = []) => {
     return 0;
   }
 };
+
+export const convertNumberToString = (value) =>
+  value?.toString()?.padStart(2, '0');

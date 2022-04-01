@@ -10,7 +10,6 @@ export const getFoodsNutritionalInfos = async ({
   perPage = 10,
   page = 1,
 }) => {
-  console.log({ query, page });
   const response = await axios({
     method: 'GET',
     url: `${baseUrl}&query=${query}&pageSize=${perPage}&pageNumber=${page}`,

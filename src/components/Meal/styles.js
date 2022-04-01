@@ -22,7 +22,9 @@ export const getStyle = ({ glucoseBadgeBg }) => {
       flexDirection: 'column',
       alignItems: 'center',
       alignSelf: 'center',
+      justifyContent: 'center',
       minWidth: '2.25rem',
+      maxWidth: '2.25rem',
     },
     mealType: {
       fontSize: '$xxsmall',

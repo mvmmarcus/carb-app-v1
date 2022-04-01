@@ -1,19 +1,24 @@
-import React, { useState, useContext } from 'react';
-import { ScrollView, Dimensions, View } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { ScrollView, Dimensions, View, TextInput } from 'react-native';
 
+import AsyncStorage from '@react-native-community/async-storage';
 import IconFA from 'react-native-vector-icons/FontAwesome';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-select-dropdown';
 import { Button, Dialog, IconButton, List } from 'react-native-paper';
 
 import Input from '../Input';
-import IconDataNotFound from '../../../assets/data_not_found.svg';
-import FallbackMessage from '../FallbackMessage';
 import SearchFoodModal from '../SearchFoodModal';
 import CustomButtom from '../CustomButton';
 import BluetoothContext from '../../contexts/bluetooth';
 import UserContext from '../../contexts/user';
+import AuthContext from '../../contexts/auth';
 import CustomText from '../CustomText';
+import { convertNumberToString } from '../../utils/global';
+import { jsonParse } from '../../utils/jsonParse';
+import {
+  calculateCorrectionInsulin,
+  calculateFoodInsulin,
+} from '../../utils/bloodGlucose';
 
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
@@ -24,22 +29,26 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const styles = getStyle({ width });
   const [mealType, setMealType] = useState('Almoço');
   const [foodAccordionId, setFoodAccordionId] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [customBloodGlucoseValue, setCustomBloodGlucoseValue] = useState('');
   const [openFoodModal, setOpenFoodModal] = useState(false);
+  const [isSavingRegister, setIsSavingRegister] = useState(false);
   const [selectedFoods, setSelectedFoods] = useState([]);
   const [updatedSelectedFoods, setUpdatedSelectedFoods] = useState([]);
   const [editablesFoods, setEditablesFoods] = useState([]);
-  const { bloodGlucoses } = useContext(BluetoothContext);
+  const { bloodGlucoses, setBloodGlucoses } = useContext(BluetoothContext);
   const { insulinParams } = useContext(UserContext);
+  const { user } = useContext(AuthContext);
+  const lastBloodGlucose =
+    bloodGlucoses?.length > 0 ? bloodGlucoses[bloodGlucoses?.length - 1] : null;
+  const totalCho = selectedFoods?.reduce(
+    (total, curr) => total + curr?.cho?.value,
+    0
+  );
 
-  const onChangeDate = (event, selectedDate) => {
-    console.log({ selectedDate });
-    const currentDate = selectedDate;
-
-    setShowDatePicker(false);
-    setDate(currentDate);
-  };
+  useEffect(() => {
+    setSelectedFoods(lastBloodGlucose?.selectedFoods);
+    setMealType(lastBloodGlucose?.type);
+  }, []);
 
   const handleAddFoods = (addedFoods) => {
     setSelectedFoods(addedFoods);
@@ -62,6 +71,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
           cho: {
             ...item?.cho,
             value: (Number(newPortion) * currentCho) / foodDefaultPortion,
+            gramPortion: newPortion,
           },
         };
       }
@@ -119,15 +129,158 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
     });
   };
 
-  console.log({ bloodGlucoses });
+  const handleCalculateInsulin = async (
+    foodInsulin,
+    correctionInsulin,
+    user,
+    bloodGlucoses = [],
+    totalCho,
+    mealType,
+    selectedFoods = [],
+    customGlucose
+  ) => {
+    setIsSavingRegister(true);
+    try {
+      let updatedBloodGlucoses = [];
+      const lastBloodGlucose =
+        bloodGlucoses?.length > 0
+          ? bloodGlucoses[bloodGlucoses?.length - 1]
+          : null;
 
-  const lastBloodGlucoseValue =
-    bloodGlucoses?.length > 0 ? bloodGlucoses[bloodGlucoses?.length - 1] : null;
+      if (lastBloodGlucose?.isFromMeter) {
+        updatedBloodGlucoses = bloodGlucoses?.map((item) => {
+          if (item?.fullDate === lastBloodGlucose?.fullDate) {
+            return {
+              ...item,
+              insulin: foodInsulin,
+              correction: correctionInsulin,
+              carbs: totalCho?.toFixed(2),
+              type: mealType,
+              selectedFoods,
+            };
+          }
 
-  const totalCho = selectedFoods?.reduce(
-    (total, curr) => total + curr?.cho?.value,
-    0
+          return item;
+        });
+      } else {
+        const splittedDate = customGlucose?.date?.split('/');
+        const day = splittedDate[0];
+        const month = splittedDate[1];
+        const year = splittedDate[2];
+        const utcDate = `${year}/${month}/${day}`;
+        const utcFullDate = `${utcDate} ${customGlucose?.time}`;
+
+        const formattedCustomGlucose = {
+          date: utcDate,
+          fullDate: utcFullDate,
+          time: customGlucose?.time,
+          value: parseFloat(customGlucose?.value),
+          insulin: foodInsulin,
+          correction: correctionInsulin,
+          carbs: parseFloat(totalCho?.toFixed(2)),
+          type: mealType,
+          selectedFoods,
+        };
+
+        if (bloodGlucoses?.length > 0) {
+          updatedBloodGlucoses = [...bloodGlucoses, formattedCustomGlucose];
+        } else {
+          updatedBloodGlucoses = [formattedCustomGlucose];
+        }
+      }
+
+      setBloodGlucoses(updatedBloodGlucoses);
+      const userInfosByUid = jsonParse(
+        await AsyncStorage.getItem(`@carbs:${user?.uid}`)
+      );
+
+      await AsyncStorage.setItem(
+        `@carbs:${user?.uid}`,
+        JSON.stringify({
+          ...userInfosByUid,
+          bloodGlucoses: updatedBloodGlucoses,
+        })
+      );
+    } catch (error) {
+      console.log('handleCalculateInsulin error: ', error);
+    } finally {
+      setIsSavingRegister(false);
+      !!onClose && onClose();
+    }
+  };
+
+  const getRegisterTime = (lastBloodGlucose) => {
+    if (!!lastBloodGlucose?.isFromMeter) {
+      return lastBloodGlucose?.time;
+    }
+
+    const today = new Date();
+    const hour = convertNumberToString(today?.getHours());
+    const minutes = convertNumberToString(today?.getMinutes());
+    const seconds = convertNumberToString(today?.getSeconds());
+    const time = `${hour}:${minutes}:${seconds}`;
+
+    return time;
+  };
+
+  const getRegisterDate = (lastBloodGlucose) => {
+    if (!!lastBloodGlucose?.isFromMeter) {
+      const registerDate = new Date(lastBloodGlucose?.date)?.toLocaleDateString(
+        'pt-BR',
+        {
+          dateStyle: 'short',
+        }
+      );
+      return registerDate;
+    }
+
+    const today = new Date();
+    const day = convertNumberToString(today?.getDate());
+    const month = convertNumberToString(today?.getMonth() + 1);
+    const fullYear = today?.getFullYear();
+    const formattedDate = `${day}/${month}/${fullYear}`;
+
+    return formattedDate;
+  };
+
+  const getCorrectionInsulin = (
+    lastBloodGlucose,
+    customBloodGlucose,
+    insulinParams
+  ) => {
+    // Validar se o usuário sincronizou o app com o medidor
+    if (lastBloodGlucose?.isFromMeter) {
+      // Se sincronizou com o medidor, utilizar a última aferição de glicose no cálculo
+      const correctionInsulin = calculateCorrectionInsulin(
+        lastBloodGlucose?.value,
+        insulinParams
+      );
+      return parseFloat(correctionInsulin) || 0;
+    }
+
+    // Se não sincronizou, utilizar o valor de glicose inserido pelo usuário
+    // Dessa forma, usuários que não possuem medidores com tecnologia bluetooth também conseguem usar o app
+    const correctionInsulin = calculateCorrectionInsulin(
+      customBloodGlucose,
+      insulinParams
+    );
+
+    return parseFloat(correctionInsulin) || 0;
+  };
+
+  const correctionInsulin = getCorrectionInsulin(
+    lastBloodGlucose,
+    customBloodGlucoseValue,
+    insulinParams
   );
+
+  const foodInsulin = calculateFoodInsulin(
+    totalCho,
+    insulinParams?.choInsulinRelationship
+  );
+
+  const showSaveButton =
+    !!lastBloodGlucose?.isFromMeter || !!customBloodGlucoseValue;
 
   return (
     <Dialog dismissable={false} style={styles.container} visible={isOpen}>
@@ -151,246 +304,252 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
             Adicionar Registro
           </CustomText>
         </View>
-        {bloodGlucoses?.length > 0 ? (
-          <ScrollView contentContainerStyle={styles.content}>
-            <View style={styles.scrollAreaContent}>
-              <View style={styles.timeContainer}>
-                <CustomText
-                  weight="bold"
-                  style={{ ...styles.text, marginBottom: 10 }}
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.scrollAreaContent}>
+            <View style={styles.timeContainer}>
+              <CustomText
+                weight="bold"
+                style={{ ...styles.text, marginBottom: 10 }}
+              >
+                Horário
+              </CustomText>
+              <View style={styles.buttonsRow}>
+                <Button
+                  style={{ ...styles.button, marginRight: 10 }}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                  icon="clock-time-four-outline"
                 >
-                  Horário
-                </CustomText>
-                <View style={styles.buttonsRow}>
-                  <Button
-                    style={{ ...styles.button, marginRight: 10 }}
-                    contentStyle={styles.buttonContent}
-                    labelStyle={styles.buttonLabel}
-                    icon="clock-time-four-outline"
-                  >
-                    {lastBloodGlucoseValue?.time}
-                  </Button>
-                  <Button
-                    // onPress={() => setShowDatePicker(true)}
-                    uppercase={false}
-                    mode="contained"
-                    style={styles.button}
-                    contentStyle={styles.buttonContent}
-                    labelStyle={styles.buttonLabel}
-                    icon="calendar"
-                  >
-                    {new Date(lastBloodGlucoseValue?.date)?.toLocaleString(
-                      'pt-BR',
-                      {
-                        dateStyle: 'short',
-                      }
-                    )}
-                    {/* <IconFA name="caret-down" size={14} /> */}
-                  </Button>
-                  {showDatePicker && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={date}
-                      mode="date"
-                      is24Hour={true}
-                      display="default"
-                      onChange={onChangeDate}
-                    />
+                  {getRegisterTime(lastBloodGlucose)}
+                </Button>
+                <Button
+                  // onPress={() => setShowDatePicker(true)}
+                  uppercase={false}
+                  mode="contained"
+                  style={styles.button}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                  icon="calendar"
+                >
+                  {getRegisterDate(lastBloodGlucose)}
+                </Button>
+              </View>
+            </View>
+            <View style={styles.timeContainer}>
+              <CustomText
+                weight="bold"
+                style={{ ...styles.text, marginBottom: 10 }}
+              >
+                Refeição
+              </CustomText>
+              <View style={styles.buttonsRow}>
+                <Button
+                  style={{ ...styles.buttonFullWidth, marginRight: 10 }}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                  icon="book-open-variant"
+                  uppercase={false}
+                  onPress={() => setOpenFoodModal(true)}
+                >
+                  Adicionar alimento
+                </Button>
+                <DropDownPicker
+                  defaultValue={mealType}
+                  data={['Café da manha', 'Almoço', 'Lanche', 'Jantar']}
+                  onSelect={setMealType}
+                  rowStyle={styles.dropdownRow}
+                  rowTextStyle={styles.dropdownRowText}
+                  buttonStyle={styles.buttonFullWidth}
+                  buttonTextStyle={styles.buttonLabel}
+                  dropdownIconPosition="right"
+                  renderDropdownIcon={() => (
+                    <IconFA name="caret-down" size={14} color={$secondary} />
                   )}
-                </View>
+                />
               </View>
-              <View style={styles.timeContainer}>
-                <CustomText
-                  weight="bold"
-                  style={{ ...styles.text, marginBottom: 10 }}
-                >
-                  Refeição
+            </View>
+            <View style={styles.infoContainer}>
+              <View style={styles.infoRow}>
+                <CustomText weight="bold" style={styles.text}>
+                  Glicemia:
                 </CustomText>
-                <View style={styles.buttonsRow}>
-                  <Button
-                    style={{ ...styles.buttonFullWidth, marginRight: 10 }}
-                    contentStyle={styles.buttonContent}
-                    labelStyle={styles.buttonLabel}
-                    icon="book-open-variant"
-                    uppercase={false}
-                    onPress={() => setOpenFoodModal(true)}
-                  >
-                    Adicionar alimento
-                  </Button>
-                  <DropDownPicker
-                    defaultValue={mealType}
-                    data={['Almoço', 'Lanche', 'Jantar']}
-                    onSelect={setMealType}
-                    rowStyle={styles.dropdownRow}
-                    rowTextStyle={styles.dropdownRowText}
-                    buttonStyle={styles.buttonFullWidth}
-                    buttonTextStyle={styles.buttonLabel}
-                    dropdownIconPosition="right"
-                    renderDropdownIcon={() => (
-                      <IconFA name="caret-down" size={14} color={$secondary} />
+
+                {lastBloodGlucose?.isFromMeter ? (
+                  <CustomText weight="bold" style={styles.text}>
+                    {lastBloodGlucose?.value} mg/dL
+                  </CustomText>
+                ) : (
+                  <View style={styles.customBloodGlucose}>
+                    <TextInput
+                      style={styles.bloodGlucoseInput}
+                      value={customBloodGlucoseValue}
+                      keyboardType="numeric"
+                      placeholder="100"
+                      onChangeText={(value) =>
+                        setCustomBloodGlucoseValue(value)
+                      }
+                    />
+                    <CustomText weight="bold" style={styles.text}>
+                      mg/dL
+                    </CustomText>
+                  </View>
+                )}
+              </View>
+              <View style={styles.diviser} />
+
+              <View style={styles.infoRow}>
+                <CustomText weight="bold" style={styles.text}>
+                  Bolus:
+                </CustomText>
+                <CustomText weight="bold" style={styles.text}>
+                  {foodInsulin} ui
+                </CustomText>
+              </View>
+              <View style={styles.diviser} />
+              <View style={styles.infoRow}>
+                <CustomText weight="bold" style={styles.text}>
+                  Correção:
+                </CustomText>
+                <CustomText weight="bold" style={styles.text}>
+                  {correctionInsulin} ui
+                </CustomText>
+              </View>
+              <View style={styles.diviser} />
+              <View style={styles.infoRow}>
+                <CustomText weight="bold" style={styles.text}>
+                  Total
+                </CustomText>
+                <CustomText weight="bold" style={styles.totalInsulin}>
+                  {parseFloat((correctionInsulin + foodInsulin)?.toFixed(2))} ui
+                </CustomText>
+              </View>
+            </View>
+
+            {selectedFoods?.length > 0 && (
+              <List.AccordionGroup
+                expandedId={foodAccordionId}
+                onAccordionPress={toggleAccordionPress}
+              >
+                <View style={styles.accordionContainer}>
+                  <List.Accordion
+                    theme={{
+                      colors: { text: $white },
+                    }}
+                    left={() => (
+                      <List.Icon
+                        color={$white}
+                        style={styles.iconLeft}
+                        icon="food"
+                      />
                     )}
-                  />
-                </View>
-              </View>
-              <View style={styles.infoContainer}>
-                <View style={styles.infoRow}>
-                  <CustomText weight="bold" style={styles.text}>
-                    Glicemia:
-                  </CustomText>
-                  <CustomText weight="bold" style={styles.text}>
-                    {!!lastBloodGlucoseValue
-                      ? `${lastBloodGlucoseValue?.value} mg/dL`
-                      : '-'}
-                  </CustomText>
-                </View>
-                <View style={styles.diviser} />
-
-                <View style={styles.infoRow}>
-                  <CustomText weight="bold" style={styles.text}>
-                    Insulina (refeição):
-                  </CustomText>
-                  <CustomText weight="bold" style={styles.text}>
-                    2 ui
-                  </CustomText>
-                </View>
-                <View style={styles.diviser} />
-                <View style={styles.infoRow}>
-                  <CustomText weight="bold" style={styles.text}>
-                    Insulina (correção):
-                  </CustomText>
-                  <CustomText weight="bold" style={styles.text}>
-                    1 ui
-                  </CustomText>
-                </View>
-              </View>
-
-              {selectedFoods?.length > 0 && (
-                <List.AccordionGroup
-                  expandedId={foodAccordionId}
-                  onAccordionPress={toggleAccordionPress}
-                >
-                  <View style={styles.accordionContainer}>
-                    <List.Accordion
-                      theme={{
-                        colors: { text: $white },
-                      }}
-                      left={() => (
-                        <List.Icon
-                          color={$white}
-                          style={styles.iconLeft}
-                          icon="food"
-                        />
-                      )}
-                      style={styles.accordion}
-                      titleStyle={styles.accordionTitle}
-                      descriptionStyle={styles.accordionDescription}
-                      title={`Alimentos selecionados (${selectedFoods?.length})`}
-                      description={`Total CHO: ${totalCho?.toFixed(2)}g`}
-                      id={'Alimentos selecionados'}
-                    >
-                      <View style={styles.accordionItem}>
-                        {selectedFoods?.map((food, index) => (
-                          <React.Fragment key={food?.fdcId}>
-                            <View style={styles.food}>
-                              <View style={styles.foodNameContainer}>
+                    style={styles.accordion}
+                    titleStyle={styles.accordionTitle}
+                    descriptionStyle={styles.accordionDescription}
+                    title={`Alimentos selecionados (${selectedFoods?.length})`}
+                    description={`Total CHO: ${totalCho?.toFixed(2)}g`}
+                    id={'Alimentos selecionados'}
+                  >
+                    <View style={styles.accordionItem}>
+                      {selectedFoods?.map((food, index) => (
+                        <React.Fragment key={food?.fdcId}>
+                          <View style={styles.food}>
+                            <View style={styles.foodNameContainer}>
+                              <CustomText
+                                weight="medium"
+                                style={styles.foodName}
+                              >
+                                {index + 1}. {food?.description}
+                              </CustomText>
+                              <CustomText style={styles.foodName}>
+                                CHO:{' '}
                                 <CustomText
-                                  weight="medium"
+                                  weight="bold"
                                   style={styles.foodName}
                                 >
-                                  {index + 1}. {food?.description}
+                                  {food?.cho?.value}g
                                 </CustomText>
-                                <CustomText style={styles.foodName}>
-                                  CHO:{' '}
-                                  <CustomText
-                                    weight="bold"
-                                    style={styles.foodName}
-                                  >
-                                    {food?.cho?.value}g
-                                  </CustomText>
-                                </CustomText>
-                              </View>
-                              <Input
-                                value={food?.cho?.defaultGramPortion}
-                                type="numeric"
-                                labelStyles={styles.portionInputLabel}
-                                labelTextStyles={styles.portionInputLabelText}
-                                label="Porção (g)"
-                                placeholder="Ex: 100"
-                                onChange={(newPortion) =>
-                                  handlePortionChange(
-                                    selectedFoods,
-                                    food,
-                                    newPortion
-                                  )
-                                }
-                              />
-                              <View style={styles.iconGroup}>
-                                {editablesFoods?.includes(food?.fdcId) && (
-                                  <IconButton
-                                    icon="check"
-                                    color={$secondary}
-                                    onPress={() =>
-                                      handleFoodSave(
-                                        food,
-                                        updatedSelectedFoods,
-                                        selectedFoods
-                                      )
-                                    }
-                                    size={20}
-                                    style={styles.iconEdit}
-                                  />
-                                )}
+                              </CustomText>
+                            </View>
+                            <Input
+                              value={food?.cho?.gramPortion}
+                              type="numeric"
+                              labelStyles={styles.portionInputLabel}
+                              labelTextStyles={styles.portionInputLabelText}
+                              label="Porção (g)"
+                              placeholder="Ex: 100"
+                              onChange={(newPortion) =>
+                                handlePortionChange(
+                                  selectedFoods,
+                                  food,
+                                  newPortion
+                                )
+                              }
+                            />
+                            <View style={styles.iconGroup}>
+                              {editablesFoods?.includes(food?.fdcId) && (
                                 <IconButton
-                                  icon="delete"
-                                  color={$red}
+                                  icon="check"
+                                  color={$secondary}
                                   onPress={() =>
-                                    handleDeleteFood(food, selectedFoods)
+                                    handleFoodSave(
+                                      food,
+                                      updatedSelectedFoods,
+                                      selectedFoods
+                                    )
                                   }
                                   size={20}
-                                  style={styles.iconDelete}
+                                  style={styles.iconEdit}
                                 />
-                              </View>
+                              )}
+                              <IconButton
+                                icon="delete"
+                                color={$red}
+                                onPress={() =>
+                                  handleDeleteFood(food, selectedFoods)
+                                }
+                                size={20}
+                                style={styles.iconDelete}
+                              />
                             </View>
-                            {selectedFoods?.length - 1 !== index && (
-                              <View style={styles.diviser} />
-                            )}
-                          </React.Fragment>
-                        ))}
-                      </View>
-                    </List.Accordion>
-                  </View>
-                </List.AccordionGroup>
-              )}
-            </View>
-            {selectedFoods?.length > 0 && (
-              <CustomButtom
-                style={styles.calcButton}
-                backgroundColor={$secondary}
-                color={$white}
-                onPress={() => {
-                  alert(
-                    JSON.stringify({
-                      lastBloodGlucoseValue,
-                      totalCho,
-                      insulinParams,
-                    })
-                  );
-                }}
-              >
-                Calcular insulina
-              </CustomButtom>
+                          </View>
+                          {selectedFoods?.length - 1 !== index && (
+                            <View style={styles.diviser} />
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </View>
+                  </List.Accordion>
+                </View>
+              </List.AccordionGroup>
             )}
-          </ScrollView>
-        ) : (
-          <FallbackMessage
-            style={styles.fallbackContainer}
-            customIcon={
-              <IconDataNotFound color={$secondary} width={100} height={100} />
-            }
-            title="Nenhum registro de glicemia encontrado"
-            subtitle="Sincronize o seu medidor de glicemia para obter os registros e calcular a insulina"
-          />
-        )}
+          </View>
+          {showSaveButton && (
+            <CustomButtom
+              isLoading={isSavingRegister}
+              style={styles.calcButton}
+              backgroundColor={$secondary}
+              color={$white}
+              onPress={() =>
+                handleCalculateInsulin(
+                  foodInsulin,
+                  correctionInsulin,
+                  user,
+                  bloodGlucoses,
+                  totalCho,
+                  mealType,
+                  selectedFoods,
+                  {
+                    time: getRegisterTime(lastBloodGlucose),
+                    date: getRegisterDate(lastBloodGlucose),
+                    value: customBloodGlucoseValue,
+                  }
+                )
+              }
+            >
+              Salvar registro
+            </CustomButtom>
+          )}
+        </ScrollView>
       </Dialog.ScrollArea>
     </Dialog>
   );

@@ -20,7 +20,6 @@ const Peripheral = ({
   const { $secondary, $white, $primary } = theme;
 
   const handleConnect = (peripheral) => {
-    console.log('selected peripheral: ', peripheral);
     !!onConnect && onConnect(peripheral);
   };
 

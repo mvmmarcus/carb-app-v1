@@ -108,7 +108,6 @@ export const getStyle = ({ width }) =>
     infoContainer: {
       marginTop: '$xxsmall',
       borderTopWidth: 1,
-      borderBottomWidth: 1,
       borderColor: '$secondary',
     },
     diviser: {
@@ -173,6 +172,7 @@ export const getStyle = ({ width }) =>
       alignSelf: 'center',
       margin: 0,
       padding: 0,
+      fontWeight: 'bold',
     },
     iconDelete: {
       alignSelf: 'center',
@@ -187,5 +187,24 @@ export const getStyle = ({ width }) =>
     },
     fallbackContainer: {
       marginHorizontal: '$xxsmall',
+    },
+    bloodGlucoseInput: {
+      height: '$xxlarge',
+      width: '3.5rem',
+      paddingHorizontal: '$small',
+      marginRight: '$xxsmall',
+      borderRadius: '$borderRadius',
+      color: '$secondary',
+      borderColor: '$secondary',
+      borderWidth: 2,
+      backgroundColor: '$white',
+    },
+    totalInsulin: {
+      fontSize: '$medium',
+      color: '$white',
+    },
+    customBloodGlucose: {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
   });

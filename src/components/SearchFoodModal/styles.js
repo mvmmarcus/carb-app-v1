@@ -85,4 +85,12 @@ export const getStyle = ({ width, height }) =>
       width: '100%',
       marginTop: '$medium',
     },
+    searchInput: {
+      paddingHorizontal: '$xxsmall',
+      borderRadius: '$borderRadius',
+      color: '$secondary',
+      borderColor: '$secondary',
+      borderWidth: 2,
+      backgroundColor: '$white',
+    },
   });

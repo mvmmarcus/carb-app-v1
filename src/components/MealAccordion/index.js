@@ -8,7 +8,12 @@ import Meal from '../Meal';
 import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
-const MealAccordion = ({ title = '', id = '1', meals = [] }) => {
+const MealAccordion = ({
+  title = '',
+  id = '1',
+  meals = [],
+  insulinParams = {},
+}) => {
   const styles = getStyle({});
   const { $white } = theme;
 
@@ -29,7 +34,7 @@ const MealAccordion = ({ title = '', id = '1', meals = [] }) => {
         >
           <View style={styles.accordionItem}>
             {meals?.map((meal) => (
-              <Meal key={meal?.id} {...meal} />
+              <Meal key={meal?.id} insulinParams={insulinParams} {...meal} />
             ))}
           </View>
         </List.Accordion>

@@ -45,12 +45,6 @@ const IndexScreeen = ({ navigation }) => {
             Registrar-se
           </CustomButtom>
         </View>
-        {/* <GoogleButton
-          onPress={() => console.log('teste')}
-          width={60}
-          height={60}
-          marginTop={16}
-        /> */}
       </View>
     </LinearGradient>
   );
