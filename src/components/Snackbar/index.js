@@ -8,7 +8,7 @@ import CustomText from '../CustomText';
 import { styles } from './styles';
 
 const Snackbar = ({
-  type = 'error',
+  type = 'default',
   message = '',
   duration = 1500,
   textColor = 'white',
@@ -23,6 +23,7 @@ const Snackbar = ({
   const stylesByType = {
     error: 'errorContainer',
     success: 'successContainer',
+    default: 'defaultContainer',
   };
 
   return (

@@ -36,7 +36,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const [updatedSelectedFoods, setUpdatedSelectedFoods] = useState([]);
   const [editablesFoods, setEditablesFoods] = useState([]);
   const { bloodGlucoses, setBloodGlucoses } = useContext(BluetoothContext);
-  const { insulinParams } = useContext(UserContext);
+  const { insulinParams, setSnackMessage } = useContext(UserContext);
   const { user } = useContext(AuthContext);
   const lastBloodGlucose =
     bloodGlucoses?.length > 0 ? bloodGlucoses[bloodGlucoses?.length - 1] : null;
@@ -201,11 +201,13 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
           bloodGlucoses: updatedBloodGlucoses,
         })
       );
+
+      setSnackMessage({ message: 'Registro salvo!', type: 'success' });
+      !!onClose && onClose();
     } catch (error) {
       console.log('handleCalculateInsulin error: ', error);
     } finally {
       setIsSavingRegister(false);
-      !!onClose && onClose();
     }
   };
 

@@ -47,7 +47,11 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
-      <Snackbar message={formError} onDismiss={() => setFormError(null)} />
+      <Snackbar
+        type="error"
+        message={formError}
+        onDismiss={() => setFormError(null)}
+      />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <CustomText style={styles.title} weight="bold">
           Vamos fazer seu cadastro

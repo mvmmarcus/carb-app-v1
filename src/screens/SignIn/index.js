@@ -39,7 +39,11 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
-      <Snackbar message={formError} onDismiss={() => setFormError(null)} />
+      <Snackbar
+        type="error"
+        message={formError}
+        onDismiss={() => setFormError(null)}
+      />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.container}>
           <View style={styles.titleGroup}>
