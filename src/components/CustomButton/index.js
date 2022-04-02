@@ -39,6 +39,7 @@ const CustomButtom = ({
           ? { ...styles.disabled, ...style }
           : { ...styles[variant], ...style }
       }
+      labelStyle={{ ...styles.text, color: styles.text.color }}
       uppercase={uppercase}
       mode={variant}
       icon={icon}
@@ -49,13 +50,11 @@ const CustomButtom = ({
       onPress={handleToggle}
       {...props}
     >
-      <CustomText weight={fontWeight} style={styles.text}>
-        {children}
-      </CustomText>
+      {children}
     </Button>
   ) : (
     <Button
-      labelStyle={{ color: styles.text.color }}
+      labelStyle={{ ...styles.text, color: styles.text.color }}
       loading={isLoading}
       disabled={disabled}
       style={
@@ -72,9 +71,7 @@ const CustomButtom = ({
       }}
       {...props}
     >
-      <CustomText weight={fontWeight} style={styles.text}>
-        {children}
-      </CustomText>
+      {children}
     </Button>
   );
 };

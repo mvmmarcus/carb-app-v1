@@ -632,7 +632,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                 )
               }
             >
-              Salvar registro
+              {isSavingRegister ? '' : 'Salvar registro'}
             </CustomButtom>
           )}
         </ScrollView>
