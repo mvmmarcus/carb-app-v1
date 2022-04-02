@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import IndexScreeen from '../screens/Index';
 import SignInScreeen from '../screens/SignIn';
 import SignUpScreen from '../screens/SignUp';
-// import SmsVerificationScreen from '../screens/SmsVerification';
+import AboutScreen from '../screens/About';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
 
 import { theme } from '../styles/theme';
@@ -21,6 +21,17 @@ const AuthNavigator = () => {
         options={{ headerShown: false }}
         name="IndexScreen"
         component={IndexScreeen}
+      />
+      <Stack.Screen
+        name="AboutScreen"
+        options={{
+          headerBackTitleVisible: true,
+          headerShown: true,
+          headerTransparent: true,
+          title: 'Sobre o Carbs',
+          headerTintColor: $white,
+        }}
+        component={AboutScreen}
       />
       <Stack.Screen
         options={{
@@ -40,15 +51,6 @@ const AuthNavigator = () => {
         name="SignUpScreen"
         component={SignUpScreen}
       />
-      {/* <Stack.Screen
-        options={{
-          headerTransparent: true,
-          title: '',
-          headerTintColor: $white,
-        }}
-        name="SmsVerificationScreen"
-        component={SmsVerificationScreen}
-      /> */}
       <Stack.Screen
         options={{
           headerTransparent: true,

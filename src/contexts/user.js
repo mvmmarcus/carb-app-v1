@@ -5,7 +5,9 @@ const AppContext = createContext({
   isAddRegisterModalOpen: false,
   isLoading: true,
   isFirstAccess: true,
+  isEditInfos: false,
   insulinParams: null,
+  setIsEditInfos: () => {},
   setInsulinParams: () => {},
   setIsFirstAccess: () => {},
   setIsLoading: () => {},
@@ -16,6 +18,7 @@ export const AppProvider = ({ children }) => {
   const [isAddRegisterModalOpen, setIsAddRegisterModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstAccess, setIsFirstAccess] = useState(true);
+  const [isEditInfos, setIsEditInfos] = useState(false);
   const [insulinParams, setInsulinParams] = useState(null);
 
   return (
@@ -25,6 +28,8 @@ export const AppProvider = ({ children }) => {
         isLoading,
         isFirstAccess,
         insulinParams,
+        isEditInfos,
+        setIsEditInfos,
         setInsulinParams,
         setIsFirstAccess,
         setIsLoading,

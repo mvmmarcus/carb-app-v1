@@ -19,6 +19,7 @@ export const getStyle = ({}) =>
     },
     textContainer: {
       marginLeft: '$xsmall',
+      paddingRight: '$xxsmall',
       justifyContent: 'center',
       flex: 1,
     },

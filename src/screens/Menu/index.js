@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import { View } from 'react-native';
 
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Avatar } from 'react-native-paper';
 
 import AuthContext from '../../contexts/auth';
+import UserContext from '../../contexts/user';
 import IconPerson from '../../../assets/person.svg';
 import IconSettings from '../../../assets/settings.svg';
 import IconLogout from '../../../assets/logout.svg';
@@ -16,9 +18,10 @@ import { getInitialsOfName } from '../../utils/global';
 
 import { getStyle } from './styles';
 
-const MenuScreen = () => {
+const MenuScreen = ({ navigation }) => {
   const styles = getStyle({});
   const { signout, user } = useContext(AuthContext);
+  const { setIsEditInfos } = useContext(UserContext);
 
   const handleSignout = async () => {
     try {
@@ -49,7 +52,18 @@ const MenuScreen = () => {
           subtitle="Ver e editar perfil"
           icon={<IconPerson />}
           iconRight={<IconChevronRight />}
+          onPress={() => navigation?.navigate('ProfileScreen')}
         />
+        <Card
+          as="option"
+          style={styles.menuOption}
+          title="Parâmetros de Cálculo"
+          subtitle="Editar parâmetros médicos para o cálculo de insulina"
+          icon={<IconPerson />}
+          iconRight={<IconChevronRight />}
+          onPress={() => setIsEditInfos(true)}
+        />
+
         <Card
           as="option"
           style={styles.menuOption}
@@ -57,12 +71,13 @@ const MenuScreen = () => {
           subtitle="Informações do aplicativo"
           icon={<IconLightbulb />}
           iconRight={<IconChevronRight />}
+          onPress={() => navigation?.navigate('AboutScreen')}
         />
         <Card
           as="option"
           style={styles.menuOption}
           title="Configurações"
-          subtitle="Alteração nas preferências"
+          subtitle="Alterar preferências"
           icon={<IconSettings />}
           iconRight={<IconChevronRight />}
         />

@@ -62,4 +62,15 @@ export const getStyle = ({ width, SEPARATOR_WIDTH }) =>
       width: '100%',
       marginTop: '$medium',
     },
+    cancelButton: {
+      alignSelf: 'center',
+      marginTop: '$medium',
+      position: 'absolute',
+      bottom: -30,
+      width: width - 160,
+      height: '$xxlarge',
+      paddingVertical: 0,
+      backgroundColor: '$secondary',
+      elevation: '$xxsmall',
+    },
   });

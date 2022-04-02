@@ -23,4 +23,16 @@ export const styles = EStyleSheet.create({
     flex: 1,
   },
   buttonGroup: { width: '100%' },
+  terms: {
+    textAlign: 'center',
+    fontSize: '$xsmall',
+    color: '$white',
+    marginTop: '$xxsmall',
+  },
+  link: {
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+    fontSize: '$xsmall',
+    color: '$secondary',
+  },
 });

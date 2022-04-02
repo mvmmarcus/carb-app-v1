@@ -7,7 +7,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButtom from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import LogoSvg from '../../../assets/full_logo.svg';
-// import GoogleButton from '../../../assets/google_btn.svg';
 import IconWomanAvatar from '../../../assets/woman_avatar.svg';
 
 import { styles } from './styles';
@@ -44,6 +43,16 @@ const IndexScreeen = ({ navigation }) => {
           >
             Registrar-se
           </CustomButtom>
+          <CustomText style={styles.terms}>
+            Ao continuar, você afirma que leu e concorda com os
+          </CustomText>
+          <CustomText
+            onPress={() => navigation?.navigate('AboutScreen')}
+            weight="medium"
+            style={styles.link}
+          >
+            Termos de utilização
+          </CustomText>
         </View>
       </View>
     </LinearGradient>

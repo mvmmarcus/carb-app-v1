@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View } from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
-import { useFocusEffect } from '@react-navigation/native';
 
 import CustomText from '../../components/CustomText';
 import AuthContext from '../../contexts/auth';
@@ -40,7 +39,7 @@ const HomeScreen = ({ navigation }) => {
   const { width } = useOrientation();
 
   const getStoragedBloodGlucoses = async (user) => {
-    setIsLoading(false);
+    setIsLoading(true);
     try {
       const userInfosByUid = jsonParse(
         await AsyncStorage.getItem(`@carbs:${user?.uid}`)
@@ -62,9 +61,11 @@ const HomeScreen = ({ navigation }) => {
   }, [bloodGlucoses]);
 
   const filterBoodGlucosesByDate = (date, bloodGlucoses = []) => {
-    const calendarDate = date?.toLocaleString('en-ZA', {
-      dateStyle: 'short',
-    });
+    const calendarDate = date
+      ?.toISOString()
+      ?.split('T')[0]
+      ?.split('-')
+      ?.join('/');
 
     const filteredBloodGlucoses = bloodGlucoses?.filter(
       (item) => item?.date === calendarDate

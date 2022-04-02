@@ -29,7 +29,7 @@ IconMC.loadFont();
 const BottomTabNavigator = () => {
   const { setIsAcceptedPermissions, setScanStatus, setBluetoothState } =
     useContext(BluetoothContext);
-  const { isFirstAccess } = useContext(UserContext);
+  const { isFirstAccess, isEditInfos } = useContext(UserContext);
   const { $white, $secondary, $gray } = theme;
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const BottomTabNavigator = () => {
     };
   }, []);
 
-  return isFirstAccess ? (
+  return isFirstAccess || isEditInfos ? (
     <QuestionsStack.Navigator initialRouteName="QuestionsScreen">
       <QuestionsStack.Screen
         name="QuestionsScreen"

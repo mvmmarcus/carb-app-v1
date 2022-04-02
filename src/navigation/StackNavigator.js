@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -7,16 +6,12 @@ import Home from '../screens/Home';
 import Sync from '../screens/Sync';
 import Registers from '../screens/Registers';
 import Menu from '../screens/Menu';
+import Profile from '../screens/Profile';
+import About from '../screens/About';
+
+import { theme } from '../styles/theme';
 
 const Stack = createNativeStackNavigator();
-
-const Screen = () => {
-  return (
-    <View>
-      <Text>Screen</Text>
-    </View>
-  );
-};
 
 const MainStackNavigator = (props) => {
   return (
@@ -25,7 +20,6 @@ const MainStackNavigator = (props) => {
       initialRouteName="HomeScreen"
     >
       <Stack.Screen name="HomeScreen" component={Home} />
-      <Stack.Screen name="Screen" component={Screen} />
     </Stack.Navigator>
   );
 };
@@ -53,12 +47,36 @@ const SyncStackNavigator = () => {
 };
 
 const MenuStackNavigator = () => {
+  const { $white } = theme;
+
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
       initialRouteName="MenuScreen"
     >
       <Stack.Screen name="MenuScreen" component={Menu} />
+      <Stack.Screen
+        name="ProfileScreen"
+        options={{
+          headerBackTitleVisible: true,
+          headerShown: true,
+          headerTransparent: true,
+          title: 'Editar perfil',
+          headerTintColor: $white,
+        }}
+        component={Profile}
+      />
+      <Stack.Screen
+        name="AboutScreen"
+        options={{
+          headerBackTitleVisible: true,
+          headerShown: true,
+          headerTransparent: true,
+          title: 'Sobre o Carbs',
+          headerTintColor: $white,
+        }}
+        component={About}
+      />
     </Stack.Navigator>
   );
 };

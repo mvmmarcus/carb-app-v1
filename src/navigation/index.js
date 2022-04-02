@@ -16,6 +16,7 @@ const Navigation = ({}) => {
     isAddRegisterModalOpen,
     isFirstAccess,
     isLoading,
+    isEditInfos,
     setIsAddRegisterModalOpen,
   } = useContext(UserContext);
 
@@ -35,7 +36,7 @@ const Navigation = ({}) => {
               onClose={() => setIsAddRegisterModalOpen(false)}
             />
           )}
-          {!isFirstAccess && !isAddRegisterModalOpen && (
+          {!isFirstAccess && !isAddRegisterModalOpen && !isEditInfos && (
             <FloatingButton onPress={() => setIsAddRegisterModalOpen(true)} />
           )}
         </BluetoothProvider>

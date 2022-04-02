@@ -12,12 +12,14 @@ import IconCheck from '../../../assets/check.svg';
 import IconNavigatePrevious from '../../../assets/navigate_before.svg';
 import CustomButtom from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
+import { jsonParse } from '../../utils/jsonParse';
 
 import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
 
 const QuestionsScreen = ({ navigation }) => {
-  const { setIsFirstAccess, setInsulinParams } = useContext(UserContext);
+  const { isEditInfos, setIsFirstAccess, setInsulinParams, setIsEditInfos } =
+    useContext(UserContext);
   const { user } = useContext(AuthContext);
   const [index, setIndex] = useState(0);
   const [form, setForm] = useState({
@@ -71,14 +73,20 @@ const QuestionsScreen = ({ navigation }) => {
   }, []);
 
   const onFinishQuestions = async (insulinParams, user) => {
+    const userInfosByUid = jsonParse(
+      await AsyncStorage.getItem(`@carbs:${user?.uid}`)
+    );
+
     await AsyncStorage.setItem(
       `@carbs:${user?.uid}`,
       JSON.stringify({
+        ...userInfosByUid,
         isFirstAccess: false,
         insulinParams: insulinParams,
       })
     );
 
+    setIsEditInfos(false);
     setIsFirstAccess(false);
     setInsulinParams(insulinParams);
   };
@@ -209,6 +217,17 @@ const QuestionsScreen = ({ navigation }) => {
               </View>
             )}
           />
+          {isEditInfos && (
+            <CustomButtom
+              uppercase={false}
+              style={styles.cancelButton}
+              labelStyle={{ color: $white }}
+              onPress={() => setIsEditInfos(false)}
+              color={$white}
+            >
+              Cancelar edição
+            </CustomButtom>
+          )}
         </View>
       </View>
     </ScreenWrapper>
