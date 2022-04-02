@@ -10,6 +10,13 @@ export const styles = EStyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: '$small',
     maxWidth: '27rem',
+    paddingBottom: '$medium',
+  },
+  logo: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: '$small',
   },
   hero: {
     marginTop: '5rem',
@@ -27,7 +34,7 @@ export const styles = EStyleSheet.create({
     textAlign: 'center',
     fontSize: '$xsmall',
     color: '$white',
-    marginTop: '$xxsmall',
+    marginTop: '$small',
   },
   link: {
     textAlign: 'center',
