@@ -16,7 +16,6 @@ const useAuth = () => {
     const userInfosByUid = jsonParse(
       await AsyncStorage.getItem(`@carbs:${user?.uid}`)
     );
-
     setUser(user);
     setIsFirstAccess(
       userInfosByUid === null ? true : userInfosByUid?.isFirstAccess

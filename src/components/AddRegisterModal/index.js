@@ -1,11 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { ScrollView, Dimensions, View, TextInput } from 'react-native';
 
+import uuid from 'react-native-uuid';
 import AsyncStorage from '@react-native-community/async-storage';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import DropDownPicker from 'react-native-select-dropdown';
 import { Button, Dialog, IconButton, List } from 'react-native-paper';
 
+import Alert from '../Alert';
 import Input from '../Input';
 import SearchFoodModal from '../SearchFoodModal';
 import CustomButtom from '../CustomButton';
@@ -22,33 +24,65 @@ import {
 
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
+import { sortByDateAndTime } from '../../utils/date';
 
 const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const { width } = Dimensions.get('screen');
   const { $secondary, $white, $red } = theme;
   const styles = getStyle({ width });
-  const [mealType, setMealType] = useState('Almoço');
+  const [mealType, setMealType] = useState('');
   const [foodAccordionId, setFoodAccordionId] = useState('');
   const [customBloodGlucoseValue, setCustomBloodGlucoseValue] = useState('');
   const [openFoodModal, setOpenFoodModal] = useState(false);
   const [isSavingRegister, setIsSavingRegister] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedFoods, setSelectedFoods] = useState([]);
   const [updatedSelectedFoods, setUpdatedSelectedFoods] = useState([]);
   const [editablesFoods, setEditablesFoods] = useState([]);
-  const { bloodGlucoses, setBloodGlucoses } = useContext(BluetoothContext);
+  const [lastBloodGlucose, setLastBloodGlucose] = useState([]);
+  const [activeNav, setActiveNav] = useState('Adicionar glicemia manual');
+  const [availableNavs, setAvailableNavs] = useState([
+    'Adicionar glicemia manual',
+  ]);
+  const { bloodGlucoses, isGettingBloodGlucoses, setBloodGlucoses } =
+    useContext(BluetoothContext);
   const { insulinParams, setSnackMessage } = useContext(UserContext);
   const { user } = useContext(AuthContext);
-  const lastBloodGlucose =
-    bloodGlucoses?.length > 0 ? bloodGlucoses[bloodGlucoses?.length - 1] : null;
+
   const totalCho = selectedFoods?.reduce(
     (total, curr) => total + curr?.cho?.value,
     0
   );
 
   useEffect(() => {
-    setSelectedFoods(lastBloodGlucose?.selectedFoods);
-    setMealType(lastBloodGlucose?.type);
-  }, []);
+    const fromMeterGlucoses = bloodGlucoses
+      ?.sort(sortByDateAndTime)
+      ?.filter((item) => item?.isFromMeter === true);
+    const lastBloodGlucoseFromMeter =
+      fromMeterGlucoses?.length > 0 ? fromMeterGlucoses[0] : null;
+    setLastBloodGlucose(lastBloodGlucoseFromMeter);
+    if (!!lastBloodGlucoseFromMeter) {
+      setAvailableNavs([
+        'Adicionar glicemia manual',
+        'Usar última leitura do medidor',
+      ]);
+      setActiveNav('Usar última leitura do medidor');
+    }
+    setIsLoading(false);
+  }, [bloodGlucoses]);
+
+  useEffect(() => {
+    if (activeNav === 'Usar última leitura do medidor') {
+      setSelectedFoods(lastBloodGlucose?.selectedFoods || []);
+      setMealType(lastBloodGlucose?.type);
+    } else {
+      setSelectedFoods([]);
+      setEditablesFoods([]);
+      setUpdatedSelectedFoods([]);
+      setMealType('');
+      setCustomBloodGlucoseValue('');
+    }
+  }, [lastBloodGlucose, activeNav]);
 
   const handleAddFoods = (addedFoods) => {
     setSelectedFoods(addedFoods);
@@ -137,24 +171,22 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
     totalCho,
     mealType,
     selectedFoods = [],
+    lastBloodGlucose,
+    isBloodGlucoseFromMeter = false,
     customGlucose
   ) => {
     setIsSavingRegister(true);
     try {
       let updatedBloodGlucoses = [];
-      const lastBloodGlucose =
-        bloodGlucoses?.length > 0
-          ? bloodGlucoses[bloodGlucoses?.length - 1]
-          : null;
 
-      if (lastBloodGlucose?.isFromMeter) {
+      if (isBloodGlucoseFromMeter) {
         updatedBloodGlucoses = bloodGlucoses?.map((item) => {
           if (item?.fullDate === lastBloodGlucose?.fullDate) {
             return {
               ...item,
               insulin: foodInsulin,
               correction: correctionInsulin,
-              carbs: totalCho?.toFixed(2),
+              carbs: parseFloat(totalCho?.toFixed(2)),
               type: mealType,
               selectedFoods,
             };
@@ -180,6 +212,8 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
           carbs: parseFloat(totalCho?.toFixed(2)),
           type: mealType,
           selectedFoods,
+          isFromMeter: false,
+          id: uuid.v4(),
         };
 
         if (bloodGlucoses?.length > 0) {
@@ -189,7 +223,6 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
         }
       }
 
-      setBloodGlucoses(updatedBloodGlucoses);
       const userInfosByUid = jsonParse(
         await AsyncStorage.getItem(`@carbs:${user?.uid}`)
       );
@@ -202,6 +235,8 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
         })
       );
 
+      setBloodGlucoses(updatedBloodGlucoses);
+
       setSnackMessage({ message: 'Registro salvo!', type: 'success' });
       !!onClose && onClose();
     } catch (error) {
@@ -211,8 +246,8 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
     }
   };
 
-  const getRegisterTime = (lastBloodGlucose) => {
-    if (!!lastBloodGlucose?.isFromMeter) {
+  const getRegisterTime = (lastBloodGlucose, isBloodGlucoseFromMeter) => {
+    if (isBloodGlucoseFromMeter) {
       return lastBloodGlucose?.time;
     }
 
@@ -225,14 +260,15 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
     return time;
   };
 
-  const getRegisterDate = (lastBloodGlucose) => {
-    if (!!lastBloodGlucose?.isFromMeter) {
+  const getRegisterDate = (lastBloodGlucose, isBloodGlucoseFromMeter) => {
+    if (isBloodGlucoseFromMeter) {
       const registerDate = new Date(lastBloodGlucose?.date)?.toLocaleDateString(
         'pt-BR',
         {
           dateStyle: 'short',
         }
       );
+
       return registerDate;
     }
 
@@ -248,10 +284,11 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const getCorrectionInsulin = (
     lastBloodGlucose,
     customBloodGlucose,
-    insulinParams
+    insulinParams,
+    isBloodGlucoseFromMeter
   ) => {
     // Validar se o usuário sincronizou o app com o medidor
-    if (lastBloodGlucose?.isFromMeter) {
+    if (isBloodGlucoseFromMeter) {
       // Se sincronizou com o medidor, utilizar a última aferição de glicose no cálculo
       const correctionInsulin = calculateCorrectionInsulin(
         lastBloodGlucose?.value,
@@ -273,7 +310,8 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const correctionInsulin = getCorrectionInsulin(
     lastBloodGlucose,
     customBloodGlucoseValue,
-    insulinParams
+    insulinParams,
+    activeNav === 'Usar última leitura do medidor'
   );
 
   const foodInsulin = calculateFoodInsulin(
@@ -281,8 +319,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
     insulinParams?.choInsulinRelationship
   );
 
-  const showSaveButton =
-    !!lastBloodGlucose?.isFromMeter || !!customBloodGlucoseValue;
+  const showSaveButton = selectedFoods?.length > 0 || !!customBloodGlucoseValue;
 
   return (
     <Dialog dismissable={false} style={styles.container} visible={isOpen}>
@@ -306,8 +343,36 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
             Adicionar Registro
           </CustomText>
         </View>
+
+        {(isLoading || isGettingBloodGlucoses) && (
+          <Alert message="Atualizando registros" />
+        )}
+
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.scrollAreaContent}>
+            <View style={styles.timeContainer}>
+              <CustomText
+                weight="bold"
+                style={{ ...styles.text, marginBottom: 10 }}
+              >
+                Fonte da glicemia
+              </CustomText>
+              <View style={styles.buttonsRow}>
+                <DropDownPicker
+                  defaultButtonText={activeNav}
+                  data={availableNavs}
+                  onSelect={setActiveNav}
+                  rowStyle={styles.dropdownRow}
+                  rowTextStyle={styles.dropdownRowText}
+                  buttonStyle={styles.buttonFullWidth}
+                  buttonTextStyle={styles.buttonLabel}
+                  dropdownIconPosition="right"
+                  renderDropdownIcon={() => (
+                    <IconFA name="caret-down" size={14} color={$secondary} />
+                  )}
+                />
+              </View>
+            </View>
             <View style={styles.timeContainer}>
               <CustomText
                 weight="bold"
@@ -322,7 +387,10 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                   labelStyle={styles.buttonLabel}
                   icon="clock-time-four-outline"
                 >
-                  {getRegisterTime(lastBloodGlucose)}
+                  {getRegisterTime(
+                    lastBloodGlucose,
+                    activeNav === 'Usar última leitura do medidor'
+                  )}
                 </Button>
                 <Button
                   // onPress={() => setShowDatePicker(true)}
@@ -333,7 +401,10 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                   labelStyle={styles.buttonLabel}
                   icon="calendar"
                 >
-                  {getRegisterDate(lastBloodGlucose)}
+                  {getRegisterDate(
+                    lastBloodGlucose,
+                    activeNav === 'Usar última leitura do medidor'
+                  )}
                 </Button>
               </View>
             </View>
@@ -356,7 +427,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                   Adicionar alimento
                 </Button>
                 <DropDownPicker
-                  defaultValue={mealType}
+                  defaultButtonText="Tipo da refeição"
                   data={['Café da manha', 'Almoço', 'Lanche', 'Jantar']}
                   onSelect={setMealType}
                   rowStyle={styles.dropdownRow}
@@ -376,7 +447,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                   Glicemia:
                 </CustomText>
 
-                {lastBloodGlucose?.isFromMeter ? (
+                {activeNav === 'Usar última leitura do medidor' ? (
                   <CustomText weight="bold" style={styles.text}>
                     {lastBloodGlucose?.value} mg/dL
                   </CustomText>
@@ -468,7 +539,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                                   weight="bold"
                                   style={styles.foodName}
                                 >
-                                  {food?.cho?.value}g
+                                  {food?.cho?.value?.toFixed(2)}g
                                 </CustomText>
                               </CustomText>
                             </View>
@@ -540,9 +611,17 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
                   totalCho,
                   mealType,
                   selectedFoods,
+                  lastBloodGlucose,
+                  activeNav === 'Usar última leitura do medidor',
                   {
-                    time: getRegisterTime(lastBloodGlucose),
-                    date: getRegisterDate(lastBloodGlucose),
+                    time: getRegisterTime(
+                      lastBloodGlucose,
+                      activeNav === 'Usar última leitura do medidor'
+                    ),
+                    date: getRegisterDate(
+                      lastBloodGlucose,
+                      activeNav === 'Usar última leitura do medidor'
+                    ),
                     value: customBloodGlucoseValue,
                   }
                 )

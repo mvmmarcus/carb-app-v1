@@ -8,7 +8,7 @@ import CustomText from '../../components/CustomText';
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
 
-const Alert = ({ message = '' }) => {
+const Alert = ({ message = '', size = 'small' }) => {
   const styles = getStyle({});
   const { $white } = theme;
   return (
@@ -16,7 +16,7 @@ const Alert = ({ message = '' }) => {
       <CustomText weight="bold" style={styles.title}>
         {message}
       </CustomText>
-      <ActivityIndicator animating={true} color={$white} />
+      <ActivityIndicator size={size} animating={true} color={$white} />
     </View>
   );
 };

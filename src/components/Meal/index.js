@@ -12,12 +12,12 @@ import { getStyle } from './styles';
 import { calculateCorrectionInsulin } from '../../utils/bloodGlucose';
 
 const Meal = ({
-  glucose = '0',
-  carbs = '0',
-  insulin = '0',
-  correction = '0',
-  time = '0',
-  type = '0',
+  glucose = 0,
+  carbs = 0,
+  insulin = 0,
+  correction = 0,
+  time = '-',
+  type = '-',
   insulinParams = null,
 }) => {
   const styles = getStyle({

@@ -13,6 +13,7 @@ import CustomText from '../../components/CustomText';
 import BluetoothContext from '../../contexts/bluetooth';
 import UserContext from '../../contexts/user';
 import { sortByDate, monthNames, sortByMonth } from '../../utils/date';
+import { convertNumberToString } from '../../utils/global';
 
 import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
@@ -71,7 +72,6 @@ const RegistersScreeen = ({ navigation }) => {
     const formattedBloodGlucoses = bloodGlucoses?.map((item) => {
       return {
         ...item,
-        id: uuid.v4(),
         time: item?.time?.slice(0, 5),
         glucose: item?.value,
       };
@@ -82,7 +82,7 @@ const RegistersScreeen = ({ navigation }) => {
 
   const formatDateByDayAndMonth = (selectedDate) => {
     const date = new Date(selectedDate);
-    const day = date?.getDate();
+    const day = convertNumberToString(date?.getDate());
     const month = monthNames[date?.getMonth()];
     const formattedDate = `${day} de ${month}`;
 
@@ -135,6 +135,7 @@ const RegistersScreeen = ({ navigation }) => {
           data={item?.dates?.sort(sortByDate)}
           renderItem={dailyBloodGlucoses}
           keyExtractor={dailyBloodGlucosesKey}
+          removeClippedSubviews={true}
         />
       </React.Fragment>
     );

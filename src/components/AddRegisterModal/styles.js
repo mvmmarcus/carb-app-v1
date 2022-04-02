@@ -8,6 +8,7 @@ export const getStyle = ({ width }) =>
       borderTopLeftRadius: '$small',
       borderTopRightRadius: '$small',
       alignSelf: 'center',
+      justifyContent: 'center',
       backgroundColor: '$primary',
       overflow: 'hidden',
     },
@@ -206,5 +207,8 @@ export const getStyle = ({ width }) =>
     customBloodGlucose: {
       flexDirection: 'row',
       alignItems: 'center',
+    },
+    navContainer: {
+      marginBottom: '$xlarge',
     },
   });

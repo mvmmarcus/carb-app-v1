@@ -2,7 +2,6 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 
 export const styles = EStyleSheet.create({
   gradient: {
-    paddingTop: '3rem',
     flex: 1,
   },
   scrollView: {
@@ -10,7 +9,6 @@ export const styles = EStyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: '$small',
     paddingBottom: '$xxxlarge',
@@ -18,6 +16,8 @@ export const styles = EStyleSheet.create({
   titleGroup: {
     width: '100%',
     alignItems: 'flex-start',
+    paddingTop: '3rem',
+    paddingHorizontal: '$small',
   },
   title: {
     fontSize: '$medium',
@@ -42,7 +42,13 @@ export const styles = EStyleSheet.create({
     fontSize: '$xsmall',
     color: '$secondary',
   },
-  formGroup: { width: '100%', marginBottom: '$xlarge', marginTop: '$xlarge' },
+  formGroup: {
+    flex: 1,
+    width: '100%',
+    marginBottom: '$xlarge',
+    marginTop: '$xlarge',
+    justifyContent: 'center',
+  },
   buttonGroup: { width: '100%' },
   radioGroup: {
     width: '100%',

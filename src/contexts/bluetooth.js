@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
+import uuid from 'react-native-uuid';
 import AsyncStorage from '@react-native-community/async-storage';
 import BleManager from 'react-native-ble-manager';
 import { Buffer } from 'buffer';
@@ -40,18 +41,6 @@ const BluetoothContext = createContext({
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
-
-let fakeBloodGlucoses = [
-  { value: 100, time: '12:00', date: '2022/03/29', carbs: 10, bolus: 2 },
-  { value: 60, time: '14:00', date: '2022/03/29', carbs: 10, bolus: 2 },
-  { value: 70, time: '16:00', date: '2022/03/29', carbs: 10, bolus: 2 },
-  { value: 145, time: '18:00', date: '2022/03/29' },
-  { value: 150, time: '19:00', date: '2022/03/29' },
-  { value: 40, time: '20:00', date: '2022/04/01', carbs: 10, bolus: 2 },
-  { value: 130, time: '22:00', date: '2022/04/01' },
-];
-
-fakeBloodGlucoses = [];
 
 export const BluetoothProvider = ({ children }) => {
   const [scanStatus, setScanStatus] = useState('start');
@@ -106,7 +95,7 @@ export const BluetoothProvider = ({ children }) => {
     const didUpdateValueForCharacteristicSubscription =
       bleManagerEmitter.addListener(
         'BleManagerDidUpdateValueForCharacteristic',
-        handleUpdateValueForCharacteristic
+        (data) => handleUpdateValueForCharacteristic(data, bloodGlucoses)
       );
 
     // Observador disparado ao encerrar a varredura por novos dispositivos
@@ -284,20 +273,55 @@ export const BluetoothProvider = ({ children }) => {
     if (data?.characteristic === racpCharacteristic) {
       // console.log('@@@@@@@@@@@@@@@ all data received @@@@@@@@@@@@@@');
 
-      setBloodGlucoses(newBloodGlucoses);
-      setIsGettingBloodGlucoses(false);
+      const bloodGlucoseAlreadyExists = (
+        bloodGlucose = null,
+        bloodGlucoses = []
+      ) => {
+        return !!bloodGlucoses?.find(
+          (item) => item?.fullDate === bloodGlucose?.fullDate
+        );
+      };
+
+      const updatedNewBloodGlucoses = [];
 
       const userInfosByUid = jsonParse(
         await AsyncStorage.getItem(`@carbs:${user?.uid}`)
       );
 
-      await AsyncStorage.setItem(
-        `@carbs:${user?.uid}`,
-        JSON.stringify({
-          ...userInfosByUid,
-          bloodGlucoses: newBloodGlucoses,
-        })
-      );
+      const currentBloodGlucoses = userInfosByUid?.bloodGlucoses;
+
+      if (currentBloodGlucoses?.length > 0) {
+        newBloodGlucoses?.forEach((item) => {
+          if (!bloodGlucoseAlreadyExists(item, currentBloodGlucoses)) {
+            updatedNewBloodGlucoses?.push(item);
+          }
+        });
+
+        await AsyncStorage.setItem(
+          `@carbs:${user?.uid}`,
+          JSON.stringify({
+            ...userInfosByUid,
+            bloodGlucoses: [
+              ...currentBloodGlucoses,
+              ...updatedNewBloodGlucoses,
+            ],
+          })
+        );
+
+        setBloodGlucoses([...currentBloodGlucoses, ...updatedNewBloodGlucoses]);
+      } else {
+        await AsyncStorage.setItem(
+          `@carbs:${user?.uid}`,
+          JSON.stringify({
+            ...userInfosByUid,
+            bloodGlucoses: newBloodGlucoses,
+          })
+        );
+
+        setBloodGlucoses(newBloodGlucoses);
+      }
+      await sleep(500); // Garantir que não trave ao receber muitos dados de uma vez
+      setIsGettingBloodGlucoses(false);
     }
 
     if (data?.characteristic === gmCharacteristic) {
@@ -330,6 +354,7 @@ export const BluetoothProvider = ({ children }) => {
         time,
         fullDate: `${date} ${time}`,
         isFromMeter: true,
+        id: uuid.v4(),
       };
 
       // Junção de todos os registros em um array de objetos (valor e data do registro da glicemia no dispositivo)

@@ -115,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
     {
       value: getTotal(
         filteredBloodGlucoses?.map((item) => parseFloat(item?.carbs) || 0)
-      )?.toFixed(0),
+      ),
       title: 'Carbs',
       subtitle: 'g',
     },
@@ -123,7 +123,8 @@ const HomeScreen = ({ navigation }) => {
       value: getTotal(
         filteredBloodGlucoses?.map(
           (item) => item?.correction + item?.insulin || 0
-        )
+        ),
+        1
       ),
       title: 'Bolus',
       subtitle: 'ui',

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, KeyboardAvoidingView } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -11,6 +11,7 @@ import AuthContext from '../../contexts/auth';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import Input from '../../components/Input';
+import useOrientation from '../../hooks/useOrientation';
 import { getErrorMessage } from '../../utils/errors';
 
 import { styles } from './styles';
@@ -24,6 +25,7 @@ const SignInScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
   const { signin } = useContext(AuthContext);
+  const { height } = useOrientation();
 
   const handleSignin = async (email, password) => {
     setIsLoadingSignin(true);
@@ -39,89 +41,91 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
-      <Snackbar
-        type="error"
-        message={formError}
-        onDismiss={() => setFormError(null)}
-      />
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.container}>
-          <View style={styles.titleGroup}>
-            <CustomText style={styles.title} weight="bold">
-              Vamos fazer seu login.
-            </CustomText>
-            <CustomText style={styles.subTitle} weight="regular">
-              Bom te ver de volta!
-            </CustomText>
-          </View>
-          <View style={styles.formGroup}>
-            <Input
-              label="Email"
-              placeholder="Digite seu e-mail"
-              iconLabel={<IconPerson />}
-              marginBottom={$medium}
-              onChange={(email) => setUserEmail(email)}
-            />
-            <Input
-              label="Senha"
-              placeholder="Digite sua senha"
-              iconLabel={<IconLock />}
-              iconInput={
-                showPassword ? (
-                  <FontAwesome5Icon
-                    name="eye"
-                    size={20}
-                    color={$primary}
-                    onPress={() => setShowPassword((prev) => !prev)}
-                  />
-                ) : (
-                  <FontAwesome5Icon
-                    name="eye-slash"
-                    size={20}
-                    color={$primary}
-                    onPress={() => setShowPassword((prev) => !prev)}
-                  />
-                )
-              }
-              marginBottom={$small}
-              onChange={(password) => setPassword(password)}
-              isSecurity={!showPassword}
-            />
-            <View style={styles.radioGroup}>
-              <CustomText
-                onPress={() => navigation?.navigate('ForgotPasswordScreen')}
-                weight="medium"
-                style={{ ...styles.link, color: $white }}
+      <KeyboardAvoidingView style={{ height }}>
+        <Snackbar
+          type="error"
+          message={formError}
+          onDismiss={() => setFormError(null)}
+        />
+        <View style={styles.titleGroup}>
+          <CustomText style={styles.title} weight="bold">
+            Vamos fazer seu login.
+          </CustomText>
+          <CustomText style={styles.subTitle} weight="regular">
+            Bom te ver de volta!
+          </CustomText>
+        </View>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.container}>
+            <View style={styles.formGroup}>
+              <Input
+                label="Email"
+                placeholder="Digite seu e-mail"
+                iconLabel={<IconPerson />}
+                marginBottom={$medium}
+                onChange={(email) => setUserEmail(email)}
+              />
+              <Input
+                label="Senha"
+                placeholder="Digite sua senha"
+                iconLabel={<IconLock />}
+                iconInput={
+                  showPassword ? (
+                    <FontAwesome5Icon
+                      name="eye"
+                      size={20}
+                      color={$primary}
+                      onPress={() => setShowPassword((prev) => !prev)}
+                    />
+                  ) : (
+                    <FontAwesome5Icon
+                      name="eye-slash"
+                      size={20}
+                      color={$primary}
+                      onPress={() => setShowPassword((prev) => !prev)}
+                    />
+                  )
+                }
+                marginBottom={$small}
+                onChange={(password) => setPassword(password)}
+                isSecurity={!showPassword}
+              />
+              <View style={styles.radioGroup}>
+                <CustomText
+                  onPress={() => navigation?.navigate('ForgotPasswordScreen')}
+                  weight="medium"
+                  style={{ ...styles.link, color: $white }}
+                >
+                  Esqueci minha senha
+                </CustomText>
+              </View>
+            </View>
+            <View style={styles.buttonGroup}>
+              <CustomButton
+                isLoading={isLoadingSignin}
+                disabled={!userEmail || !password}
+                backgroundColor={$secondary}
+                color={$white}
+                onPress={() =>
+                  !isLoadingSignin && handleSignin(userEmail, password)
+                }
               >
-                Esqueci minha senha
+                {isLoadingSignin ? '' : 'Entrar'}
+              </CustomButton>
+              <CustomText weight="medium" style={styles.description}>
+                Sou novo por aqui.{' '}
+                <CustomText
+                  onPress={() => navigation?.navigate('SignUpScreen')}
+                  weight="medium"
+                  style={styles.link}
+                >
+                  Registrar-se
+                </CustomText>
               </CustomText>
             </View>
           </View>
-          <View style={styles.buttonGroup}>
-            <CustomButton
-              isLoading={isLoadingSignin}
-              disabled={!userEmail || !password}
-              backgroundColor={$secondary}
-              color={$white}
-              onPress={() =>
-                !isLoadingSignin && handleSignin(userEmail, password)
-              }
-            >
-              {isLoadingSignin ? '' : 'Entrar'}
-            </CustomButton>
-            <CustomText weight="medium" style={styles.description}>
-              Sou novo por aqui.{' '}
-              <CustomText
-                onPress={() => navigation?.navigate('SignUpScreen')}
-                weight="medium"
-                style={styles.link}
-              >
-                Registrar-se
-              </CustomText>
-            </CustomText>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
