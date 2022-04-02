@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { ScrollView, View } from 'react-native';
 
+import Toast from 'react-native-toast-message';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
-import Snackbar from '../../components/Snackbar';
 import AuthContext from '../../contexts/auth';
 import IconLock from '../../../assets/lock.svg';
 import CustomButtom from '../../components/CustomButton';
@@ -25,21 +25,26 @@ const SignUpScreen = ({ navigation }) => {
   const [userEmail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [formError, setFormError] = useState('');
   const { signup } = useContext(AuthContext);
 
   const handleSignup = async () => {
     setIsLoadingSignup(true);
     try {
       if (password !== confirmPassword) {
-        setFormError('A confirmação de senha falhou. Tente novamente');
+        Toast.show({
+          type: 'error',
+          text1: 'A confirmação de senha falhou. Tente novamente',
+        });
         return;
       }
 
       await signup(userName, userEmail, password);
     } catch (error) {
       console.log('handleSignup error: ', error);
-      setFormError(getErrorMessage(error?.code));
+      Toast.show({
+        type: 'error',
+        text1: getErrorMessage(error?.code),
+      });
     } finally {
       setIsLoadingSignup(false);
     }
@@ -47,11 +52,6 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
-      <Snackbar
-        type="error"
-        message={formError}
-        onDismiss={() => setFormError(null)}
-      />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <CustomText style={styles.title} weight="bold">
           Vamos fazer seu cadastro

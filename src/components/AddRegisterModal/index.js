@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { ScrollView, Dimensions, View, TextInput } from 'react-native';
 
+import Toast from 'react-native-toast-message';
 import uuid from 'react-native-uuid';
 import AsyncStorage from '@react-native-community/async-storage';
 import IconFA from 'react-native-vector-icons/FontAwesome';
@@ -46,7 +47,7 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   ]);
   const { bloodGlucoses, isGettingBloodGlucoses, setBloodGlucoses } =
     useContext(BluetoothContext);
-  const { insulinParams, setSnackMessage } = useContext(UserContext);
+  const { insulinParams } = useContext(UserContext);
   const { user } = useContext(AuthContext);
 
   const totalCho = selectedFoods?.reduce(
@@ -237,7 +238,11 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
 
       setBloodGlucoses(updatedBloodGlucoses);
 
-      setSnackMessage({ message: 'Registro salvo!', type: 'success' });
+      Toast.show({
+        type: 'success',
+        text1: 'Registro salvo!',
+      });
+
       !!onClose && onClose();
     } catch (error) {
       console.log('handleCalculateInsulin error: ', error);

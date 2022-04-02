@@ -3,6 +3,7 @@ const errorsByFirebaseCode = {
   'auth/user-not-found': 'Usuário não encontrado',
   'auth/invalid-email': 'Email inválido',
   'auth/weak-password': 'A senha precisa ter, no mínimo, 6 digitos',
+  'auth/email-already-in-use': 'Já existe um usuário com este email',
   default: 'Ocorreu algum erro interno, tente novamente',
 };
 

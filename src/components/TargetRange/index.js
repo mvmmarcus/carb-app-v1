@@ -8,10 +8,12 @@ import ArrowDown from '../../../assets/arrow_down.svg';
 import ArrowUp from '../../../assets/arrow_up.svg';
 
 import { getStyle } from './styles';
+import { theme } from '../../styles/theme';
 
 const TargetRange = ({ onValuesChange, ...props }) => {
-  const [values, setValues] = useState([90, 120]);
+  const [values, setValues] = useState([90, 100]);
 
+  const { $red } = theme;
   const styles = getStyle({});
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const TargetRange = ({ onValuesChange, ...props }) => {
             Hiper
           </CustomText>
           <CustomText style={styles.maxMinValue} weight="bold">
-            {values[1]} mg/dL
+            140 mg/dL
           </CustomText>
         </View>
       </View>
@@ -45,7 +47,7 @@ const TargetRange = ({ onValuesChange, ...props }) => {
         selectedStyle={styles.selected}
         markerStyle={styles.marker}
         enableLabel
-        values={[90, 120]}
+        values={[90, 110]}
         min={70}
         max={140}
         sliderLength={240}
@@ -55,13 +57,13 @@ const TargetRange = ({ onValuesChange, ...props }) => {
       />
       <CustomText style={styles.unit}>mg/dL</CustomText>
       <View style={styles.arrowContainer}>
-        <ArrowDown />
+        <ArrowDown color={$red} />
         <View style={styles.maxMinValueContainer}>
           <CustomText style={styles.maxMinValueTitle} weight="bold">
             Hipo
           </CustomText>
           <CustomText style={styles.maxMinValue} weight="bold">
-            {values[0]} mg/dL
+            70 mg/dL
           </CustomText>
         </View>
       </View>

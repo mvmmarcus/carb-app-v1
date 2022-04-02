@@ -3,21 +3,21 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 export const styles = EStyleSheet.create({
   gradient: {
     flex: 1,
+    paddingTop: '3rem',
+    paddingHorizontal: '$small',
   },
   scrollView: {
     flexGrow: 1,
   },
   container: {
-    flex: 1,
     alignItems: 'center',
-    paddingHorizontal: '$small',
+    justifyContent: 'space-between',
     paddingBottom: '$xxxlarge',
+    flex: 1,
   },
   titleGroup: {
     width: '100%',
     alignItems: 'flex-start',
-    paddingTop: '3rem',
-    paddingHorizontal: '$small',
   },
   title: {
     fontSize: '$medium',

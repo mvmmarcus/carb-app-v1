@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
+import Toast from 'react-native-toast-message';
 import LinearGradient from 'react-native-linear-gradient';
 
-import Snackbar from '../../components/Snackbar';
 import IconPerson from '../../../assets/person_outline.svg';
 import AuthContext from '../../contexts/auth';
 import CustomButtom from '../../components/CustomButton';
@@ -18,7 +18,6 @@ const CreatePasswordScreen = ({ navigation }) => {
   const { $primary, $secondary, $white, $medium } = theme;
   const [userEmail, setUserEmail] = useState('');
   const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const [formError, setFormError] = useState('');
   const { forgotPassword } = useContext(AuthContext);
 
   const handleSendForgotPasswordEmail = async (userEmail) => {
@@ -27,7 +26,10 @@ const CreatePasswordScreen = ({ navigation }) => {
       await forgotPassword(userEmail);
     } catch (error) {
       console.log('handleSignin error: ', error?.code);
-      setFormError(getErrorMessage(error?.code));
+      Toast.show({
+        type: 'error',
+        text1: getErrorMessage(error?.code),
+      });
     } finally {
       setIsSendingEmail(false);
     }
@@ -35,11 +37,6 @@ const CreatePasswordScreen = ({ navigation }) => {
 
   return (
     <LinearGradient colors={[$secondary, $primary]} style={styles.gradient}>
-      <Snackbar
-        type="error"
-        message={formError}
-        onDismiss={() => setFormError(null)}
-      />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.container}>
           <View style={styles.titleGroup}>

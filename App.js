@@ -3,6 +3,7 @@ import 'react-native-gesture-handler';
 import React, { useEffect } from 'react';
 import { StatusBar, LogBox } from 'react-native';
 
+import Toast from 'react-native-toast-message';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
@@ -34,6 +35,7 @@ const App = () => {
             </AuthProvider>
           </AppProvider>
         </NavigationContainer>
+        <Toast />
       </SafeAreaProvider>
     </PaperProvider>
   );

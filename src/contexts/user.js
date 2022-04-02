@@ -6,12 +6,10 @@ const AppContext = createContext({
   isLoading: true,
   isFirstAccess: true,
   insulinParams: null,
-  snackMessage: null,
   setInsulinParams: () => {},
   setIsFirstAccess: () => {},
   setIsLoading: () => {},
   setIsAddRegisterModalOpen: () => {},
-  setSnackMessage: () => {},
 });
 
 export const AppProvider = ({ children }) => {
@@ -19,7 +17,6 @@ export const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [insulinParams, setInsulinParams] = useState(null);
-  const [snackMessage, setSnackMessage] = useState(null);
 
   return (
     <AppContext.Provider
@@ -28,8 +25,6 @@ export const AppProvider = ({ children }) => {
         isLoading,
         isFirstAccess,
         insulinParams,
-        snackMessage,
-        setSnackMessage,
         setInsulinParams,
         setIsFirstAccess,
         setIsLoading,

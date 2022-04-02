@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 
 const useOrientation = () => {
-  const [screenInfo, setScreenInfo] = useState(Dimensions.get('screen'));
+  const [screenInfo, setScreenInfo] = useState(Dimensions.get('window'));
 
   const onDimensionChange = (result) => setScreenInfo(result?.screen);
 

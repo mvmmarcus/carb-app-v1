@@ -24,6 +24,8 @@ export const AuthProvider = ({ children }) => {
 
     await auth().currentUser.updateProfile({ displayName: name });
 
+    setUser({ ...response.user, displayName: name });
+
     return { ...response.user, displayName: name };
   };
 
