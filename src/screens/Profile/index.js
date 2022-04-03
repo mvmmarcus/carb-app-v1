@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { ScrollView, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -22,10 +23,19 @@ const ProfileScreen = ({ navigation }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { user, setUser } = useContext(AuthContext);
-  const [userName, setUserName] = useState(user?.displayName || '');
+  const [userName, setUserName] = useState(user?.displayName);
   const [userEmail, setUserEmail] = useState(user?.email);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        setUserName(user?.displayName);
+        setUserEmail(user?.email);
+      }
+    }, [user])
+  );
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -150,7 +160,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
           <View style={styles.buttonGroup}>
             <CustomButtom
-              disabled={!userName || !userEmail}
+              disabled={!userEmail || !userName}
               isLoading={isSaving}
               backgroundColor={$secondary}
               color={$white}

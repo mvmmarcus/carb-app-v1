@@ -23,7 +23,7 @@ export const getStyle = ({}) =>
       marginBottom: '$small',
     },
     input: {
-      width: '$xlarge',
+      width: '$xxlarge',
       backgroundColor: 'transparent',
       borderBottomWidth: '0.2rem',
       borderBottomColor: '$white',
@@ -32,6 +32,7 @@ export const getStyle = ({}) =>
       fontSize: '$small',
       textAlign: 'center',
       padding: 0,
+      paddingBottom: 2,
     },
     labelContainer: {
       textAlign: 'left',

@@ -35,7 +35,7 @@ const TargetRange = ({ onValuesChange, ...props }) => {
             Hiper
           </CustomText>
           <CustomText style={styles.maxMinValue} weight="bold">
-            140 mg/dL
+            180 mg/dL
           </CustomText>
         </View>
       </View>

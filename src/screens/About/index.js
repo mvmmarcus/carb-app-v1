@@ -20,9 +20,7 @@ const AoutScreen = ({ navigation }) => {
             diabetes a manter o controle dos seus índices glicêmicos. Por meio
             da contagem de carboidratos e do valor da glicemia aferida pelo
             usuário, é feito o cálculo da quantidade total de insulina que deve
-            ser aplicada para correção.
-          </Text>
-          <Text style={styles.text}>
+            ser aplicada para correção.{'\n'}
             Para os usuários que possuem dispositivos com tecnologia bluetooth
             para aferição da glicemia no sangue, é possível realizar a
             sincronização com o app para obtenção dos dados diretamente do

@@ -266,21 +266,12 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   };
 
   const getRegisterDate = (lastBloodGlucose, isBloodGlucoseFromMeter) => {
-    if (isBloodGlucoseFromMeter) {
-      const registerDate = new Date(lastBloodGlucose?.date)?.toLocaleDateString(
-        'pt-BR',
-        {
-          dateStyle: 'short',
-        }
-      );
-
-      return registerDate;
-    }
-
-    const today = new Date();
-    const day = convertNumberToString(today?.getDate());
-    const month = convertNumberToString(today?.getMonth() + 1);
-    const fullYear = today?.getFullYear();
+    const date = isBloodGlucoseFromMeter
+      ? new Date(lastBloodGlucose?.date)
+      : new Date();
+    const day = convertNumberToString(date?.getDate());
+    const month = convertNumberToString(date?.getMonth() + 1);
+    const fullYear = date?.getFullYear();
     const formattedDate = `${day}/${month}/${fullYear}`;
 
     return formattedDate;
