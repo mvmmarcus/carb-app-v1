@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { View } from 'react-native';
 
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Avatar } from 'react-native-paper';
 
 import AuthContext from '../../contexts/auth';
+import useAuth from '../../hooks/useAuth';
 import UserContext from '../../contexts/user';
 import IconPerson from '../../../assets/person.svg';
 import IconSettings from '../../../assets/settings.svg';
@@ -20,7 +20,8 @@ import { getStyle } from './styles';
 
 const MenuScreen = ({ navigation }) => {
   const styles = getStyle({});
-  const { signout, user } = useContext(AuthContext);
+  const { user } = useAuth();
+  const { signout } = useContext(AuthContext);
   const { setIsEditInfos } = useContext(UserContext);
 
   const handleSignout = async () => {

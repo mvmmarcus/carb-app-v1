@@ -11,7 +11,7 @@ import { getStyle } from './styles';
 import { theme } from '../../styles/theme';
 
 const TargetRange = ({ onValuesChange, ...props }) => {
-  const [values, setValues] = useState([90, 100]);
+  const [values, setValues] = useState([90, 110]);
 
   const { $red } = theme;
   const styles = getStyle({});

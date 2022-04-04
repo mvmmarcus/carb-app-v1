@@ -14,7 +14,7 @@ import SearchFoodModal from '../SearchFoodModal';
 import CustomButtom from '../CustomButton';
 import BluetoothContext from '../../contexts/bluetooth';
 import UserContext from '../../contexts/user';
-import AuthContext from '../../contexts/auth';
+import useAuth from '../../hooks/useAuth';
 import CustomText from '../CustomText';
 import { convertNumberToString } from '../../utils/global';
 import { jsonParse } from '../../utils/jsonParse';
@@ -45,10 +45,11 @@ const AddRegisterModal = ({ isOpen = false, onClose }) => {
   const [availableNavs, setAvailableNavs] = useState([
     'Adicionar glicemia manual',
   ]);
+
   const { bloodGlucoses, isGettingBloodGlucoses, setBloodGlucoses } =
     useContext(BluetoothContext);
   const { insulinParams } = useContext(UserContext);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   const totalCho = selectedFoods?.reduce(
     (total, curr) => total + curr?.cho?.value,

@@ -5,9 +5,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 
 import CustomText from '../../components/CustomText';
-import AuthContext from '../../contexts/auth';
 import Badge from '../../components/Badge';
 import Card from '../../components/Card';
+import useAuth from '../../hooks/useAuth';
 import useOrientation from '../../hooks/useOrientation';
 import GlucoseChart from '../../components/GlucoseChart';
 import ScreenWrapper from '../../components/ScreenWrapper';
@@ -34,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
     isGettingBloodGlucoses,
     setBloodGlucoses,
   } = useContext(BluetoothContext);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const { insulinParams } = useContext(UserContext);
   const { width } = useOrientation();
 
@@ -44,6 +44,7 @@ const HomeScreen = ({ navigation }) => {
       const userInfosByUid = jsonParse(
         await AsyncStorage.getItem(`@carbs:${user?.uid}`)
       );
+
       const bloodGlucoses = userInfosByUid?.bloodGlucoses;
       setBloodGlucoses(bloodGlucoses);
     } catch (error) {
@@ -55,10 +56,10 @@ const HomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (bloodGlucoses?.length === 0 && !isGettingBloodGlucoses) {
+    if (bloodGlucoses?.length === 0 && !isGettingBloodGlucoses && !!user) {
       getStoragedBloodGlucoses(user);
     }
-  }, [bloodGlucoses]);
+  }, []);
 
   const filterBoodGlucosesByDate = (date, bloodGlucoses = []) => {
     const calendarDate = date

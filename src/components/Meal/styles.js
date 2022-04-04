@@ -83,13 +83,13 @@ export const getStyle = ({ glucoseBadgeBg }) => {
     },
     mealItemValue: {
       fontSize: '$small',
-      lineHeight: '1.25rem',
       marginRight: '0.25rem',
-      alignSelf: 'flex-end',
+      alignSelf: 'center',
     },
     mealItemUnity: {
       fontSize: '0.625rem',
       alignSelf: 'flex-end',
+      marginBottom: '0.2rem',
     },
     iconEdit: {
       alignSelf: 'center',

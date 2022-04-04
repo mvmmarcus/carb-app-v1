@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import BleManager from 'react-native-ble-manager';
 import { Buffer } from 'buffer';
 
+import useAuth from '../hooks/useAuth';
 import AuthContext from '../contexts/auth';
 import { jsonParse } from '../utils/jsonParse';
 import {
@@ -54,7 +55,7 @@ export const BluetoothProvider = ({ children }) => {
   const [discoveredPeripherals, setDiscoveredPeripherals] = useState([]);
   const [discoveredPeripheral, setDiscoveredPeripheral] = useState(null);
   const [isResetListeners, setIsResetListeners] = useState(false);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   let newBloodGlucoses = [];
   let currentDiscoveredPeripheral = null;

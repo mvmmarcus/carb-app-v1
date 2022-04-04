@@ -1,6 +1,5 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -8,6 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 import AuthContext from '../../contexts/auth';
+import useAuth from '../../hooks/useAuth';
 import IconLock from '../../../assets/lock.svg';
 import CustomButtom from '../../components/CustomButton';
 import Input from '../../components/Input';
@@ -22,20 +22,18 @@ const ProfileScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const { user, setUser } = useContext(AuthContext);
-  const [userName, setUserName] = useState(user?.displayName);
-  const [userEmail, setUserEmail] = useState(user?.email);
+  const { setUser } = useContext(AuthContext);
+
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const { user } = useAuth();
 
-  useFocusEffect(
-    useCallback(() => {
-      if (user) {
-        setUserName(user?.displayName);
-        setUserEmail(user?.email);
-      }
-    }, [user])
-  );
+  useEffect(() => {
+    setUserName(user?.displayName);
+    setUserEmail(user?.email);
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -88,76 +86,78 @@ const ProfileScreen = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.container}>
           <View style={styles.titleGroup}></View>
-          <View style={styles.formGroup}>
-            <Input
-              label="Nome"
-              placeholder="Digite seu nome"
-              iconLabel={<IconPerson />}
-              marginBottom={$medium}
-              value={userName}
-              onChange={(name) => setUserName(name)}
-            />
-            <Input
-              label="Email"
-              placeholder="Digite seu e-mail"
-              iconLabel={<IconPerson />}
-              marginBottom={$medium}
-              value={userEmail}
-              onChange={(email) => setUserEmail(email)}
-            />
-            <Input
-              label="Senha"
-              placeholder="Digite sua senha"
-              iconLabel={<IconLock />}
-              marginBottom={$medium}
-              onChange={(password) => setPassword(password)}
-              isSecurity={!showPassword}
-              iconInput={
-                showPassword ? (
-                  <FontAwesome5Icon
-                    name="eye"
-                    size={20}
-                    color={$primary}
-                    onPress={() => setShowPassword((prev) => !prev)}
-                  />
-                ) : (
-                  <FontAwesome5Icon
-                    name="eye-slash"
-                    size={20}
-                    color={$primary}
-                    onPress={() => setShowPassword((prev) => !prev)}
-                  />
-                )
-              }
-            />
-            <Input
-              label="Confirmar senha"
-              placeholder="Confirme sua senha"
-              iconLabel={<IconLock />}
-              iconInput={
-                showConfirmPassword ? (
-                  <FontAwesome5Icon
-                    name="eye"
-                    size={20}
-                    color={$primary}
-                    onPress={() => setShowConfirmPassword((prev) => !prev)}
-                  />
-                ) : (
-                  <FontAwesome5Icon
-                    name="eye-slash"
-                    size={20}
-                    color={$primary}
-                    onPress={() => setShowConfirmPassword((prev) => !prev)}
-                  />
-                )
-              }
-              marginBottom={$small}
-              onChange={(confirmPassword) =>
-                setConfirmPassword(confirmPassword)
-              }
-              isSecurity={!showConfirmPassword}
-            />
-          </View>
+          {!!userEmail && (
+            <View style={styles.formGroup}>
+              <Input
+                label="Nome"
+                placeholder="Digite seu nome"
+                iconLabel={<IconPerson />}
+                marginBottom={$medium}
+                value={userName}
+                onChange={(name) => setUserName(name)}
+              />
+              <Input
+                label="Email"
+                placeholder="Digite seu e-mail"
+                iconLabel={<IconPerson />}
+                marginBottom={$medium}
+                value={userEmail}
+                onChange={(email) => setUserEmail(email)}
+              />
+              <Input
+                label="Senha"
+                placeholder="Digite sua senha"
+                iconLabel={<IconLock />}
+                marginBottom={$medium}
+                onChange={(password) => setPassword(password)}
+                isSecurity={!showPassword}
+                iconInput={
+                  showPassword ? (
+                    <FontAwesome5Icon
+                      name="eye"
+                      size={20}
+                      color={$primary}
+                      onPress={() => setShowPassword((prev) => !prev)}
+                    />
+                  ) : (
+                    <FontAwesome5Icon
+                      name="eye-slash"
+                      size={20}
+                      color={$primary}
+                      onPress={() => setShowPassword((prev) => !prev)}
+                    />
+                  )
+                }
+              />
+              <Input
+                label="Confirmar senha"
+                placeholder="Confirme sua senha"
+                iconLabel={<IconLock />}
+                iconInput={
+                  showConfirmPassword ? (
+                    <FontAwesome5Icon
+                      name="eye"
+                      size={20}
+                      color={$primary}
+                      onPress={() => setShowConfirmPassword((prev) => !prev)}
+                    />
+                  ) : (
+                    <FontAwesome5Icon
+                      name="eye-slash"
+                      size={20}
+                      color={$primary}
+                      onPress={() => setShowConfirmPassword((prev) => !prev)}
+                    />
+                  )
+                }
+                marginBottom={$small}
+                onChange={(confirmPassword) =>
+                  setConfirmPassword(confirmPassword)
+                }
+                isSecurity={!showConfirmPassword}
+              />
+            </View>
+          )}
           <View style={styles.buttonGroup}>
             <CustomButtom
               disabled={!userEmail || !userName}

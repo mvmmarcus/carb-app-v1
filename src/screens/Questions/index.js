@@ -1,18 +1,17 @@
 import React, { useRef, useState, useCallback, useContext } from 'react';
-import { View, Dimensions, FlatList, ScrollView } from 'react-native';
+import { View, Dimensions, FlatList } from 'react-native';
 
+import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import ScreenWrapper from '../../components/ScreenWrapper';
 import UserContext from '../../contexts/user';
-import AuthContext from '../../contexts/auth';
 import useQuestions from '../../hooks/useQuestions';
 import IconNavigateNext from '../../../assets/navigate_next.svg';
 import IconCheck from '../../../assets/check.svg';
 import IconNavigatePrevious from '../../../assets/navigate_before.svg';
 import CustomButtom from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
-import { jsonParse } from '../../utils/jsonParse';
 
 import { theme } from '../../styles/theme';
 import { getStyle } from './styles';
@@ -20,7 +19,6 @@ import { getStyle } from './styles';
 const QuestionsScreen = ({ navigation }) => {
   const { isEditInfos, setIsFirstAccess, setInsulinParams, setIsEditInfos } =
     useContext(UserContext);
-  const { user } = useContext(AuthContext);
   const [index, setIndex] = useState(0);
   const [form, setForm] = useState({
     type: null,
@@ -72,15 +70,12 @@ const QuestionsScreen = ({ navigation }) => {
     });
   }, []);
 
-  const onFinishQuestions = async (insulinParams, user) => {
-    const userInfosByUid = jsonParse(
-      await AsyncStorage.getItem(`@carbs:${user?.uid}`)
-    );
+  const onFinishQuestions = async (insulinParams) => {
+    const userId = auth().currentUser.uid;
 
     await AsyncStorage.setItem(
-      `@carbs:${user?.uid}`,
+      `@carbs:${userId}`,
       JSON.stringify({
-        ...userInfosByUid,
         isFirstAccess: false,
         insulinParams: insulinParams,
       })
@@ -210,7 +205,7 @@ const QuestionsScreen = ({ navigation }) => {
                         icon={() => <IconCheck />}
                         backgroundColor={$secondary}
                         color={$white}
-                        onPress={() => onFinishQuestions(form, user)}
+                        onPress={() => onFinishQuestions(form)}
                       />
                     )}
                 </View>
