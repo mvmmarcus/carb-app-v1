@@ -7,7 +7,7 @@ export const getStyle = ({ glucoseBadgeBg }) => {
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: '0.375rem',
-    elevation: '$xxsmall',
+    elevation: 8,
     height: '$xlarge',
     minWidth: '$xxxlarge',
     paddingHorizontal: '0.625rem',
@@ -81,15 +81,13 @@ export const getStyle = ({ glucoseBadgeBg }) => {
       backgroundColor: glucoseBadgeBg,
     },
     mealItemValue: {
-      fontSize: '$medium',
+      fontSize: '$small',
       marginRight: '0.25rem',
-      marginTop: '0.175rem',
-      marginBottom: 0,
     },
     mealItemUnity: {
       fontSize: '0.625rem',
       alignSelf: 'flex-end',
-      marginBottom: '0.175rem',
+      marginBottom: '0.4rem',
     },
     iconEdit: {
       alignSelf: 'center',
