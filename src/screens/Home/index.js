@@ -15,6 +15,7 @@ import BluetoothContext from '../../contexts/bluetooth';
 import UserContext from '../../contexts/user';
 import { jsonParse } from '../../utils/jsonParse';
 import {
+  convertNumberToString,
   getAverageValue,
   getCaptalizedFirstName,
   getTotal,
@@ -62,11 +63,10 @@ const HomeScreen = ({ navigation }) => {
   }, []);
 
   const filterBoodGlucosesByDate = (date, bloodGlucoses = []) => {
-    const calendarDate = date
-      ?.toISOString()
-      ?.split('T')[0]
-      ?.split('-')
-      ?.join('/');
+    const day = convertNumberToString(date?.getDate());
+    const month = convertNumberToString(date?.getMonth() + 1);
+    const fullYear = date?.getFullYear();
+    const calendarDate = `${fullYear}/${month}/${day}`;
 
     const filteredBloodGlucoses = bloodGlucoses?.filter(
       (item) => item?.date === calendarDate

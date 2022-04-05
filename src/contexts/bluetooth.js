@@ -1,11 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
 import uuid from 'react-native-uuid';
@@ -14,7 +8,6 @@ import BleManager from 'react-native-ble-manager';
 import { Buffer } from 'buffer';
 
 import useAuth from '../hooks/useAuth';
-import AuthContext from '../contexts/auth';
 import { jsonParse } from '../utils/jsonParse';
 import {
   glucoseService,
@@ -22,6 +15,7 @@ import {
   gmCharacteristic,
   racpCharacteristic,
 } from '../utils/glucoseServices';
+import { calculateCorrectionInsulin } from '../utils/bloodGlucose';
 
 const BluetoothContext = createContext({
   bluetoothState: 'PoweredOff',
@@ -294,7 +288,16 @@ export const BluetoothProvider = ({ children }) => {
       if (currentBloodGlucoses?.length > 0) {
         newBloodGlucoses?.forEach((item) => {
           if (!bloodGlucoseAlreadyExists(item, currentBloodGlucoses)) {
-            updatedNewBloodGlucoses?.push(item);
+            const correctionInsulin = calculateCorrectionInsulin(
+              item?.value,
+              userInfosByUid?.insulinParams
+            );
+
+            updatedNewBloodGlucoses?.push({
+              ...item,
+              correction: parseFloat(correctionInsulin),
+              insulin: 0,
+            });
           }
         });
 
@@ -311,15 +314,30 @@ export const BluetoothProvider = ({ children }) => {
 
         setBloodGlucoses([...currentBloodGlucoses, ...updatedNewBloodGlucoses]);
       } else {
+        const newBloodGlucosesWithCorrectionInsulin = newBloodGlucoses?.map(
+          (item) => {
+            const correctonInsulin = calculateCorrectionInsulin(
+              item?.value,
+              userInfosByUid?.insulinParams
+            );
+
+            return {
+              ...item,
+              correction: parseFloat(correctonInsulin),
+              insulin: 0,
+            };
+          }
+        );
+
         await AsyncStorage.setItem(
           `@carbs:${user?.uid}`,
           JSON.stringify({
             ...userInfosByUid,
-            bloodGlucoses: newBloodGlucoses,
+            bloodGlucoses: newBloodGlucosesWithCorrectionInsulin,
           })
         );
 
-        setBloodGlucoses(newBloodGlucoses);
+        setBloodGlucoses(newBloodGlucosesWithCorrectionInsulin);
       }
       await sleep(500); // Garantir que não trave ao receber muitos dados de uma vez
       setIsGettingBloodGlucoses(false);

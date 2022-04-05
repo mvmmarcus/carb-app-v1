@@ -1,11 +1,11 @@
 // Cálculo da insulina de correção (com base na glicemia aferida)
 export const calculateCorrectionInsulin = (bloodGlucose, insulinParams) => {
   const bloodGlucoseTarget = 100; // 100 mg/dL
-  const bolusCorrecao =
+  const correctionInsulin =
     (bloodGlucose - bloodGlucoseTarget) /
     Number(insulinParams?.correctionFactor);
 
-  return bolusCorrecao > 0 ? bolusCorrecao?.toFixed(1) : 0;
+  return correctionInsulin > 0 ? correctionInsulin?.toFixed(1) : 0;
 };
 
 // Cálculo da insulina com base no total de carboidratos da refeição
